@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>姜駒車業 - 在庫展示大廳 v4.7</title>
+    <title>姜駒車業 - 在庫車源表</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -211,7 +211,7 @@
                     </div>
                     <div>
                         <h1 class="text-2xl font-black text-slate-850 tracking-tighter">姜駒車業 <span class="text-emerald-600">在庫展示大廳</span></h1>
-                        <p class="text-[11px] text-slate-400 font-bold tracking-wider mt-0.5 uppercase">Premium Stock Showroom Hall v4.7</p>
+                        <p class="text-[11px] text-slate-400 font-bold tracking-wider mt-0.5 uppercase"></p>
                     </div>
                 </div>
                 <div class="flex gap-2 w-full md:w-auto">
@@ -268,7 +268,7 @@
                     <option value="是">認證車源</option>
                     <option value="否">非認證</option>
                 </select>
-                <!-- 智慧調節版面顯示比例 (Requirement 1) -->
+                <!-- 智慧調節版面顯示比例 -->
                 <select id="select-scale" onchange="changeScale(this.value)" class="bg-slate-50 text-slate-700 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold outline-none focus:ring-2 focus:ring-emerald-500 transition-all cursor-pointer">
                     <option value="compact">版面：精簡緊湊</option>
                     <option value="normal" selected>版面：標準舒適</option>
@@ -307,9 +307,9 @@
 
             <!-- 內容滾動區 -->
             <div class="overflow-y-auto flex-grow pb-4">
-                <!-- 大圖 -->
+                <!-- 大圖 (新增 cursor-zoom-in 游標與 click 放大處理) -->
                 <div class="h-[280px] md:h-[400px] w-full bg-slate-100 relative overflow-hidden">
-                    <img id="modal-img" src="" alt="車輛大圖" class="w-full h-full object-cover">
+                    <img id="modal-img" src="" alt="車輛大圖" class="w-full h-full object-cover cursor-zoom-in hover:opacity-95 transition-opacity duration-300" onclick="openLightbox(this.src)">
                     
                     <!-- Modal 專屬售出大鋼印 -->
                     <div id="modal-sold-stamp" class="hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rotate-[-12deg] border-[8px] border-double border-red-600 text-red-600 bg-white/95 px-8 py-4 rounded-2xl shadow-2xl z-30 font-black text-3xl tracking-widest text-center pointer-events-none">
@@ -334,7 +334,7 @@
                 <!-- 彈窗內的未認證醒目提示條 -->
                 <div id="modal-uncertified-warning-bar" class="hidden bg-rose-50 text-rose-700 py-3.5 px-6 font-black text-sm flex items-center gap-3 border-b border-rose-100">
                     <i class="fa-solid fa-triangle-exclamation text-lg animate-pulse text-rose-600"></i>
-                    <span>提醒：本車目前「尚未通過第三方認證」！</span>
+                    <span>提醒：本車目前「尚未通過第三方認證」，看車現場請務必核對車況細節！</span>
                 </div>
 
                 <!-- 其他照片相簿 -->
@@ -491,9 +491,19 @@
         </div>
     </div>
 
+    <!-- 全螢幕相片檢視 Lightbox 彈窗燈箱 -->
+    <div id="lightbox-modal" class="hidden fixed inset-0 z-[60] bg-black/95 backdrop-blur-md flex items-center justify-center p-4 cursor-zoom-out" onclick="closeLightbox(event)">
+        <!-- 頂部浮動關閉按鈕 -->
+        <button onclick="closeLightbox(event)" class="absolute top-6 right-6 text-white/80 hover:text-white hover:scale-110 active:scale-95 text-3xl transition-all w-12 h-12 flex items-center justify-center bg-black/40 rounded-full shadow-lg border border-white/10">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+        <!-- 高解析度主圖片 -->
+        <img id="lightbox-img" src="" alt="全螢幕車照" class="max-w-full max-h-[90vh] object-contain rounded-2xl shadow-2xl transition-all duration-300 transform scale-95 opacity-0">
+    </div>
+
     <!-- 頁尾 -->
     <footer class="mt-auto py-8 text-center text-xs text-slate-400 no-capture">
-        <p>©  v4.7</p>
+        <p>© 姜駒車業 v4.7</p>
     </footer>
 
     <script>
@@ -502,9 +512,8 @@
         let currentSelectedCar = null; 
         let isListView = false; 
         let confidentialPricesVisible = false; 
-        let currentScale = 'normal'; // 預設比例為 standard / 舒適 normal
+        let currentScale = 'normal'; 
 
-        // 智慧版面配置定義檔 (對接精簡、標準、放大三種視覺模式)
         const scaleConfig = {
             compact: {
                 imgWidth: "md:w-[260px]",
@@ -553,10 +562,8 @@
             }
         };
 
-        // 當前系統模擬時間基準：2026年6月5日 (June 2026)
         const currentSystemDate = new Date(2026, 5, 5);
 
-        // 預防圖片破圖的高質感跑車占位圖庫
         const placeholderImages = [
             "https://images.unsplash.com/photo-1617788138017-80ad40651399?q=80&w=1200", 
             "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?q=80&w=1200", 
@@ -564,7 +571,6 @@
             "https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=1200" 
         ];
 
-        // 智慧多在庫位置顏色配置系統
         const locationColors = {
             "台北總店": "bg-indigo-50 text-indigo-700 border-indigo-200",
             "台北店": "bg-indigo-50 text-indigo-700 border-indigo-200",
@@ -576,7 +582,6 @@
             "桃園店": "bg-sky-50 text-sky-700 border-sky-200"
         };
 
-        // 售賣形式顏色配置系統
         const saleTypeColors = {
             "零售": "bg-emerald-50 text-emerald-700 border-emerald-200",
             "盤兵": "bg-sky-50 text-sky-700 border-sky-200",
@@ -584,7 +589,6 @@
             "尋車": "bg-amber-50 text-amber-700 border-amber-200"
         };
 
-        // 動態獲取位置彩色樣式
         function getLocationColor(loc) {
             if (!loc) return "bg-slate-50 text-slate-600 border-slate-200";
             const trimmed = String(loc).trim();
@@ -605,7 +609,6 @@
             return colors[index];
         }
 
-        // 動態獲取售賣型式彩色樣式
         function getSaleTypeColor(type) {
             if (!type) return "bg-slate-50 text-slate-600 border-slate-200";
             const trimmed = String(type).trim();
@@ -613,7 +616,6 @@
             return "bg-slate-50 text-slate-600 border-slate-200";
         }
 
-        // 智慧型里程轉換器
         function formatMileage(mileageVal) {
             if (mileageVal === undefined || mileageVal === null || mileageVal === "") return '-- 萬 km';
             let str = String(mileageVal).trim();
@@ -633,7 +635,6 @@
             }
         }
 
-        // 智慧日期解析器 (民國/西元相容)
         function parseDate(dateStr) {
             if (!dateStr) return null;
             let str = String(dateStr).trim();
@@ -668,7 +669,6 @@
             return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
         }
 
-        // 智慧驗車狀態計算核心
         function getInspectionStatus(car) {
             if (car["販售狀態"] === "售出") return null;
             const freq = String(car["驗車頻率"] || "").trim();
@@ -712,13 +712,11 @@
 
         window.onload = () => init();
 
-        // 比例變更監聽與重新渲染 (Requirement 1)
         function changeScale(scaleValue) {
             currentScale = scaleValue;
             render();
         }
 
-        // 智能 Google Drive 網址轉換
         function getDirectImageUrl(url) {
             if (!url || typeof url !== 'string') return placeholderImages[0];
             const drivePattern = /(?:https?:\/\/)?(?:drive\.google\.com\/)(?:file\/d\/|open\?id=)([^/&?#]+)/;
@@ -793,7 +791,7 @@
                     "在庫位子": "台中分店",
                     "販售狀態": "收訂", 
                     "是否認證": "是",
-                    "售賣形式": "零售",
+                    "售賣形式": "寄賣",
                     "封面圖片": "https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=1200",
                     "其他照片": "",
                     "購入日期": "2026/06/01", 
@@ -956,7 +954,6 @@
             const searchKeyword = document.getElementById('search-bar').value.trim().toLowerCase();
             gallery.innerHTML = "";
 
-            // 動態加載比例設定 (Requirement 1)
             const sc = scaleConfig[currentScale] || scaleConfig.normal;
 
             const filtered = cars.filter(c => {
@@ -982,7 +979,6 @@
                 return;
             }
             
-            // 雙層排序邏輯
             filtered.sort((a, b) => {
                 const aSold = a["販售狀態"] === "售出" ? 1 : 0;
                 const bSold = b["販售狀態"] === "售出" ? 1 : 0;
@@ -1013,7 +1009,7 @@
                 }
             });
 
-            // --- 模式 1: 清單總覽模式 (對應 Requirement 1 之縮放調整) ---
+            // --- 模式 1: 清單總覽模式 ---
             if (isListView) {
                 let tableHtml = `
                     <div class="overflow-x-auto bg-white/90 rounded-2xl border border-slate-200 shadow-sm relative z-10 backdrop-blur-sm">
@@ -1040,7 +1036,6 @@
                     const locBadgeClass = getLocationColor(car["在庫位子"]);
                     const saleBadgeClass = getSaleTypeColor(car["售賣形式"]);
 
-                    // 智慧驗車狀態
                     const inspectStatus = getInspectionStatus(car);
                     let inspectWarningBadge = '';
                     if (inspectStatus) {
@@ -1114,7 +1109,7 @@
                 return;
             }
 
-            // --- 模式 2: 圖文卡片模式 (對應 Requirement 1 之卡片縮放調整) ---
+            // --- 模式 2: 圖文卡片模式 ---
             filtered.forEach((car, index) => {
                 const isSold = car["販售狀態"] === "售出";
                 const isReserved = car["販售狀態"] === "收訂" || car["販售狀態"] === "預訂";
@@ -1128,7 +1123,6 @@
                 const locBadgeClass = getLocationColor(car["在庫位子"]); 
                 const saleBadgeClass = getSaleTypeColor(car["售賣形式"]);
 
-                // 智慧驗車狀態於卡片上額外呈顯
                 const inspectStatus = getInspectionStatus(car);
                 let cardInspectBadge = '';
                 if (inspectStatus && (inspectStatus.type === 'due' || inspectStatus.type === 'overdue' || inspectStatus.type === 'remind')) {
@@ -1151,7 +1145,6 @@
                     `;
                 }
 
-                // 卡片模式專屬備註 (Requirement 2)
                 const cardRemarksHtml = car["備註"] ? `
                     <div class="${sc.cardRemarksMargin} text-slate-500 bg-slate-50 border border-slate-100 leading-relaxed line-clamp-2" title="${car["備註"]}">
                         <i class="fa-regular fa-comment-dots text-emerald-600 mr-1.5"></i>${car["備註"]}
@@ -1176,7 +1169,7 @@
                         </div>` : ''
                     }
                     
-                    <!-- 圖片盒 (連動縮放設定高寬) -->
+                    <!-- 圖片盒 -->
                     <div class="img-box w-full ${sc.imgWidth} ${sc.imgHeight} bg-slate-100 flex-shrink-0 relative overflow-hidden ${isReserved ? 'pt-6' : ''}">
                         <img src="${resolvedImageUrl}" 
                              onerror="handleImageError(this, ${index})" 
@@ -1196,14 +1189,14 @@
                         ` : ''}
                     </div>
 
-                    <!-- 內文規格盒 (連動縮放設定 Padding 與 font-size) -->
+                    <!-- 內文規格盒 -->
                     <div class="flex-grow ${sc.contentPadding} flex flex-col justify-between bg-white ${isReserved ? 'pt-10' : ''}">
                         <div>
                             <div class="flex items-center gap-2 mb-2">
                                 <span class="border px-2 py-0.5 rounded-md text-[10px] font-black tracking-wider uppercase ${saleBadgeClass}">${car["售賣形式"] || '零售'}</span>
                             </div>
                             
-                            <!-- 核心優化：品牌與型號並排，且深度凸顯型號 -->
+                            <!-- 廠牌型號橫向並排且凸顯型號 -->
                             <div class="flex items-center flex-wrap gap-2.5 mb-3.5">
                                 <span class="bg-slate-900 text-white ${sc.brandText} rounded uppercase tracking-wider flex-shrink-0">${car["廠牌"] || '--'}</span>
                                 <h3 class="${sc.titleText} font-black text-slate-950 tracking-tight hover:text-emerald-600 transition-colors decoration-emerald-500/30 decoration-2">${car["型號"] || '--'}</h3>
@@ -1226,7 +1219,7 @@
                         </div>
                     </div>
 
-                    <!-- 價格盒 (連動縮放設定寬度與 padding、金額大小) -->
+                    <!-- 價格盒 -->
                     <div class="price-box w-full ${sc.priceWidth} border-l border-slate-100 ${sc.pricePadding} flex flex-col justify-center items-end bg-slate-50/50 ${isReserved ? 'pt-12' : ''}">
                         <div class="text-left md:text-right w-full">
                             <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">網路優惠價</p>
@@ -1265,7 +1258,6 @@
             document.getElementById('modal-title').innerText = car["型號"] || '--';
             document.getElementById('modal-badge-year').innerText = `${car["年份"]} 年`;
             
-            // 售賣形式標籤色彩同步
             const modalBadgeSale = document.getElementById('modal-badge-sale');
             modalBadgeSale.innerText = car["售賣形式"] || '零售';
             modalBadgeSale.className = `border px-2.5 py-1 rounded-md text-xs font-bold ${getSaleTypeColor(car["售賣形式"])}`;
@@ -1426,6 +1418,34 @@
                 modalCard.classList.add('scale-100', 'opacity-100');
             }, 10);
             document.body.style.overflow = 'hidden';
+        }
+
+        // 全螢幕 Lightbox 燈箱開關邏輯
+        function openLightbox(imgSrc) {
+            if (!imgSrc) return;
+            const lightbox = document.getElementById('lightbox-modal');
+            const lightboxImg = document.getElementById('lightbox-img');
+            lightboxImg.src = imgSrc;
+            lightbox.classList.remove('hidden');
+            setTimeout(() => {
+                lightboxImg.classList.remove('scale-95', 'opacity-0');
+                lightboxImg.classList.add('scale-100', 'opacity-100');
+            }, 50);
+        }
+
+        function closeLightbox(e) {
+            // 如果點選的是圖片本身而非背景或關閉按鈕，則不作動
+            if (e && e.target.id === 'lightbox-img') return;
+            
+            const lightbox = document.getElementById('lightbox-modal');
+            const lightboxImg = document.getElementById('lightbox-img');
+            
+            lightboxImg.classList.remove('scale-100', 'opacity-100');
+            lightboxImg.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                lightbox.classList.add('hidden');
+                lightboxImg.src = '';
+            }, 300);
         }
 
         function toggleConfidentialPrices() {
