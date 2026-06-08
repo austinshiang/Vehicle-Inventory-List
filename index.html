@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>姜駒車業 - 在庫展示大廳 </title>
+    <title>姜駒車業 - 在庫車源表</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -241,8 +241,8 @@
                         <i class="fa-solid fa-car-rear text-2xl"></i>
                     </div>
                     <div>
-                        <h1 class="text-2xl font-black text-slate-850 tracking-tighter">姜駒車業 <span class="text-emerald-600">在庫車輛車源表</span></h1>
-                        <p class="text-[11px] text-slate-400 font-bold tracking-wider mt-0.5 uppercase">Premium Stock Showroom Hall v4.9</p>
+                        <h1 class="text-2xl font-black text-slate-850 tracking-tighter">姜駒車業 <span class="text-emerald-600">在庫車源</span></h1>
+                        <p class="text-[11px] text-slate-400 font-bold tracking-wider mt-0.5 uppercase">Premium Stock Showroom Hall v5.0</p>
                     </div>
                 </div>
                 <div class="flex gap-2 w-full md:w-auto">
@@ -340,7 +340,7 @@
             <div class="overflow-y-auto flex-grow pb-4">
                 <!-- 大圖 -->
                 <div class="h-auto aspect-square md:aspect-auto md:h-[400px] w-full bg-slate-100 relative overflow-hidden">
-                    <img id="modal-img" src="" alt="車輛大圖" class="w-full h-full object-cover cursor-zoom-in hover:opacity-95 transition-opacity duration-300" onclick="openLightbox(this.src)">
+                    <img id="modal-img" src="" alt="車輛大圖" class="w-full h-full object-cover cursor-zoom-in hover:opacity-95 transition-opacity duration-300">
                     
                     <!-- Modal 專屬售出大鋼印 -->
                     <div id="modal-sold-stamp" class="hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rotate-[-12deg] border-[8px] border-double border-red-600 text-red-600 bg-white/95 px-8 py-4 rounded-2xl shadow-2xl z-30 font-black text-3xl tracking-widest text-center pointer-events-none">
@@ -365,7 +365,7 @@
                 <!-- 彈窗內的未認證醒目提示條 -->
                 <div id="modal-uncertified-warning-bar" class="hidden bg-rose-50 text-rose-700 py-3.5 px-6 font-black text-sm flex items-center gap-3 border-b border-rose-100">
                     <i class="fa-solid fa-triangle-exclamation text-lg animate-pulse text-rose-600"></i>
-                    <span>提醒：本車目前「尚未通過第三方認證」！</span>
+                    <span>提醒：本車目前「尚未通過第三方認證」，看車現場請務必核對車況細節！</span>
                 </div>
 
                 <!-- 其他照片相簿 -->
@@ -525,16 +525,27 @@
     <!-- 全螢幕相片檢視 Lightbox 彈窗燈箱 -->
     <div id="lightbox-modal" class="hidden fixed inset-0 z-[60] bg-black/95 backdrop-blur-md flex items-center justify-center p-4 cursor-zoom-out" onclick="closeLightbox(event)">
         <!-- 頂部浮動關閉按鈕 -->
-        <button onclick="closeLightbox(event)" class="absolute top-6 right-6 text-white/80 hover:text-white hover:scale-110 active:scale-95 text-3xl transition-all w-12 h-12 flex items-center justify-center bg-black/40 rounded-full shadow-lg border border-white/10">
+        <button onclick="closeLightbox(event)" class="absolute top-6 right-6 text-white/80 hover:text-white hover:scale-110 active:scale-95 text-3xl transition-all w-12 h-12 flex items-center justify-center bg-black/40 rounded-full shadow-lg border border-white/10 z-[70]">
             <i class="fa-solid fa-xmark"></i>
         </button>
+
+        <!-- 左方向切換按鈕 -->
+        <button id="lightbox-prev-btn" onclick="prevLightboxImage(event)" class="absolute left-4 md:left-8 text-white/70 hover:text-white text-3xl md:text-4xl p-3 md:p-4 bg-black/20 hover:bg-black/50 hover:scale-105 active:scale-95 rounded-full transition-all z-[70] hidden">
+            <i class="fa-solid fa-chevron-left"></i>
+        </button>
+
+        <!-- 右方向切換按鈕 -->
+        <button id="lightbox-next-btn" onclick="nextLightboxImage(event)" class="absolute right-4 md:right-8 text-white/70 hover:text-white text-3xl md:text-4xl p-3 md:p-4 bg-black/20 hover:bg-black/50 hover:scale-105 active:scale-95 rounded-full transition-all z-[70] hidden">
+            <i class="fa-solid fa-chevron-right font-bold"></i>
+        </button>
+
         <!-- 高解析度主圖片 -->
-        <img id="lightbox-img" src="" alt="全螢幕車照" class="max-w-full max-h-[90vh] object-contain rounded-2xl shadow-2xl transition-all duration-300 transform scale-95 opacity-0">
+        <img id="lightbox-img" src="" alt="全螢幕車照" class="max-w-full max-h-[90vh] object-contain rounded-2xl shadow-2xl transition-all duration-300 transform scale-95 opacity-0 select-none">
     </div>
 
     <!-- 頁尾 -->
     <footer class="mt-auto py-8 text-center text-xs text-slate-400 no-capture">
-        <p>© v4.9</p>
+        <p>© 整合系統 v5.0</p>
     </footer>
 
     <script>
@@ -544,6 +555,12 @@
         let isListView = false; 
         let confidentialPricesVisible = false; 
         let currentScale = 'normal'; 
+
+        // 全螢幕燈箱大圖切換與手勢專用全域變數
+        let lightboxImages = [];
+        let currentLightboxIndex = 0;
+        let touchStartX = 0;
+        let touchEndX = 0;
 
         // 智慧版面配置定義檔 (完美支援行動端與桌機端橫向聯動)
         const scaleConfig = {
@@ -758,7 +775,10 @@
             return finalStatus || { type: 'none', targetMonths: targetMonths, freq: freq };
         }
 
-        window.onload = () => init();
+        window.onload = () => {
+            init();
+            initLightboxGestures();
+        };
 
         function changeScale(scaleValue) {
             currentScale = scaleValue;
@@ -1057,7 +1077,7 @@
                 }
             });
 
-            // --- 模式 1: 清單總覽模式 (針對手機端進行了完美的無水平捲軸響應式重構) ---
+            // --- 模式 1: 清單總覽模式 ---
             if (isListView) {
                 let tableHtml = `
                     <div class="overflow-x-auto bg-white/90 rounded-2xl border border-slate-200 shadow-sm relative z-10 backdrop-blur-sm">
@@ -1110,10 +1130,7 @@
 
                     tableHtml += `
                         <tr onclick="openModalByCode('${car["編碼"]}')" class="hover:bg-slate-50/80 cursor-pointer transition-colors ${isSold ? 'opacity-65 grayscale-[30%]' : ''} ${isReserved ? 'bg-amber-50/20' : ''}">
-                            <!-- 廠牌欄 -->
                             <td class="${sc.tdPadding} font-bold text-slate-500 tracking-wider uppercase">${car["廠牌"] || '--'}</td>
-                            
-                            <!-- 型號與狀態資訊 (手機版在此欄位會整合下方隱藏的標籤列，確保畫面完整不滑動) -->
                             <td class="${sc.tdPadding}">
                                 <div class="flex flex-col gap-1.5 justify-center">
                                     <div class="flex flex-wrap items-center gap-2">
@@ -1123,7 +1140,7 @@
                                         <span class="hidden md:inline">${inspectWarningBadge}</span>
                                     </div>
                                     
-                                    <!-- 手機版專屬極密標籤列 (100% 寬度完美適配) -->
+                                    <!-- 手機版專屬極密標籤列 -->
                                     <div class="flex flex-wrap items-center gap-1.5 mt-0.5 md:hidden text-[10px]">
                                         <span class="text-slate-500 font-bold bg-slate-100 px-1 py-0.5 rounded">${car["年份"]} 年</span>
                                         <span class="text-slate-500 font-bold bg-slate-100 px-1 py-0.5 rounded">${formatMileage(car["里程"])}</span>
@@ -1139,7 +1156,6 @@
                                 </div>
                             </td>
                             
-                            <!-- 桌機端獨立呈現欄位 -->
                             <td class="${sc.tdPadding} text-slate-600 font-bold hidden md:table-cell">${car["年份"] || '--'} 年</td>
                             <td class="${sc.tdPadding} text-slate-600 font-bold hidden md:table-cell">${formatMileage(car["里程"])}</td>
                             <td class="${sc.tdPadding} hidden md:table-cell">
@@ -1178,7 +1194,7 @@
                 return;
             }
 
-            // --- 模式 2: 圖文卡片模式 (橫向流水版排版) ---
+            // --- 模式 2: 圖文卡片模式 ---
             filtered.forEach((car, index) => {
                 const isSold = car["販售狀態"] === "售出";
                 const isReserved = car["販售狀態"] === "收訂" || car["販售狀態"] === "預訂";
@@ -1214,13 +1230,6 @@
                     `;
                 }
 
-                // 備註對話框
-                const cardRemarksHtml = car["備註"] ? `
-                    <div class="${sc.cardRemarksMargin} text-slate-500 bg-slate-50 border border-slate-150 leading-relaxed line-clamp-2 md:line-clamp-none" title="${car["備註"]}">
-                        <i class="fa-regular fa-comment-dots text-emerald-600 mr-1.5"></i>${car["備註"]}
-                    </div>
-                ` : '';
-
                 row.innerHTML = `
                     ${isReserved ? `
                         <div class="absolute top-0 inset-x-0 bg-gradient-to-r from-amber-500 via-rose-500 to-amber-500 text-white text-[9px] md:text-[11px] font-black py-0.5 md:py-1.5 px-4 text-center tracking-wider z-20 flex items-center justify-center gap-1.5">
@@ -1230,7 +1239,7 @@
                     ` : ''}
 
                     ${isSold ? `
-                        <!-- 已售出印章 (智慧縮小防止破壞排版) -->
+                        <!-- 已售出印章 -->
                         <div class="sold-stamp">
                             已售出
                             <span class="text-[9px] md:text-[11px] font-black block mt-0.5 md:mt-1.5 tracking-widest text-red-600 bg-white/95 px-1.5 py-0.5 md:px-2.5 md:py-0.5 rounded border border-red-200">
@@ -1239,14 +1248,14 @@
                         </div>` : ''
                     }
                     
-                    <!-- 圖片盒 (核心修正：利用 md:bottom-auto 完美修復電腦版在庫標示跑掉、重疊與垂直拉伸問題) -->
+                    <!-- 圖片盒 -->
                     <div class="img-box ${sc.imgWidth} ${sc.imgHeight} bg-slate-100 flex-shrink-0 relative overflow-hidden flex items-center justify-center">
                         <img src="${resolvedImageUrl}" 
                              onerror="handleImageError(this, ${index})" 
                              class="w-full h-full object-cover transition-transform duration-500 hover:scale-105" 
                              alt="${car["型號"]}">
                         
-                        <!-- 電腦版/手機版標籤融合 (完美定位不重疊) -->
+                        <!-- 在庫狀態標示定位優化 (修復 md:bottom-auto，防止拉伸) -->
                         <div class="absolute bottom-1 md:bottom-auto md:top-3 left-1 md:left-3 px-1 md:px-2.5 py-0.5 md:py-1 rounded text-[8px] md:text-[10px] font-black tracking-wide badge-status-${car["販售狀態"] || '在庫'} shadow-md z-10">
                             ${car["販售狀態"] || '在庫'}
                         </div>
@@ -1260,7 +1269,7 @@
                         ` : ''}
                     </div>
 
-                    <!-- 內文規格盒 (自適應精美寬度與 Padding) -->
+                    <!-- 內文規格盒 (注意：已徹底移除了 cardRemarksHtml 備註區塊，確保卡片高度絕對整齊) -->
                     <div class="flex-grow ${sc.contentPadding} flex flex-col justify-between bg-white min-w-0">
                         <div>
                             <div class="flex items-center gap-2 mb-1 md:mb-2">
@@ -1280,8 +1289,6 @@
                                     <i class="fa-solid fa-location-dot text-[8px] md:text-[10px]"></i> ${car["在庫位子"] || "展間"}
                                 </span>
                             </div>
-
-                            ${cardRemarksHtml}
                         </div>
                         <div class="hidden md:flex mt-4 pt-4 border-t border-slate-100 items-center justify-between no-capture">
                             <span class="text-xs text-slate-500 font-bold hover:text-emerald-600 transition-colors">
@@ -1290,7 +1297,7 @@
                         </div>
                     </div>
 
-                    <!-- 價格盒 (不落入直列，與卡片保持橫向貼合) -->
+                    <!-- 價格盒 -->
                     <div class="price-box w-auto md:w-${sc.priceWidth} border-l-0 md:border-l border-slate-100 ${sc.pricePadding} flex flex-col justify-center items-end bg-transparent md:bg-slate-50/50 pr-2">
                         <div class="text-right w-full">
                             <p class="text-[8px] md:text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-0.5 md:mb-1">網路優惠價</p>
@@ -1357,7 +1364,7 @@
             const buyDateStr = car["購入日期"] ? getOnlyDate(car["購入日期"]) : '--';
             document.getElementById('spec-buy-date').innerText = buyDateStr;
 
-            // 智慧驗車資訊動態綁定呈現
+            // 智慧驗車資訊動態呈現
             const specInspectEl = document.getElementById('spec-inspection');
             const inspectStatus = getInspectionStatus(car);
             
@@ -1452,7 +1459,7 @@
             statusBadge.className = `absolute bottom-4 right-4 px-3 py-1.5 rounded-lg text-xs font-black shadow-xl badge-status-${car["販售狀態"] || '在庫'}`;
             statusBadge.innerText = car["販售狀態"] || '在庫';
 
-            // 多圖相簿
+            // 多圖相簿與燈箱輪播陣列建立
             const thumbsContainer = document.getElementById('modal-thumbnails-container');
             const thumbsDiv = document.getElementById('modal-thumbnails');
             thumbsDiv.innerHTML = '';
@@ -1463,6 +1470,13 @@
             otherPhotos.forEach(p => {
                 allPhotos.push(getDirectImageUrl(p));
             });
+
+            // 建立 Modal 主圖之點擊開啟輪播大圖
+            document.getElementById('modal-img').onclick = () => {
+                const currentImgSrc = document.getElementById('modal-img').src;
+                const idx = allPhotos.indexOf(currentImgSrc);
+                openLightbox(idx !== -1 ? idx : 0, allPhotos);
+            };
 
             if (allPhotos.length > 1) {
                 thumbsContainer.classList.remove('hidden');
@@ -1491,21 +1505,62 @@
             document.body.style.overflow = 'hidden';
         }
 
-        // 全螢幕 Lightbox 燈箱開關邏輯
-        function openLightbox(imgSrc) {
-            if (!imgSrc) return;
+        // --- 全螢幕 Lightbox 燈箱 2.0 (多圖輪播、鍵盤方向鍵切換、滑動手勢) ---
+        function openLightbox(index, photoArray) {
+            if (!photoArray || photoArray.length === 0) return;
+            lightboxImages = photoArray;
+            currentLightboxIndex = index;
+
             const lightbox = document.getElementById('lightbox-modal');
             const lightboxImg = document.getElementById('lightbox-img');
-            lightboxImg.src = imgSrc;
+            const prevBtn = document.getElementById('lightbox-prev-btn');
+            const nextBtn = document.getElementById('lightbox-next-btn');
+
+            // 更新按鈕是否顯示
+            if (lightboxImages.length > 1) {
+                prevBtn.classList.remove('hidden');
+                nextBtn.classList.remove('hidden');
+            } else {
+                prevBtn.classList.add('hidden');
+                nextBtn.classList.add('hidden');
+            }
+
+            updateLightboxImage();
             lightbox.classList.remove('hidden');
+
             setTimeout(() => {
                 lightboxImg.classList.remove('scale-95', 'opacity-0');
                 lightboxImg.classList.add('scale-100', 'opacity-100');
             }, 50);
         }
 
+        function updateLightboxImage() {
+            const lightboxImg = document.getElementById('lightbox-img');
+            lightboxImg.classList.add('opacity-0'); // 切換淡出動畫
+            setTimeout(() => {
+                lightboxImg.src = lightboxImages[currentLightboxIndex];
+                lightboxImg.classList.remove('opacity-0');
+            }, 150);
+        }
+
+        function nextLightboxImage(event) {
+            if (event) event.stopPropagation(); // 阻止事件氣泡，防止關閉燈箱
+            if (lightboxImages.length <= 1) return;
+            currentLightboxIndex = (currentLightboxIndex + 1) % lightboxImages.length;
+            updateLightboxImage();
+        }
+
+        function prevLightboxImage(event) {
+            if (event) event.stopPropagation(); // 阻止事件氣泡，防止關閉燈箱
+            if (lightboxImages.length <= 1) return;
+            currentLightboxIndex = (currentLightboxIndex - 1 + lightboxImages.length) % lightboxImages.length;
+            updateLightboxImage();
+        }
+
         function closeLightbox(e) {
-            if (e && e.target.id === 'lightbox-img') return;
+            // 如果點選的是大圖本身、或是點選了左右方向切換按鈕，不進行關閉大圖動作
+            if (e && (e.target.id === 'lightbox-img' || e.target.closest('#lightbox-prev-btn') || e.target.closest('#lightbox-next-btn'))) return;
+            
             const lightbox = document.getElementById('lightbox-modal');
             const lightboxImg = document.getElementById('lightbox-img');
             
@@ -1514,7 +1569,49 @@
             setTimeout(() => {
                 lightbox.classList.add('hidden');
                 lightboxImg.src = '';
+                lightboxImages = [];
             }, 300);
+        }
+
+        // 初始化鍵盤、滑動手勢
+        function initLightboxGestures() {
+            // 1. 鍵盤事件監聽 (左右方向鍵、Escape 鍵)
+            document.addEventListener('keydown', (e) => {
+                const lightbox = document.getElementById('lightbox-modal');
+                if (lightbox && !lightbox.classList.contains('hidden')) {
+                    if (e.key === 'ArrowRight' || e.key === 'Right') {
+                        nextLightboxImage();
+                    } else if (e.key === 'ArrowLeft' || e.key === 'Left') {
+                        prevLightboxImage();
+                    } else if (e.key === 'Escape') {
+                        closeLightbox();
+                    }
+                }
+            });
+
+            // 2. 行動端觸控手勢滑動 (Swipe Left/Right)
+            const lightboxModal = document.getElementById('lightbox-modal');
+            lightboxModal.addEventListener('touchstart', (e) => {
+                touchStartX = e.changedTouches[0].screenX;
+            }, { passive: true });
+
+            lightboxModal.addEventListener('touchend', (e) => {
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipeGesture();
+            }, { passive: true });
+        }
+
+        function handleSwipeGesture() {
+            const swipeThreshold = 50; // 定義滑動觸發閥值 (像素)
+            if (lightboxImages.length <= 1) return;
+
+            if (touchStartX - touchEndX > swipeThreshold) {
+                // 向左滑動 -> 顯示下一張
+                nextLightboxImage();
+            } else if (touchEndX - touchStartX > swipeThreshold) {
+                // 向右滑動 -> 顯示上一張
+                prevLightboxImage();
+            }
         }
 
         function toggleConfidentialPrices() {
