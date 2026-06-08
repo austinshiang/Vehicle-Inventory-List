@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>姜駒車業 - 在庫車源表</title>
+    <title>姜駒車業 - 在庫展示大廳 </title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -63,6 +63,7 @@
             border: 1px solid #e2e8f0; 
             border-radius: 24px; 
             display: flex; 
+            flex-direction: row; /* 全螢幕尺寸皆維持橫向排列 */
             position: relative; 
             overflow: hidden; 
             z-index: 10; 
@@ -121,26 +122,36 @@
             color: #64748b !important;
         }
         
-        /* 售出鋼印 */
+        /* 售出鋼印 (智慧適應尺寸) */
         .sold-stamp { 
             position: absolute; 
             top: 50%; 
             left: 50%; 
             transform: translate(-50%, -50%) rotate(-12deg); 
-            border: 6px double #dc2626; 
+            border: 4px double #dc2626; 
             color: #dc2626; 
             background: rgba(255, 255, 255, 0.96); 
-            padding: 16px 44px; 
-            font-size: 2.8rem; 
+            padding: 8px 20px; 
+            font-size: 1.5rem; 
             font-weight: 900; 
             z-index: 30; 
-            border-radius: 20px; 
-            box-shadow: 0 10px 30px rgba(220, 38, 38, 0.25); 
+            border-radius: 12px; 
+            box-shadow: 0 10px 30px rgba(220, 38, 38, 0.15); 
             text-align: center; 
             line-height: 1.1; 
             pointer-events: none; 
-            letter-spacing: 6px;
+            letter-spacing: 4px;
             animation: stamp-appear 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @media (min-width: 768px) {
+            .sold-stamp {
+                border: 6px double #dc2626; 
+                padding: 16px 44px; 
+                font-size: 2.8rem; 
+                border-radius: 20px;
+                letter-spacing: 6px;
+            }
         }
 
         @keyframes stamp-appear {
@@ -185,11 +196,31 @@
             transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        /* 手機版排版極致優化：圖片縮小、內距微調，能顯示更多車輛 */
+        /* 手機版排版極致優化 (橫向流水布局，完美解決 1:1 相片裁切與超重高度問題) */
         @media (max-width: 768px) { 
-            .car-row { flex-direction: column !important; } 
-            .img-box { width: 100% !important; height: 160px !important; } 
-            .price-box { border-left: none !important; border-top: 1px solid #f1f5f9; width: 100% !important; padding: 16px !important; flex-direction: row !important; justify-content: space-between !important; align-items: center !important; } 
+            .car-row { 
+                flex-direction: row !important; /* 確保不變為直列 */
+                padding: 10px !important;
+                gap: 10px !important;
+                border-radius: 16px !important;
+            } 
+            
+            .img-box { 
+                border-radius: 10px !important; 
+                flex-shrink: 0 !important;
+            } 
+            
+            .price-box { 
+                border-left: none !important; 
+                border-top: none !important; 
+                width: auto !important; 
+                padding: 0 !important; 
+                flex-direction: column !important; 
+                justify-content: center !important; 
+                align-items: flex-end !important; 
+                background-color: transparent !important;
+                flex-shrink: 0 !important;
+            } 
         }
     </style>
 </head>
@@ -201,7 +232,7 @@
     <!-- 退出截圖模式按鈕 -->
     <button id="exit-capture" onclick="toggleCapture(false)"><i class="fa-solid fa-xmark mr-2"></i> 結束截圖模式</button>
 
-    <!-- 核心優化：不再凍結頂部，移除 sticky 與 backdrop-blur 屬性 -->
+    <!-- 頂部控制列（隨滾動自然滑出，不擋住可視區域） -->
     <header class="bg-white border-b border-slate-200 py-6 px-4 relative z-40 shadow-sm no-capture">
         <div class="max-w-6xl mx-auto space-y-6">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -210,8 +241,8 @@
                         <i class="fa-solid fa-car-rear text-2xl"></i>
                     </div>
                     <div>
-                        <h1 class="text-2xl font-black text-slate-850 tracking-tighter">姜駒車業 <span class="text-emerald-600">在庫展示大廳</span></h1>
-                        <p class="text-[11px] text-slate-400 font-bold tracking-wider mt-0.5 uppercase"></p>
+                        <h1 class="text-2xl font-black text-slate-850 tracking-tighter">姜駒車業 <span class="text-emerald-600">在庫車輛車源表</span></h1>
+                        <p class="text-[11px] text-slate-400 font-bold tracking-wider mt-0.5 uppercase">Premium Stock Showroom Hall v4.9</p>
                     </div>
                 </div>
                 <div class="flex gap-2 w-full md:w-auto">
@@ -249,7 +280,7 @@
                 </div>
             </div>
 
-            <!-- 篩選器與搜尋與排序 (增加版面縮放選擇器，整合自適應排版) -->
+            <!-- 篩選器與搜尋與排序 -->
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-3">
                 <div class="lg:col-span-2 relative">
                     <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
@@ -307,8 +338,8 @@
 
             <!-- 內容滾動區 -->
             <div class="overflow-y-auto flex-grow pb-4">
-                <!-- 大圖 (新增 cursor-zoom-in 游標與 click 放大處理) -->
-                <div class="h-[280px] md:h-[400px] w-full bg-slate-100 relative overflow-hidden">
+                <!-- 大圖 -->
+                <div class="h-auto aspect-square md:aspect-auto md:h-[400px] w-full bg-slate-100 relative overflow-hidden">
                     <img id="modal-img" src="" alt="車輛大圖" class="w-full h-full object-cover cursor-zoom-in hover:opacity-95 transition-opacity duration-300" onclick="openLightbox(this.src)">
                     
                     <!-- Modal 專屬售出大鋼印 -->
@@ -334,7 +365,7 @@
                 <!-- 彈窗內的未認證醒目提示條 -->
                 <div id="modal-uncertified-warning-bar" class="hidden bg-rose-50 text-rose-700 py-3.5 px-6 font-black text-sm flex items-center gap-3 border-b border-rose-100">
                     <i class="fa-solid fa-triangle-exclamation text-lg animate-pulse text-rose-600"></i>
-                    <span>提醒：本車目前「尚未通過第三方認證」，看車現場請務必核對車況細節！</span>
+                    <span>提醒：本車目前「尚未通過第三方認證」！</span>
                 </div>
 
                 <!-- 其他照片相簿 -->
@@ -410,19 +441,19 @@
                                 <p id="spec-status" class="text-sm font-black text-slate-800">--</p>
                             </div>
                             <div class="bg-slate-50/50 p-3.5 rounded-xl border border-slate-100">
-                                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-0.5">購入日期</p>
+                                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1">購入日期</p>
                                 <p id="spec-buy-date" class="text-sm font-black text-slate-800">--</p>
                             </div>
                             <div class="bg-slate-50/50 p-3.5 rounded-xl border border-slate-100">
-                                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-0.5">在庫天數 / 銷售期</p>
+                                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1">在庫天數 / 銷售期</p>
                                 <p id="spec-stock-days" class="text-sm font-black text-emerald-600">--</p>
                             </div>
                             <div class="bg-slate-50/50 p-3.5 rounded-xl border border-slate-100">
-                                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-0.5">驗車資訊</p>
+                                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1">驗車資訊</p>
                                 <div id="spec-inspection" class="text-sm font-black text-slate-800">--</div>
                             </div>
                             <div class="bg-slate-50/50 p-3.5 rounded-xl border border-slate-100 col-span-2 md:col-span-1">
-                                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-0.5">第三方專業認證</p>
+                                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1">第三方專業認證</p>
                                 <p id="spec-cert" class="text-sm font-black">--</p>
                             </div>
                         </div>
@@ -503,7 +534,7 @@
 
     <!-- 頁尾 -->
     <footer class="mt-auto py-8 text-center text-xs text-slate-400 no-capture">
-        <p>© 姜駒車業 v4.7</p>
+        <p>© v4.9</p>
     </footer>
 
     <script>
@@ -514,49 +545,50 @@
         let confidentialPricesVisible = false; 
         let currentScale = 'normal'; 
 
+        // 智慧版面配置定義檔 (完美支援行動端與桌機端橫向聯動)
         const scaleConfig = {
             compact: {
-                imgWidth: "md:w-[260px]",
-                imgHeight: "h-[180px] md:h-[180px]",
-                contentPadding: "p-3.5 md:p-4",
-                brandText: "text-[9px] px-2 py-0.5",
-                titleText: "text-base md:text-lg",
-                tagGap: "mt-2 gap-1.5",
-                tagPadding: "px-2 py-1 text-[10px] rounded-lg",
-                cardRemarksMargin: "mt-2.5 p-2.5 text-[11px] rounded-lg",
+                imgWidth: "w-20 h-20 sm:w-24 sm:h-24 md:w-[260px]",
+                imgHeight: "md:h-[180px]",
+                contentPadding: "p-2 md:p-4",
+                brandText: "text-[8px] md:text-[9px] px-1.5 py-0.5",
+                titleText: "text-xs sm:text-sm md:text-lg",
+                tagGap: "mt-1 gap-1 md:mt-2 md:gap-1.5",
+                tagPadding: "px-1.5 py-0.5 md:px-2 md:py-1 text-[9px] md:text-[10px] rounded",
+                cardRemarksMargin: "mt-1 p-1.5 md:mt-2.5 md:p-2.5 text-[10px] md:text-[11px] rounded-lg",
                 priceWidth: "md:w-[170px]",
-                pricePadding: "p-4 md:p-5",
-                priceText: "text-2xl md:text-3xl",
+                pricePadding: "p-2 md:p-5",
+                priceText: "text-lg sm:text-xl md:text-3xl",
                 tdPadding: "py-2 px-4 text-xs",
                 thPadding: "py-2.5 px-4 text-[10px]"
             },
             normal: {
-                imgWidth: "md:w-[340px]",
-                imgHeight: "h-[230px]",
-                contentPadding: "p-4 md:p-6",
-                brandText: "text-[9.5px] px-2.5 py-0.5",
-                titleText: "text-xl md:text-2xl",
-                tagGap: "mt-3.5 gap-2",
-                tagPadding: "px-3 py-1.5 text-[11px] rounded-xl",
-                cardRemarksMargin: "mt-3.5 p-3 text-xs rounded-xl",
+                imgWidth: "w-24 h-24 sm:w-32 sm:h-32 md:w-[340px]",
+                imgHeight: "md:h-[230px]",
+                contentPadding: "p-3 md:p-6",
+                brandText: "text-[9px] md:text-[9.5px] px-2 py-0.5",
+                titleText: "text-sm sm:text-base md:text-2xl",
+                tagGap: "mt-1.5 gap-1 md:mt-3.5 md:gap-2",
+                tagPadding: "px-2 py-0.5 md:px-3 md:py-1.5 text-[10px] md:text-[11px] rounded-lg md:rounded-xl",
+                cardRemarksMargin: "mt-2 p-2 md:mt-3.5 md:p-3 text-[11px] md:text-xs rounded-lg md:rounded-xl",
                 priceWidth: "md:w-[220px]",
-                pricePadding: "p-5 md:p-8",
-                priceText: "text-4xl md:text-5xl",
+                pricePadding: "p-3 md:p-8",
+                priceText: "text-xl sm:text-2xl md:text-5xl",
                 tdPadding: "py-4 px-6 text-sm",
                 thPadding: "py-4 px-6 text-[11px]"
             },
             large: {
-                imgWidth: "md:w-[400px]",
-                imgHeight: "h-[280px]",
-                contentPadding: "p-6 md:p-8",
-                brandText: "text-[11px] px-3 py-1",
-                titleText: "text-2xl md:text-3xl",
-                tagGap: "mt-5 gap-3",
-                tagPadding: "px-4 py-2 text-xs rounded-2xl",
-                cardRemarksMargin: "mt-5 p-4 text-sm rounded-2xl",
+                imgWidth: "w-28 h-28 sm:w-36 sm:h-36 md:w-[400px]",
+                imgHeight: "md:h-[280px]",
+                contentPadding: "p-4 md:p-8",
+                brandText: "text-[10px] md:text-[11px] px-2.5 py-1",
+                titleText: "text-base sm:text-lg md:text-3xl",
+                tagGap: "mt-2 gap-1.5 md:mt-5 md:gap-3",
+                tagPadding: "px-2.5 py-1 md:px-4 md:py-2 text-[11px] md:text-xs rounded-xl md:rounded-2xl",
+                cardRemarksMargin: "mt-3 p-2.5 md:mt-5 md:p-4 text-xs md:text-sm rounded-xl md:rounded-2xl",
                 priceWidth: "md:w-[280px]",
-                pricePadding: "p-6 md:p-10",
-                priceText: "text-5xl md:text-6xl",
+                pricePadding: "p-4 md:p-10",
+                priceText: "text-2xl sm:text-3xl md:text-6xl",
                 tdPadding: "py-5 px-8 text-base",
                 thPadding: "py-5 px-8 text-xs"
             }
@@ -571,15 +603,26 @@
             "https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=1200" 
         ];
 
+        // 庫位色彩庫 (確保不同據點擁有專屬識別色系)
         const locationColors = {
             "台北總店": "bg-indigo-50 text-indigo-700 border-indigo-200",
             "台北店": "bg-indigo-50 text-indigo-700 border-indigo-200",
+            "台北展示間": "bg-indigo-50 text-indigo-700 border-indigo-200",
+            "新北總店": "bg-teal-50 text-teal-700 border-teal-200",
+            "新北店": "bg-teal-50 text-teal-700 border-teal-200",
+            "新莊店": "bg-teal-50 text-teal-700 border-teal-200",
+            "三重店": "bg-emerald-50 text-emerald-700 border-emerald-200",
+            "桃園店": "bg-sky-50 text-sky-700 border-sky-200",
+            "中壢店": "bg-sky-50 text-sky-700 border-sky-200",
+            "新竹店": "bg-cyan-50 text-cyan-700 border-cyan-200",
+            "竹北店": "bg-cyan-50 text-cyan-700 border-cyan-200",
             "台中分店": "bg-amber-50 text-amber-700 border-amber-200",
             "台中店": "bg-amber-50 text-amber-700 border-amber-200",
-            "高雄展示間": "bg-purple-50 text-purple-700 border-purple-200",
+            "彰化店": "bg-lime-50 text-lime-700 border-lime-200",
+            "台南店": "bg-rose-50 text-rose-700 border-rose-200",
             "高雄店": "bg-purple-50 text-purple-700 border-purple-200",
-            "新竹店": "bg-cyan-50 text-cyan-700 border-cyan-200",
-            "桃園店": "bg-sky-50 text-sky-700 border-sky-200"
+            "高雄展示間": "bg-purple-50 text-purple-700 border-purple-200",
+            "左營店": "bg-purple-50 text-purple-700 border-purple-200"
         };
 
         const saleTypeColors = {
@@ -589,24 +632,29 @@
             "尋車": "bg-amber-50 text-amber-700 border-amber-200"
         };
 
+        // 智慧在庫據點色彩解析器
         function getLocationColor(loc) {
             if (!loc) return "bg-slate-50 text-slate-600 border-slate-200";
             const trimmed = String(loc).trim();
             if (locationColors[trimmed]) return locationColors[trimmed];
             
-            const colors = [
-                "bg-teal-50 text-teal-700 border-teal-200",
+            // 當遇到未知的新店名，利用雜湊算法隨機分配高質感色彩，實現「不相同的使用不同顏色」
+            const fallbackPalettes = [
+                "bg-fuchsia-50 text-fuchsia-700 border-fuchsia-200",
                 "bg-orange-50 text-orange-700 border-orange-200",
                 "bg-pink-50 text-pink-700 border-pink-200",
-                "bg-lime-50 text-lime-700 border-lime-200",
-                "bg-blue-50 text-blue-700 border-blue-200"
+                "bg-violet-50 text-violet-700 border-violet-200",
+                "bg-yellow-50 text-yellow-700 border-yellow-200",
+                "bg-blue-50 text-blue-700 border-blue-200",
+                "bg-emerald-50 text-emerald-700 border-emerald-200",
+                "bg-rose-50 text-rose-700 border-rose-200"
             ];
             let hash = 0;
             for (let i = 0; i < trimmed.length; i++) {
                 hash = trimmed.charCodeAt(i) + ((hash << 5) - hash);
             }
-            const index = Math.abs(hash) % colors.length;
-            return colors[index];
+            const index = Math.abs(hash) % fallbackPalettes.length;
+            return fallbackPalettes[index];
         }
 
         function getSaleTypeColor(type) {
@@ -1009,20 +1057,20 @@
                 }
             });
 
-            // --- 模式 1: 清單總覽模式 ---
+            // --- 模式 1: 清單總覽模式 (針對手機端進行了完美的無水平捲軸響應式重構) ---
             if (isListView) {
                 let tableHtml = `
                     <div class="overflow-x-auto bg-white/90 rounded-2xl border border-slate-200 shadow-sm relative z-10 backdrop-blur-sm">
-                        <table class="w-full text-left border-collapse min-w-[850px] ${currentScale === 'compact' ? 'text-xs' : currentScale === 'large' ? 'text-base' : 'text-sm'}">
+                        <table class="w-full text-left border-collapse md:min-w-[850px] ${currentScale === 'compact' ? 'text-xs' : currentScale === 'large' ? 'text-base' : 'text-sm'}">
                             <thead>
                                 <tr class="bg-slate-50/80 border-b border-slate-200 font-black text-slate-400 uppercase tracking-wider">
                                     <th class="${sc.thPadding}">廠牌</th>
                                     <th class="${sc.thPadding}">型號與狀態資訊</th>
-                                    <th class="${sc.thPadding}">年份</th>
-                                    <th class="${sc.thPadding}">行駛里程</th>
-                                    <th class="${sc.thPadding}">在庫位子</th>
-                                    <th class="${sc.thPadding}">販售狀態</th>
-                                    <th class="${sc.thPadding}">認證</th>
+                                    <th class="${sc.thPadding} hidden md:table-cell">年份</th>
+                                    <th class="${sc.thPadding} hidden md:table-cell">行駛里程</th>
+                                    <th class="${sc.thPadding} hidden md:table-cell">在庫位子</th>
+                                    <th class="${sc.thPadding} hidden md:table-cell">販售狀態</th>
+                                    <th class="${sc.thPadding} hidden md:table-cell">認證</th>
                                     <th class="${sc.thPadding} text-right">網絡優惠開價</th>
                                 </tr>
                             </thead>
@@ -1062,28 +1110,49 @@
 
                     tableHtml += `
                         <tr onclick="openModalByCode('${car["編碼"]}')" class="hover:bg-slate-50/80 cursor-pointer transition-colors ${isSold ? 'opacity-65 grayscale-[30%]' : ''} ${isReserved ? 'bg-amber-50/20' : ''}">
+                            <!-- 廠牌欄 -->
                             <td class="${sc.tdPadding} font-bold text-slate-500 tracking-wider uppercase">${car["廠牌"] || '--'}</td>
+                            
+                            <!-- 型號與狀態資訊 (手機版在此欄位會整合下方隱藏的標籤列，確保畫面完整不滑動) -->
                             <td class="${sc.tdPadding}">
-                                <div class="flex flex-wrap items-center gap-2">
-                                    <span class="font-black ${isSold ? 'text-slate-400 line-through' : 'text-slate-900'}">${car["型號"] || '--'}</span>
-                                    <span class="border px-1.5 py-0.5 rounded text-[9px] font-bold ${saleBadgeClass}">${car["售賣形式"] || '零售'}</span>
-                                    ${isSold ? `<span class="bg-red-50 text-red-600 border border-red-100 px-1.5 py-0.5 rounded text-[9px] font-bold">已售出 (${getOnlyDate(car["成交日期"])})</span>` : ''}
-                                    ${inspectWarningBadge}
+                                <div class="flex flex-col gap-1.5 justify-center">
+                                    <div class="flex flex-wrap items-center gap-2">
+                                        <span class="font-black ${isSold ? 'text-slate-400 line-through' : 'text-slate-900'}">${car["型號"] || '--'}</span>
+                                        <span class="border px-1.5 py-0.5 rounded text-[9px] font-bold ${saleBadgeClass}">${car["售賣形式"] || '零售'}</span>
+                                        ${isSold ? `<span class="bg-red-50 text-red-600 border border-red-100 px-1.5 py-0.5 rounded text-[9px] font-bold">已售出 (${getOnlyDate(car["成交日期"])})</span>` : ''}
+                                        <span class="hidden md:inline">${inspectWarningBadge}</span>
+                                    </div>
+                                    
+                                    <!-- 手機版專屬極密標籤列 (100% 寬度完美適配) -->
+                                    <div class="flex flex-wrap items-center gap-1.5 mt-0.5 md:hidden text-[10px]">
+                                        <span class="text-slate-500 font-bold bg-slate-100 px-1 py-0.5 rounded">${car["年份"]} 年</span>
+                                        <span class="text-slate-500 font-bold bg-slate-100 px-1 py-0.5 rounded">${formatMileage(car["里程"])}</span>
+                                        <span class="border px-1.5 py-0.5 rounded font-bold ${locBadgeClass}">${car["在庫位子"] || "展間"}</span>
+                                        <span class="px-1.5 py-0.5 rounded font-black badge-status-${car["販售狀態"] || '在庫'}">${car["販售狀態"] || '在庫'}</span>
+                                        ${isCert ? `
+                                            <span class="text-emerald-600 font-black text-[9px] border border-emerald-100 bg-emerald-50 px-1 rounded"><i class="fa-solid fa-shield-halved mr-0.5"></i>已認證</span>
+                                        ` : `
+                                            <span class="text-rose-500 font-bold text-[9px] border border-rose-100 bg-rose-50 px-1 rounded"><i class="fa-solid fa-circle-exclamation mr-0.5"></i>未認證</span>
+                                        `}
+                                        ${inspectWarningBadge ? `<div class="w-full mt-1">${inspectWarningBadge}</div>` : ''}
+                                    </div>
                                 </div>
                             </td>
-                            <td class="${sc.tdPadding} text-slate-600 font-bold">${car["年份"] || '--'} 年</td>
-                            <td class="${sc.tdPadding} text-slate-600 font-bold">${formatMileage(car["里程"])}</td>
-                            <td class="${sc.tdPadding}">
+                            
+                            <!-- 桌機端獨立呈現欄位 -->
+                            <td class="${sc.tdPadding} text-slate-600 font-bold hidden md:table-cell">${car["年份"] || '--'} 年</td>
+                            <td class="${sc.tdPadding} text-slate-600 font-bold hidden md:table-cell">${formatMileage(car["里程"])}</td>
+                            <td class="${sc.tdPadding} hidden md:table-cell">
                                 <span class="px-2.5 py-1 rounded-lg border text-[11px] font-bold inline-flex items-center gap-1 ${locBadgeClass}">
                                     <i class="fa-solid fa-location-dot text-[9px]"></i> ${car["在庫位子"] || "展間"}
                                 </span>
                             </td>
-                            <td class="${sc.tdPadding}">
+                            <td class="${sc.tdPadding} hidden md:table-cell">
                                 <span class="px-2 py-0.5 rounded text-[10px] font-black badge-status-${car["販售狀態"] || '在庫'} shadow-sm">
                                     ${car["販售狀態"] || '在庫'}
                                 </span>
                             </td>
-                            <td class="${sc.tdPadding}">
+                            <td class="${sc.tdPadding} hidden md:table-cell">
                                 ${isCert ? `
                                     <span class="text-emerald-600 font-black"><i class="fa-solid fa-shield-halved mr-1"></i>已認證</span>
                                 ` : `
@@ -1109,7 +1178,7 @@
                 return;
             }
 
-            // --- 模式 2: 圖文卡片模式 ---
+            // --- 模式 2: 圖文卡片模式 (橫向流水版排版) ---
             filtered.forEach((car, index) => {
                 const isSold = car["販售狀態"] === "售出";
                 const isReserved = car["販售狀態"] === "收訂" || car["販售狀態"] === "預訂";
@@ -1128,104 +1197,106 @@
                 if (inspectStatus && (inspectStatus.type === 'due' || inspectStatus.type === 'overdue' || inspectStatus.type === 'remind')) {
                     let badgeBg = "bg-blue-600 text-white";
                     let badgeIcon = "fa-circle-info";
-                    let badgeLabel = `提醒驗車 (${inspectStatus.targetMonth}月)`;
+                    let badgeLabel = `提醒 ${inspectStatus.targetMonth}月`;
                     if (inspectStatus.type === 'due') {
                         badgeBg = "bg-amber-500 text-white animate-pulse";
                         badgeIcon = "fa-bell";
-                        badgeLabel = `本月驗車 (${inspectStatus.targetMonth}月)`;
+                        badgeLabel = `本月 ${inspectStatus.targetMonth}月`;
                     } else if (inspectStatus.type === 'overdue') {
                         badgeBg = "bg-rose-600 text-white animate-pulse";
                         badgeIcon = "fa-triangle-exclamation";
-                        badgeLabel = `過期警告 (${inspectStatus.targetMonth}月)`;
+                        badgeLabel = `過期 ${inspectStatus.targetMonth}月`;
                     }
                     cardInspectBadge = `
-                        <div class="absolute top-12 left-3 ${badgeBg} text-[9px] font-black px-2 py-1 rounded-md shadow-lg flex items-center z-10 ${isReserved ? 'mt-6' : ''}">
-                            <i class="fa-solid ${badgeIcon} mr-1"></i>${badgeLabel}
+                        <div class="absolute top-1 md:top-12 left-1 md:left-3 ${badgeBg} text-[8px] md:text-[9px] font-black px-1.5 py-0.5 md:px-2 md:py-1 rounded shadow-lg flex items-center z-10">
+                            <i class="fa-solid ${badgeIcon} mr-0.5 md:mr-1"></i><span class="scale-90 md:scale-100 origin-left">${badgeLabel}</span>
                         </div>
                     `;
                 }
 
+                // 備註對話框
                 const cardRemarksHtml = car["備註"] ? `
-                    <div class="${sc.cardRemarksMargin} text-slate-500 bg-slate-50 border border-slate-100 leading-relaxed line-clamp-2" title="${car["備註"]}">
+                    <div class="${sc.cardRemarksMargin} text-slate-500 bg-slate-50 border border-slate-150 leading-relaxed line-clamp-2 md:line-clamp-none" title="${car["備註"]}">
                         <i class="fa-regular fa-comment-dots text-emerald-600 mr-1.5"></i>${car["備註"]}
                     </div>
                 ` : '';
 
                 row.innerHTML = `
                     ${isReserved ? `
-                        <div class="absolute top-0 inset-x-0 bg-gradient-to-r from-amber-500 via-rose-500 to-amber-500 text-white text-[11px] font-black py-1.5 px-4 text-center tracking-wider z-20 flex items-center justify-center gap-1.5">
+                        <div class="absolute top-0 inset-x-0 bg-gradient-to-r from-amber-500 via-rose-500 to-amber-500 text-white text-[9px] md:text-[11px] font-black py-0.5 md:py-1.5 px-4 text-center tracking-wider z-20 flex items-center justify-center gap-1.5">
                             <i class="fa-solid fa-circle-exclamation animate-pulse"></i>
-                            <span>此車已被預訂/收訂保留！請勿重複銷售避免爭議</span>
+                            <span class="truncate">本車已被預訂/收訂保留！請勿重複銷售</span>
                         </div>
                     ` : ''}
 
                     ${isSold ? `
-                        <!-- 已售出印章 -->
+                        <!-- 已售出印章 (智慧縮小防止破壞排版) -->
                         <div class="sold-stamp">
                             已售出
-                            <span class="text-[11px] font-black block mt-1.5 tracking-widest text-red-600 bg-white/95 px-2.5 py-0.5 rounded border border-red-200">
+                            <span class="text-[9px] md:text-[11px] font-black block mt-0.5 md:mt-1.5 tracking-widest text-red-600 bg-white/95 px-1.5 py-0.5 md:px-2.5 md:py-0.5 rounded border border-red-200">
                                 ${getOnlyDate(car["成交日期"])}
                             </span>
                         </div>` : ''
                     }
                     
-                    <!-- 圖片盒 -->
-                    <div class="img-box w-full ${sc.imgWidth} ${sc.imgHeight} bg-slate-100 flex-shrink-0 relative overflow-hidden ${isReserved ? 'pt-6' : ''}">
+                    <!-- 圖片盒 (核心修正：利用 md:bottom-auto 完美修復電腦版在庫標示跑掉、重疊與垂直拉伸問題) -->
+                    <div class="img-box ${sc.imgWidth} ${sc.imgHeight} bg-slate-100 flex-shrink-0 relative overflow-hidden flex items-center justify-center">
                         <img src="${resolvedImageUrl}" 
                              onerror="handleImageError(this, ${index})" 
                              class="w-full h-full object-cover transition-transform duration-500 hover:scale-105" 
                              alt="${car["型號"]}">
                         
-                        <div class="absolute top-3 left-3 px-2.5 py-1 rounded-md text-[10px] font-black tracking-wide badge-status-${car["販售狀態"] || '在庫'} shadow-md z-10 ${isReserved ? 'mt-6' : ''}">
+                        <!-- 電腦版/手機版標籤融合 (完美定位不重疊) -->
+                        <div class="absolute bottom-1 md:bottom-auto md:top-3 left-1 md:left-3 px-1 md:px-2.5 py-0.5 md:py-1 rounded text-[8px] md:text-[10px] font-black tracking-wide badge-status-${car["販售狀態"] || '在庫'} shadow-md z-10">
                             ${car["販售狀態"] || '在庫'}
                         </div>
 
                         ${cardInspectBadge}
 
                         ${isCert && !isSold ? `
-                            <div class="absolute bottom-3 right-3 bg-emerald-600 text-white text-[9px] font-black px-2 py-1 rounded-md shadow-xl flex items-center z-10">
-                                <i class="fa-solid fa-shield-halved mr-1"></i>認證車
+                            <div class="absolute bottom-1 md:bottom-3 right-1 md:right-3 bg-emerald-600 text-white text-[8px] md:text-[9px] font-black px-1 md:px-2 py-0.5 md:py-1 rounded shadow-xl flex items-center z-10">
+                                <i class="fa-solid fa-shield-halved mr-0.5 md:mr-1"></i>認證車
                             </div>
                         ` : ''}
                     </div>
 
-                    <!-- 內文規格盒 -->
-                    <div class="flex-grow ${sc.contentPadding} flex flex-col justify-between bg-white ${isReserved ? 'pt-10' : ''}">
+                    <!-- 內文規格盒 (自適應精美寬度與 Padding) -->
+                    <div class="flex-grow ${sc.contentPadding} flex flex-col justify-between bg-white min-w-0">
                         <div>
-                            <div class="flex items-center gap-2 mb-2">
-                                <span class="border px-2 py-0.5 rounded-md text-[10px] font-black tracking-wider uppercase ${saleBadgeClass}">${car["售賣形式"] || '零售'}</span>
+                            <div class="flex items-center gap-2 mb-1 md:mb-2">
+                                <span class="border px-1.5 py-0.5 rounded text-[8px] md:text-[10px] font-black tracking-wider uppercase ${saleBadgeClass}">${car["售賣形式"] || '零售'}</span>
                             </div>
                             
                             <!-- 廠牌型號橫向並排且凸顯型號 -->
-                            <div class="flex items-center flex-wrap gap-2.5 mb-3.5">
-                                <span class="bg-slate-900 text-white ${sc.brandText} rounded uppercase tracking-wider flex-shrink-0">${car["廠牌"] || '--'}</span>
-                                <h3 class="${sc.titleText} font-black text-slate-950 tracking-tight hover:text-emerald-600 transition-colors decoration-emerald-500/30 decoration-2">${car["型號"] || '--'}</h3>
+                            <div class="flex items-center flex-wrap gap-1.5 md:gap-2.5 mb-2 md:mb-3.5">
+                                <span class="bg-slate-900 text-white ${sc.brandText} rounded uppercase tracking-wider flex-shrink-0 scale-90 md:scale-100 origin-left">${car["廠牌"] || '--'}</span>
+                                <h3 class="${sc.titleText} font-black text-slate-950 tracking-tight hover:text-emerald-600 transition-colors truncate min-w-0" title="${car["型號"] || '--'}">${car["型號"] || '--'}</h3>
                             </div>
 
                             <div class="flex flex-wrap ${sc.tagGap}">
-                                <span class="bg-slate-50 border border-slate-100 text-slate-600 ${sc.tagPadding} font-bold">${car["年份"]} 年份</span>
-                                <span class="bg-slate-50 border border-slate-100 text-slate-600 ${sc.tagPadding} font-bold">${formatMileage(car["里程"])}</span>
-                                <span class="border ${sc.tagPadding} font-bold flex items-center gap-1 ${locBadgeClass}">
-                                    <i class="fa-solid fa-location-dot text-[10px]"></i> ${car["在庫位子"] || "展間"}
+                                <span class="bg-slate-50 border border-slate-100 text-slate-600 ${sc.tagPadding} font-bold scale-95 md:scale-100 origin-left">${car["年份"]} 年份</span>
+                                <span class="bg-slate-50 border border-slate-100 text-slate-600 ${sc.tagPadding} font-bold scale-95 md:scale-100 origin-left">${formatMileage(car["里程"])}</span>
+                                <span class="border ${sc.tagPadding} font-bold flex items-center gap-0.5 md:gap-1 ${locBadgeClass} scale-95 md:scale-100 origin-left truncate max-w-[120px] md:max-w-none">
+                                    <i class="fa-solid fa-location-dot text-[8px] md:text-[10px]"></i> ${car["在庫位子"] || "展間"}
                                 </span>
                             </div>
 
                             ${cardRemarksHtml}
                         </div>
-                        <div class="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between no-capture">
+                        <div class="hidden md:flex mt-4 pt-4 border-t border-slate-100 items-center justify-between no-capture">
                             <span class="text-xs text-slate-500 font-bold hover:text-emerald-600 transition-colors">
                                 查看車輛詳細資料與大圖相簿 <i class="fa-solid fa-arrow-right ml-1"></i>
                             </span>
                         </div>
                     </div>
 
-                    <!-- 價格盒 -->
-                    <div class="price-box w-full ${sc.priceWidth} border-l border-slate-100 ${sc.pricePadding} flex flex-col justify-center items-end bg-slate-50/50 ${isReserved ? 'pt-12' : ''}">
-                        <div class="text-left md:text-right w-full">
-                            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">網路優惠價</p>
-                            <div class="flex items-end justify-end gap-1">
+                    <!-- 價格盒 (不落入直列，與卡片保持橫向貼合) -->
+                    <div class="price-box w-auto md:w-${sc.priceWidth} border-l-0 md:border-l border-slate-100 ${sc.pricePadding} flex flex-col justify-center items-end bg-transparent md:bg-slate-50/50 pr-2">
+                        <div class="text-right w-full">
+                            <p class="text-[8px] md:text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-0.5 md:mb-1">網路優惠價</p>
+                            <div class="flex items-end justify-end gap-0.5 md:gap-1">
                                 <span class="${sc.priceText} font-black text-rose-600 italic tracking-tighter">${car["開價"]}</span>
-                                <span class="text-sm font-black text-rose-600 mb-1">萬</span>
+                                <span class="text-[10px] md:text-sm font-black text-rose-600 mb-0.5 md:mb-1">萬</span>
                             </div>
                         </div>
                     </div>
@@ -1434,9 +1505,7 @@
         }
 
         function closeLightbox(e) {
-            // 如果點選的是圖片本身而非背景或關閉按鈕，則不作動
             if (e && e.target.id === 'lightbox-img') return;
-            
             const lightbox = document.getElementById('lightbox-modal');
             const lightboxImg = document.getElementById('lightbox-img');
             
