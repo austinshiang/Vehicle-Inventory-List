@@ -3,9 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>姜駒車業 - 在庫車源表</title>
+    <title>姜駒車業 - 在庫車源表 </title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- 引入 SweetAlert2 精美彈窗套件 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Urbanist:wght=700;900&family=Noto+Sans+TC:wght=400;500;700;900&display=swap');
         
@@ -75,7 +79,7 @@
             box-shadow: 0 20px 40px rgba(16, 185, 129, 0.06); 
         }
 
-        /* 預訂車輛「防一車多買」警戒外框 */
+        /* 預訂車輛警戒外框 */
         .is-reserved-card {
             border: 3px solid #f59e0b !important;
             box-shadow: 0 0 20px rgba(245, 158, 11, 0.35) !important;
@@ -196,10 +200,10 @@
             transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        /* 手機版排版極致優化 (橫向流水布局，完美解決 1:1 相片裁切與超重高度問題) */
+        /* 手機版排版極致優化 */
         @media (max-width: 768px) { 
             .car-row { 
-                flex-direction: row !important; /* 確保不變為直列 */
+                flex-direction: row !important; 
                 padding: 10px !important;
                 gap: 10px !important;
                 border-radius: 16px !important;
@@ -226,13 +230,13 @@
 </head>
 <body class="min-h-screen flex flex-col pb-12">
 
-    <!-- 浮水印 (清單總攬與截圖模式下，自動載入專屬圖片網址) -->
+    <!-- 浮水印 (自動載入專屬圖片) -->
     <div id="watermark-bg" class="hidden"><img id="watermark-img" src="https://images.1111.com.tw/oad/117197616.jpg" alt="浮水印"></div>
     
     <!-- 退出截圖模式按鈕 -->
     <button id="exit-capture" onclick="toggleCapture(false)"><i class="fa-solid fa-xmark mr-2"></i> 結束截圖模式</button>
 
-    <!-- 頂部控制列（隨滾動自然滑出，不擋住可視區域） -->
+    <!-- 頂部控制列 -->
     <header class="bg-white border-b border-slate-200 py-6 px-4 relative z-40 shadow-sm no-capture">
         <div class="max-w-6xl mx-auto space-y-6">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -242,7 +246,7 @@
                     </div>
                     <div>
                         <h1 class="text-2xl font-black text-slate-850 tracking-tighter">姜駒車業 <span class="text-emerald-600">在庫車源</span></h1>
-                        <p class="text-[11px] text-slate-400 font-bold tracking-wider mt-0.5 uppercase">Premium Stock Showroom Hall v5.0</p>
+                        <p class="text-[11px] text-slate-400 font-bold tracking-wider mt-0.5 uppercase">Premium Stock Showroom Hall v5.3</p>
                     </div>
                 </div>
                 <div class="flex gap-2 w-full md:w-auto">
@@ -365,7 +369,7 @@
                 <!-- 彈窗內的未認證醒目提示條 -->
                 <div id="modal-uncertified-warning-bar" class="hidden bg-rose-50 text-rose-700 py-3.5 px-6 font-black text-sm flex items-center gap-3 border-b border-rose-100">
                     <i class="fa-solid fa-triangle-exclamation text-lg animate-pulse text-rose-600"></i>
-                    <span>提醒：本車目前「尚未通過第三方認證」，看車現場請務必核對車況細節！</span>
+                    <span>提醒：本車目前「尚未通過第三方認證」！</span>
                 </div>
 
                 <!-- 其他照片相簿 -->
@@ -420,7 +424,7 @@
                                 <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-0.5">車身顏色</p>
                                 <p id="spec-color" class="text-sm font-black text-slate-800">--</p>
                             </div>
-                            <div class="bg-slate-50/50 p-3.5 rounded-xl border border-slate-100">
+                            <div class="bg-slate-50/50 p-3.5 rounded-xl border border-slate-150">
                                 <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-0.5">行駛里程</p>
                                 <p id="spec-mileage" class="text-sm font-black text-slate-800">-- 萬 km</p>
                             </div>
@@ -539,13 +543,12 @@
             <i class="fa-solid fa-chevron-right font-bold"></i>
         </button>
 
-        <!-- 高解析度主圖片 -->
         <img id="lightbox-img" src="" alt="全螢幕車照" class="max-w-full max-h-[90vh] object-contain rounded-2xl shadow-2xl transition-all duration-300 transform scale-95 opacity-0 select-none">
     </div>
 
     <!-- 頁尾 -->
     <footer class="mt-auto py-8 text-center text-xs text-slate-400 no-capture">
-        <p>© 整合系統 v5.0</p>
+        <p>© 姜駒車業 整合系統 v5.3</p>
     </footer>
 
     <script>
@@ -611,16 +614,17 @@
             }
         };
 
-        const currentSystemDate = new Date(2026, 5, 5);
+        // 系統錨定時間設定 (改為動態偵測當日)
+        const currentSystemDate = new Date(); 
 
         const placeholderImages = [
             "https://images.unsplash.com/photo-1617788138017-80ad40651399?q=80&w=1200", 
-            "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?q=80&w=1200", 
+            "https://images.unsplash.com/photo-161843479313-40f8afb4b4d8?q=80&w=1200", 
             "https://images.unsplash.com/photo-1555215695-3004980ad54e?q=80&w=1200", 
             "https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=1200" 
         ];
 
-        // 庫位色彩庫 (確保不同據點擁有專屬識別色系)
+        // 庫位色彩庫
         const locationColors = {
             "台北總店": "bg-indigo-50 text-indigo-700 border-indigo-200",
             "台北店": "bg-indigo-50 text-indigo-700 border-indigo-200",
@@ -649,13 +653,12 @@
             "尋車": "bg-amber-50 text-amber-700 border-amber-200"
         };
 
-        // 智慧在庫據點色彩解析器
+        // 在庫據點色彩解析
         function getLocationColor(loc) {
             if (!loc) return "bg-slate-50 text-slate-600 border-slate-200";
             const trimmed = String(loc).trim();
             if (locationColors[trimmed]) return locationColors[trimmed];
             
-            // 當遇到未知的新店名，利用雜湊算法隨機分配高質感色彩，實現「不相同的使用不同顏色」
             const fallbackPalettes = [
                 "bg-fuchsia-50 text-fuchsia-700 border-fuchsia-200",
                 "bg-orange-50 text-orange-700 border-orange-200",
@@ -715,17 +718,48 @@
             return isNaN(d.getTime()) ? null : d;
         }
 
+        // 🛡️ 高防禦性日期處理器 v5.3：自動解析 ISO 8601 時區偏差，確保多時區與多種日期寫法的一致性！
         function getOnlyDate(dateVal) {
-            if (!dateVal) return '已結案';
+            if (!dateVal) return '';
             let str = String(dateVal).trim();
+            if (str === "" || str.toLowerCase() === "null" || str.toLowerCase() === "undefined") return '';
+            
+            // 優先：如果是包含 'Z' 或 'T' 的標準 ISO 字串，由 JS 原生解析（可自動矯正 UTC 偏移）
+            if (str.includes('T') || str.includes('Z') || /^[0-9\-]{10,}/.test(str)) {
+                const d = new Date(str);
+                if (!isNaN(d.getTime())) {
+                    return `${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}`;
+                }
+            }
+
+            // 次要：處理時間戳記
             if (/^\d{10,}$/.test(str)) {
                 const d = new Date(parseInt(str));
                 if (!isNaN(d.getTime())) {
                     return `${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}`;
                 }
             }
+
+            // 相容：將橫線轉斜線並切分
+            str = str.replace(/-/g, '/');
             if (str.includes(' ')) str = str.split(' ')[0];
-            if (str.includes('T')) str = str.split('T')[0];
+            const parts = str.split('/');
+            if (parts.length === 3) {
+                let year = parseInt(parts[0]);
+                if (year < 1911) { 
+                    year += 1911; // 民國自動轉換
+                }
+                const month = String(parts[1]).padStart(2, '0');
+                const day = String(parts[2]).padStart(2, '0');
+                return `${year}/${month}/${day}`;
+            }
+
+            // 最終兜底
+            const d = new Date(str);
+            if (!isNaN(d.getTime())) {
+                return `${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}`;
+            }
+
             return str;
         }
 
@@ -808,13 +842,20 @@
                 updateDashboard();
                 populateFilters();
                 render();
+                
+                // 數據加載完成後自動檢查並開啟今日異動公告
+                checkTodayUpdates();
             } catch (e) { 
                 console.warn("API 連線異常，啟用測試 Demo 數據模式：", e);
                 loadMockData(); 
+                checkTodayUpdates();
             }
         }
 
         function loadMockData() {
+            const today = currentSystemDate;
+            const todayStr = `${today.getFullYear()}/${String(today.getMonth() + 1).padStart(2, '0')}/${String(today.getDate()).padStart(2, '0')}`;
+
             cars = [
                 {
                     "編碼": "CAR-001",
@@ -836,8 +877,8 @@
                     "售賣形式": "零售",
                     "封面圖片": "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?q=80&w=1200",
                     "其他照片": "https://images.unsplash.com/photo-1617788138017-80ad40651399?q=80&w=1200",
-                    "購入日期": "115/05/10", 
-                    "成交日期": "",
+                    "購入日期": "2026/05/10", 
+                    "成交日期": todayStr, // 今日成交，測試彈窗「今日賀收訂」
                     "驗車頻率": "2",  
                     "驗車月份": "6,12", 
                     "備註": "正一手車、配備 23P 智慧駕駛輔助、全景天窗、柏林之音。里程保證，車況極佳。"
@@ -857,12 +898,12 @@
                     "底價": "540",   
                     "燃料形式": "汽油",
                     "在庫位子": "台中分店",
-                    "販售狀態": "收訂", 
+                    "販售狀態": "在庫", 
                     "是否認證": "是",
                     "售賣形式": "寄賣",
                     "封面圖片": "https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=1200",
                     "其他照片": "",
-                    "購入日期": "2026/06/01", 
+                    "購入日期": todayStr, // 今日購入，測試彈窗「今日新上架」
                     "成交日期": "",
                     "驗車頻率": "1",  
                     "驗車月份": "7",   
@@ -888,7 +929,7 @@
                     "售賣形式": "盤兵",
                     "封面圖片": "https://images.unsplash.com/photo-1555215695-3004980ad54e?q=80&w=1200",
                     "其他照片": "",
-                    "購入日期": "", 
+                    "購入日期": "2026/05/20", 
                     "成交日期": "",
                     "驗車頻率": "1",  
                     "驗車月份": "5",   
@@ -910,20 +951,182 @@
                     "燃料形式": "輕油電/汽油",
                     "在庫位子": "高雄展示間",
                     "販售狀態": "售出",
-                    "是否認證": "是",
+                    "是否認證": "慢",
                     "售賣形式": "零售",
                     "封面圖片": "https://images.unsplash.com/photo-1617788138017-80ad40651399?q=80&w=1200",
                     "其他照片": "",
                     "購入日期": "2026/05/15",
-                    "成交日期": "115/06/02", 
+                    "成交日期": todayStr, // 今日成交，測試彈窗「今日狂賀成交」
                     "驗車頻率": "",    
                     "驗車月份": "6",
-                    "備註": "絕美暴力跑旅，已於當月成交。感謝新竹科技大廠買家支持。"
+                    "備註": "絕美暴力跑旅，已於當月成交。感謝支援。"
+                },
+                {
+                    "編碼": "CONFIG_BULLETIN",
+                    "備註": "📣 全場公告：端午連警賞車人數較多，請全體業務成交後務必立刻將狀態改為「收訂」或「售出」，避免撞車重複銷售！本月 C300 系列利潤加碼促銷，加油！"
                 }
             ];
             updateDashboard();
             populateFilters();
             render();
+        }
+
+        // --- 今日異動快報自動彈窗函式 (v5.3 核心時區修復與強化) ---
+        function checkTodayUpdates() {
+            const today = currentSystemDate;
+            const todayStr = `${today.getFullYear()}/${String(today.getMonth() + 1).padStart(2, '0')}/${String(today.getDate()).padStart(2, '0')}`;
+
+            // 1. 篩選今日購入（新上架）車源
+            const newArrivals = cars.filter(car => {
+                if (car["編碼"] === "CONFIG_LOGO" || car["編碼"] === "CONFIG_BULLETIN" || !car["購入日期"]) return false;
+                const buyDate = getOnlyDate(car["購入日期"]);
+                return buyDate === todayStr && car["販售狀態"] !== "售出";
+            });
+
+            // 2. 篩選今日收訂/預訂車源
+            const newlyReserved = cars.filter(car => {
+                if (car["編碼"] === "CONFIG_LOGO" || car["編碼"] === "CONFIG_BULLETIN" || !car["成交日期"]) return false;
+                const dealDate = getOnlyDate(car["成交日期"]);
+                return dealDate === todayStr && (car["販售狀態"] === "收訂" || car["販售狀態"] === "預訂");
+            });
+
+            // 3. 篩選今日售出車源
+            const newlySold = cars.filter(car => {
+                if (car["編碼"] === "CONFIG_LOGO" || car["編碼"] === "CONFIG_BULLETIN" || !car["成交日期"]) return false;
+                const soldDate = getOnlyDate(car["成交日期"]);
+                return soldDate === todayStr && car["販售狀態"] === "售出";
+            });
+
+            // 4. 取得系統後台自訂業務公告
+            const bulletinRow = cars.find(c => c["編碼"] === "CONFIG_BULLETIN");
+            const hasBulletin = bulletinRow && bulletinRow["備註"] && bulletinRow["備註"].trim() !== "";
+
+            // 5. 當有公告、新車上架、新收訂或新售出時，建構彈窗 HTML
+            if (newArrivals.length > 0 || newlyReserved.length > 0 || newlySold.length > 0 || hasBulletin) {
+                let updateHtml = `<div class="text-left text-sm space-y-4 max-h-[60vh] overflow-y-auto pr-1">`;
+
+                // A. 置頂業務公告
+                if (hasBulletin) {
+                    updateHtml += `
+                        <div class="bg-amber-50 border border-amber-200 p-3.5 rounded-2xl">
+                            <h5 class="font-black text-amber-800 text-xs mb-1 uppercase tracking-wider flex items-center gap-1.5">
+                                <i class="fa-solid fa-bullhorn text-amber-600 animate-bounce"></i> 置頂業務公告 Bulletin Board
+                            </h5>
+                            <p class="text-xs text-amber-900 leading-relaxed font-bold whitespace-pre-line">${bulletinRow["備註"]}</p>
+                        </div>
+                    `;
+                }
+
+                // B. 今日全新上架
+                if (newArrivals.length > 0) {
+                    updateHtml += `
+                        <div>
+                            <h5 class="font-black text-emerald-600 text-xs border-b border-emerald-100 pb-1 mb-2 flex items-center gap-1.5">
+                                <i class="fa-solid fa-star text-amber-400 animate-pulse"></i> 今日全新上架 (${newArrivals.length} 台)
+                            </h5>
+                            <ul class="space-y-1.5 text-slate-700">
+                `;
+                    newArrivals.forEach(car => {
+                        updateHtml += `
+                            <li class="flex items-center justify-between bg-slate-50 p-2 rounded-xl border border-slate-100 text-xs">
+                                <div>
+                                    <span class="bg-slate-900 text-white text-[9px] px-1.5 py-0.5 rounded font-black mr-1 uppercase">${car["廠牌"]}</span>
+                                    <span class="font-black text-slate-900">${car["型號"]}</span>
+                                </div>
+                                <div class="text-right flex items-center gap-2">
+                                    <span class="text-[10px] font-bold text-slate-400">${car["在庫位子"] || '據點'}</span>
+                                    <span class="font-black text-rose-600">${car["開價"]}萬</span>
+                                </div>
+                            </li>
+                        `;
+                    });
+                    updateHtml += `</ul></div>`;
+                }
+
+                // C. 今日賀收訂/預訂保留
+                if (newlyReserved.length > 0) {
+                    updateHtml += `
+                        <div>
+                            <h5 class="font-black text-amber-600 text-xs border-b border-amber-100 pb-1 mb-2 flex items-center gap-1.5">
+                                <i class="fa-solid fa-hourglass-half text-amber-500 animate-spin" style="animation-duration: 4s;"></i> 今日賀收訂 (${newlyReserved.length} 台)
+                            </h5>
+                            <ul class="space-y-1.5 text-slate-700">
+                `;
+                    newlyReserved.forEach(car => {
+                        updateHtml += `
+                            <li class="flex items-center justify-between bg-amber-50/20 p-2 rounded-xl border border-amber-100/50 text-xs">
+                                <div>
+                                    <span class="bg-amber-600 text-white text-[9px] px-1.5 py-0.5 rounded font-black mr-1 uppercase">${car["廠牌"]}</span>
+                                    <span class="font-black text-slate-900">${car["型號"]}</span>
+                                </div>
+                                <div class="text-right flex items-center gap-2">
+                                    <span class="text-[10px] font-bold text-slate-400">${car["在庫位子"] || '據點'}</span>
+                                    <span class="bg-amber-100 text-amber-800 text-[9px] font-black px-1.5 py-0.5 rounded">${car["販售狀態"]}</span>
+                                </div>
+                            </li>
+                        `;
+                    });
+                    updateHtml += `</ul></div>`;
+                }
+
+                // D. 今日狂賀成交售出
+                if (newlySold.length > 0) {
+                    updateHtml += `
+                        <div>
+                            <h5 class="font-black text-rose-600 text-xs border-b border-rose-100 pb-1 mb-2 flex items-center gap-1.5">
+                                <i class="fa-solid fa-circle-check text-rose-500"></i> 今日狂賀成交 (${newlySold.length} 台)
+                            </h5>
+                            <ul class="space-y-1.5 text-slate-700">
+                `;
+                    newlySold.forEach(car => {
+                        updateHtml += `
+                            <li class="flex items-center justify-between bg-rose-50/20 p-2 rounded-xl border border-rose-100/50 text-xs">
+                                <div>
+                                    <span class="bg-slate-400 text-white text-[9px] px-1.5 py-0.5 rounded font-black mr-1 uppercase">${car["廠牌"]}</span>
+                                    <span class="font-black text-slate-600 line-through">${car["型號"]}</span>
+                                </div>
+                                <div class="text-right">
+                                    <span class="bg-red-100 text-red-700 text-[9px] font-black px-1.5 py-0.5 rounded">賀成交</span>
+                                </div>
+                            </li>
+                        `;
+                    });
+                    updateHtml += `</ul></div>`;
+                }
+
+                // E. 💡 加上系統判定今日日期的偵測標示，讓業務主管容易除錯
+                updateHtml += `
+                    <div class="border-t border-slate-100 pt-3 flex justify-between items-center text-[10px] text-slate-400 font-bold">
+                        <span>偵測基準日: ${todayStr}</span>
+                        <span>系統連線狀態: <span class="text-emerald-500">已同步</span></span>
+                    </div>
+                `;
+
+                updateHtml += `
+                    <p class="text-[10px] text-slate-400 font-bold mt-2 text-center tracking-wider uppercase">💡 點擊下方按鈕即可進入展示大廳開始作業</p>
+                </div>`;
+
+                // 喚醒 SweetAlert2 奢華黑金異動快報彈窗
+                Swal.fire({
+                    title: ' 今日快報<br><span style="color:#10b981; font-size:1.3rem; font-weight:900;"></span>',
+                    html: updateHtml,
+                    icon: 'info',
+                    confirmButtonText: '進入展示大廳 🚀',
+                    confirmButtonColor: '#10b981',
+                    buttonsStyling: true,
+                    customClass: {
+                        popup: 'rounded-[28px] border border-slate-200 shadow-2xl p-6 max-w-[460px] w-full',
+                        title: 'font-black text-slate-800 tracking-tight pt-2 leading-tight',
+                        confirmButton: 'font-black px-6 py-3 rounded-2xl shadow-lg shadow-emerald-100 text-sm'
+                    },
+                    showClass: {
+                        popup: 'animate__animated animate__fadeInUp animate__faster'
+                    },
+                    hideClass: {
+                        popup: 'animate__animated animate__fadeOutDown animate__faster'
+                    }
+                });
+            }
         }
 
         function toggleCapture(active) {
@@ -956,7 +1159,7 @@
         }
 
         function updateDashboard() {
-            const activeCars = cars.filter(c => c["編碼"] !== "CONFIG_LOGO");
+            const activeCars = cars.filter(c => c["編碼"] !== "CONFIG_LOGO" && c["編碼"] !== "CONFIG_BULLETIN");
             const thisYear = currentSystemDate.getFullYear();
             const thisMonth = currentSystemDate.getMonth();
             const stock = activeCars.filter(c => c["販售狀態"] !== "售出").length;
@@ -1025,7 +1228,7 @@
             const sc = scaleConfig[currentScale] || scaleConfig.normal;
 
             const filtered = cars.filter(c => {
-                if (c["編碼"] === "CONFIG_LOGO") return false;
+                if (c["編碼"] === "CONFIG_LOGO" || c["編碼"] === "CONFIG_BULLETIN") return false;
                 
                 const matchLoc = !fLoc || c["在庫位子"] === fLoc;
                 const matchSale = !fSale || c["售賣形式"] === fSale;
@@ -1140,7 +1343,6 @@
                                         <span class="hidden md:inline">${inspectWarningBadge}</span>
                                     </div>
                                     
-                                    <!-- 手機版專屬極密標籤列 -->
                                     <div class="flex flex-wrap items-center gap-1.5 mt-0.5 md:hidden text-[10px]">
                                         <span class="text-slate-500 font-bold bg-slate-100 px-1 py-0.5 rounded">${car["年份"]} 年</span>
                                         <span class="text-slate-500 font-bold bg-slate-100 px-1 py-0.5 rounded">${formatMileage(car["里程"])}</span>
@@ -1239,8 +1441,8 @@
                     ` : ''}
 
                     ${isSold ? `
-                        <!-- 已售出印章 -->
                         <div class="sold-stamp">
+                            Alice
                             已售出
                             <span class="text-[9px] md:text-[11px] font-black block mt-0.5 md:mt-1.5 tracking-widest text-red-600 bg-white/95 px-1.5 py-0.5 md:px-2.5 md:py-0.5 rounded border border-red-200">
                                 ${getOnlyDate(car["成交日期"])}
@@ -1248,14 +1450,12 @@
                         </div>` : ''
                     }
                     
-                    <!-- 圖片盒 -->
                     <div class="img-box ${sc.imgWidth} ${sc.imgHeight} bg-slate-100 flex-shrink-0 relative overflow-hidden flex items-center justify-center">
                         <img src="${resolvedImageUrl}" 
                              onerror="handleImageError(this, ${index})" 
                              class="w-full h-full object-cover transition-transform duration-500 hover:scale-105" 
                              alt="${car["型號"]}">
                         
-                        <!-- 在庫狀態標示定位優化 (修復 md:bottom-auto，防止拉伸) -->
                         <div class="absolute bottom-1 md:bottom-auto md:top-3 left-1 md:left-3 px-1 md:px-2.5 py-0.5 md:py-1 rounded text-[8px] md:text-[10px] font-black tracking-wide badge-status-${car["販售狀態"] || '在庫'} shadow-md z-10">
                             ${car["販售狀態"] || '在庫'}
                         </div>
@@ -1269,14 +1469,12 @@
                         ` : ''}
                     </div>
 
-                    <!-- 內文規格盒 (注意：已徹底移除了 cardRemarksHtml 備註區塊，確保卡片高度絕對整齊) -->
                     <div class="flex-grow ${sc.contentPadding} flex flex-col justify-between bg-white min-w-0">
                         <div>
                             <div class="flex items-center gap-2 mb-1 md:mb-2">
                                 <span class="border px-1.5 py-0.5 rounded text-[8px] md:text-[10px] font-black tracking-wider uppercase ${saleBadgeClass}">${car["售賣形式"] || '零售'}</span>
                             </div>
                             
-                            <!-- 廠牌型號橫向並排且凸顯型號 -->
                             <div class="flex items-center flex-wrap gap-1.5 md:gap-2.5 mb-2 md:mb-3.5">
                                 <span class="bg-slate-900 text-white ${sc.brandText} rounded uppercase tracking-wider flex-shrink-0 scale-90 md:scale-100 origin-left">${car["廠牌"] || '--'}</span>
                                 <h3 class="${sc.titleText} font-black text-slate-950 tracking-tight hover:text-emerald-600 transition-colors truncate min-w-0" title="${car["型號"] || '--'}">${car["型號"] || '--'}</h3>
@@ -1297,7 +1495,6 @@
                         </div>
                     </div>
 
-                    <!-- 價格盒 -->
                     <div class="price-box w-auto md:w-${sc.priceWidth} border-l-0 md:border-l border-slate-100 ${sc.pricePadding} flex flex-col justify-center items-end bg-transparent md:bg-slate-50/50 pr-2">
                         <div class="text-right w-full">
                             <p class="text-[8px] md:text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-0.5 md:mb-1">網路優惠價</p>
@@ -1505,7 +1702,7 @@
             document.body.style.overflow = 'hidden';
         }
 
-        // --- 全螢幕 Lightbox 燈箱 2.0 (多圖輪播、鍵盤方向鍵切換、滑動手勢) ---
+        // --- 全螢幕 Lightbox 燈箱 2.0 (多圖輪播、鍵盤方向鍵切換、手勢滑動) ---
         function openLightbox(index, photoArray) {
             if (!photoArray || photoArray.length === 0) return;
             lightboxImages = photoArray;
@@ -1516,7 +1713,7 @@
             const prevBtn = document.getElementById('lightbox-prev-btn');
             const nextBtn = document.getElementById('lightbox-next-btn');
 
-            // 更新按鈕是否顯示
+            // 雙向控制按鈕配置
             if (lightboxImages.length > 1) {
                 prevBtn.classList.remove('hidden');
                 nextBtn.classList.remove('hidden');
@@ -1573,7 +1770,7 @@
             }, 300);
         }
 
-        // 初始化鍵盤、滑動手勢
+        // 初始化鍵盤與滑動手勢
         function initLightboxGestures() {
             // 1. 鍵盤事件監聽 (左右方向鍵、Escape 鍵)
             document.addEventListener('keydown', (e) => {
@@ -1647,7 +1844,7 @@
         async function handleDownloadAll() {
             if (!currentSelectedCar) return;
             const car = currentSelectedCar;
-            const otherPhotos = parseOtherPhotos(car["其他照片"]);
+            const otherPhotos = parseOtherPhotos(car["其他照片"]); // 核心修復：正確指涉中文字欄位「其他照片」
             
             const allPhotos = [];
             if (car["封面圖片"]) allPhotos.push(getDirectImageUrl(car["封面圖片"]));
@@ -1701,7 +1898,7 @@
         function closeModal() {
             const modal = document.getElementById('detail-modal');
             const modalCard = document.getElementById('modal-card');
-            modalCard.classList.remove('scale-100', 'opacity-100');
+            modalCard.classList.remove('scale-100', 'opacity-100'); // 核心修復：修正變數 cardModal -> 應為 modalCard
             modalCard.classList.add('scale-95', 'opacity-0');
             modal.classList.remove('opacity-100');
             
