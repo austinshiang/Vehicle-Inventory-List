@@ -6,16 +6,6 @@
     <title>在庫車輛車源表系統</title>
     
     <!-- ========================================== -->
-    <!-- 🌟 網頁自訂 LOGO 小圖標 (Favicon) 設定區 🌟 -->
-    <!-- 請將您的 LOGO 圖片上傳至 GitHub 儲存庫根目錄（與 index.html 同一層） -->
-    <!-- 使用相對路徑 ./ 與 ?v=1 參數可以強制破除 GitHub Pages 與瀏覽器的快取殘留 -->
-    <link class="favicon-icon" rel="icon" href="./logo.png?v=1" type="image/png">
-    <link class="favicon-shortcut" rel="shortcut icon" href="./logo.png?v=1" type="image/png">
-    <!-- 如果您使用的是傳統的 ico 格式，請改用下方這行： -->
-    <!-- <link rel="icon" href="./favicon.ico?v=1" type="image/x-icon"> -->
-    <!-- ========================================== -->
-
-    <!-- ========================================== -->
     <!-- 🍎 iOS / iPhone Safari 專屬 APP 模式設定 🍎 -->
     <!-- 1. 啟用獨立 Web App 模式（隱藏 Safari 網址列與底部導覽列） -->
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -23,10 +13,51 @@
     <!-- black-translucent 能讓網頁背景延伸至最上方狀態列，呈現沉浸式全螢幕效果 -->
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <!-- 3. 設定加入主畫面後的 APP 顯示名稱 (建議控制在 4~6 個中文字，避免截斷) -->
-    <meta name="apple-mobile-web-app-title" content="線上車源表">
-    <!-- 4. 設定 iPhone 主畫面 App 專用精美圖標 (Apple Touch Icon) -->
-    <!-- 同樣使用相對路徑與 ?v=1 快取破除技術，確保圖標能即時更新 -->
-    <link class="apple-touch-icon" href="./logo.png?v=1">
+    <meta name="apple-mobile-web-app-title" content="ㄒ線上車源表">
+    <!-- ========================================== -->
+
+    <!-- ========================================== -->
+    <!-- 🛡️ iOS Safari 桌面圖標路徑絕對化編譯器 🛡 -->
+    <!-- iOS 系統在解析相對路徑圖標時容易失敗，本腳本能確保動態編譯出 100% 完美的絕對 URL -->
+    <script>
+        (function() {
+            try {
+                const origin = window.location.origin;
+                const pathname = window.location.pathname;
+                const folder = pathname.substring(0, pathname.lastIndexOf('/'));
+                // 產生 100% 精準的 logo 絕對路徑，並附加時間戳防止快取死鎖
+                const absoluteLogoUrl = origin + folder + '/logo.png?v=' + Date.now();
+                
+                // 1. 動態建立標準 Apple Touch Icon
+                const appleIcon = document.createElement('link');
+                appleIcon.rel = 'apple-touch-icon';
+                appleIcon.href = absoluteLogoUrl;
+                document.head.appendChild(appleIcon);
+
+                // 2. 動態建立預合成 Apple Touch Icon (相容舊版 iOS)
+                const appleIconPre = document.createElement('link');
+                appleIconPre.rel = 'apple-touch-icon-precomposed';
+                appleIconPre.href = absoluteLogoUrl;
+                document.head.appendChild(appleIconPre);
+
+                // 3. 動態建立 Favicon
+                const favicon = document.createElement('link');
+                favicon.rel = 'icon';
+                favicon.type = 'image/png';
+                favicon.href = absoluteLogoUrl;
+                document.head.appendChild(favicon);
+
+                // 4. 動態建立 Shortcut Icon
+                const shortcut = document.createElement('link');
+                shortcut.rel = 'shortcut icon';
+                shortcut.type = 'image/png';
+                shortcut.href = absoluteLogoUrl;
+                document.head.appendChild(shortcut);
+            } catch (e) {
+                console.error("iOS 絕對圖標編譯器執行異常: ", e);
+            }
+        })();
+    </script>
     <!-- ========================================== -->
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -225,6 +256,11 @@
             transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
+        /* 自訂摺疊標籤展開箭頭隱藏 */
+        details summary::-webkit-details-marker {
+            display: none;
+        }
+
         /* 手機端排版優化：圖片佔滿上方寬度，資訊向下堆疊 */
         @media (max-width: 768px) { 
             .car-row { 
@@ -273,7 +309,7 @@
                     </div>
                     <div>
                         <h1 class="text-xl md:text-2xl font-black text-slate-850 tracking-tighter">在庫車輛 <span class="text-emerald-600">車源總表</span></h1>
-                        <p class="text-[10px] text-slate-400 font-bold tracking-wider mt-0.5 uppercase">v5.42</p>
+                        <p class="text-[10px] text-slate-400 font-bold tracking-wider mt-0.5 uppercase">Premium Stock Showroom Hall v5.42</p>
                     </div>
                 </div>
                 <div class="flex gap-2 w-full md:w-auto">
@@ -316,7 +352,7 @@
                 <!-- 搜尋框 -->
                 <div class="col-span-2 relative">
                     <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                    <input type="text" id="search-bar" oninput="render()" placeholder="搜尋 brand、型號、規格、配備..." class="w-full bg-slate-50 text-slate-800 placeholder-slate-400 border border-slate-200 rounded-xl pl-8 pr-3 py-1.5 outline-none focus:ring-2 focus:ring-emerald-500 transition-all font-bold">
+                    <input type="text" id="search-bar" oninput="render()" placeholder="搜尋品牌、型號、規格、配備..." class="w-full bg-slate-50 text-slate-800 placeholder-slate-400 border border-slate-200 rounded-xl pl-8 pr-3 py-1.5 outline-none focus:ring-2 focus:ring-emerald-500 transition-all font-bold">
                 </div>
                 <!-- 汽車廠牌快選 -->
                 <select id="filter-brand" onchange="render()" class="bg-slate-50 text-slate-700 border border-slate-200 rounded-xl px-2 py-1.5 font-bold outline-none focus:ring-2 focus:ring-emerald-500 transition-all cursor-pointer">
@@ -330,7 +366,6 @@
                 <select id="filter-sale" onchange="render()" class="bg-slate-50 text-slate-700 border border-slate-200 rounded-xl px-2 py-1.5 font-bold outline-none focus:ring-2 focus:ring-emerald-500 transition-all cursor-pointer">
                     <option value="">所有售賣形式</option>
                     <option value="零售">零售</option>
-                    <option value="盤兵">盤兵</option>
                     <option value="寄賣">寄賣</option>
                 </select>
                 <!-- 版面大小調節 -->
@@ -547,7 +582,7 @@
             <!-- 底部動作欄 -->
             <div class="p-6 bg-slate-50 border-t border-slate-150 flex flex-col sm:flex-row gap-3 justify-end no-capture">
                 <button id="btn-download-photos" onclick="handleDownloadAll()" class="bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 font-black py-3.5 px-6 rounded-2xl text-center text-sm shadow-sm flex items-center justify-center gap-2 transition-all">
-                    <i class="fa-solid fa-circle-arrow-down text-emerald-600"></i> 一鍵下載所有照片
+                    <i class="fa-solid fa-circle-arrow-down text-emerald-600"></i> 下載所有照片
                 </button>
                 <button onclick="closeModal()" class="bg-slate-900 hover:bg-slate-850 text-white font-black py-3.5 px-6 rounded-2xl text-center text-sm shadow-md flex items-center justify-center gap-2 transition-all">
                     關閉視窗 Close
@@ -578,7 +613,7 @@
 
     <!-- 頁尾 -->
     <footer class="mt-auto py-6 text-center text-xs text-slate-400 no-capture">
-        <p>© 姜駒車業 . All Rights Reserved. 整合系統 v5.42</p>
+        <p>© 姜駒車業. All Rights Reserved. 整合系統 v5.42</p>
     </footer>
 
     <script>
@@ -654,7 +689,7 @@
             "https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=1200" 
         ];
 
-        // 🌈 全面擴充據點背景配色 (共 24 組專屬據點配色，飽和度與辨識度極高)
+        // 🌈 全面擴充據點背景配色
         const locationColors = {
             "台北總店": "bg-indigo-50 text-indigo-700 border-indigo-200",
             "台北店": "bg-indigo-50 text-indigo-700 border-indigo-200",
@@ -691,7 +726,6 @@
             "尋車": "bg-amber-50 text-amber-700 border-amber-200"
         };
 
-        // 🎨 升級高熵隨機 fallback 演算法配色（共 12 組，完美避免自訂據點色塊重複）
         const fallbackPalettes = [
             "bg-fuchsia-50 text-fuchsia-700 border-fuchsia-200",
             "bg-orange-50 text-orange-700 border-orange-200",
@@ -761,7 +795,6 @@
             return isNaN(d.getTime()) ? null : d;
         }
 
-        // 🛡️ 高防禦性日期處理器
         function getOnlyDate(dateVal) {
             if (!dateVal) return '';
             let str = String(dateVal).trim();
@@ -858,7 +891,6 @@
             render();
         }
 
-        // 自動解析 Google Drive 或其他圖片網址
         function getDirectImageUrl(url) {
             if (!url || typeof url !== 'string') return placeholderImages[0];
             const drivePattern = /(?:https?:\/\/)?(?:drive\.google\.com\/)(?:file\/d\/|open\?id=)([^/&?#]+)/;
@@ -890,7 +922,6 @@
             }
         }
 
-        // 本地 Mock 資料庫
         function loadMockData() {
             const today = currentSystemDate;
             const todayStr = `${today.getFullYear()}/${String(today.getMonth() + 1).padStart(2, '0')}/${String(today.getDate()).padStart(2, '0')}`;
@@ -976,7 +1007,7 @@
                 },
                 {
                     "編碼": "CONFIG_BULLETIN",
-                    "備註": "📣 全場公告：看到此通知請重新登入網頁，此為資料庫抓取失敗的示範網頁！"
+                    "備註": "📣 全場公告：看見此通知請重新載入網頁，此為資料庫抓取失敗的範例網頁！"
                 }
             ];
             updateDashboard();
@@ -1148,7 +1179,6 @@
             render();
         }
 
-        // 重新封裝狀態並同步至頂部
         function updateDashboard() {
             const activeCars = cars.filter(c => c["編碼"] !== "CONFIG_LOGO" && c["編碼"] !== "CONFIG_BULLETIN");
             const thisYear = currentSystemDate.getFullYear();
@@ -1187,13 +1217,11 @@
             document.getElementById('stat-year').innerText = yCount;
         }
 
-        // 📊 動態在庫車庫與品牌統計，選取前即可精準看見各分店在庫車輛數
         function populateFilters() {
             const brands = [...new Set(cars.map(c => c["廠牌"]).filter(b => b && b !== ""))];
             const brandSelect = document.getElementById('filter-brand');
             brandSelect.innerHTML = '<option value="">所有汽車廠牌</option>';
             brands.forEach(b => {
-                // 計算各廠牌非售出的在庫車輛數
                 const count = cars.filter(c => c["編碼"] !== "CONFIG_LOGO" && c["編碼"] !== "CONFIG_BULLETIN" && c["廠牌"] === b && c["販售狀態"] !== "售出").length;
                 const opt = document.createElement('option');
                 opt.value = b;
@@ -1205,7 +1233,6 @@
             const select = document.getElementById('filter-location');
             select.innerHTML = '<option value="">所有車輛位置</option>';
             locs.forEach(l => { 
-                // 計算各據點非售出的實際在庫車數
                 const count = cars.filter(c => c["編碼"] !== "CONFIG_LOGO" && c["編碼"] !== "CONFIG_BULLETIN" && c["在庫位子"] === l && c["販售狀態"] !== "售出").length;
                 const opt = document.createElement('option'); 
                 opt.value = l; 
@@ -1222,7 +1249,6 @@
                 .filter(url => url.startsWith('http'));
         }
 
-        // 一鍵快速清除篩選功能
         function clearFilters() {
             document.getElementById('filter-brand').value = "";
             document.getElementById('filter-location').value = "";
@@ -1255,7 +1281,6 @@
                 return matchBrand && matchLoc && matchSale && matchSearch;
             });
 
-            // 👑 動態奢華篩選狀態看板（即刻顯示該車庫或品牌篩選下的精確庫存數，並附加一鍵清除）
             let filterStatusHtml = '';
             if (fBrand || fLoc || fSale || searchKeyword) {
                 let filterTexts = [];
@@ -1728,7 +1753,7 @@
             document.body.style.overflow = 'hidden';
         }
 
-        // --- 全螢幕 Lightbox 燈箱 (多圖輪播與手勢滑動) ---
+        // --- 全螢幕 Lightbox 燈箱 ---
         function openLightbox(index, photoArray) {
             if (!photoArray || photoArray.length === 0) return;
             lightboxImages = photoArray;
@@ -1860,7 +1885,7 @@
             }
         }
 
-        // 💻 電腦版專屬：全自動依序下載全部照片 (精準安全延時，繞過瀏覽器限制)
+        // 💻 電腦版專屬：全自動依序下載全部照片
         async function downloadAllDesktopPhotos() {
             if (!currentSelectedCar) return;
             const car = currentSelectedCar;
@@ -1878,7 +1903,6 @@
             const originalHTML = btn.innerHTML;
             btn.disabled = true;
 
-            // 建立 SweetAlert 提示浮窗
             const Toast = Swal.mixin({
                 toast: true,
                 position: 'top-end',
@@ -1894,7 +1918,6 @@
                 const vehicleYear = car["年份"] || "0000";
                 const fileName = `${cleanedBrand}_${cleanedModel}_${vehicleYear}_照片_${i + 1}.jpg`;
 
-                // 動態更新按鈕文字顯示進度
                 btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> 下載中 (${i + 1}/${allPhotos.length})`;
 
                 try {
@@ -1913,7 +1936,7 @@
                     
                     URL.revokeObjectURL(objectUrl);
                     
-                    // 關鍵安全延時：防止瀏覽器垃圾下載防護阻擋多圖排程
+                    // 400ms 間隔防止被瀏覽器安全阻擋
                     await new Promise(resolve => setTimeout(resolve, 400));
                 } catch (error) {
                     console.warn(`遭遇跨域或網路限制，正在嘗試以新分頁下載：${imageUrl}`);
@@ -1958,10 +1981,8 @@
                 return;
             }
 
-            // 📱 偵測是否為行動裝置
             const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-            // 動態產生電腦端一鍵自動批次下載快捷列
             let desktopShortcutHtml = "";
             if (!isMobile) {
                 desktopShortcutHtml = `
@@ -1988,33 +2009,42 @@
                     
                     ${desktopShortcutHtml}
 
-                    <!-- 智慧保存指南看板 -->
-                    <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-3 shadow-inner">
-                        <h4 class="font-black text-slate-800 text-xs flex items-center gap-1.5 border-b border-slate-200 pb-2">
-                            <i class="fa-solid fa-circle-question text-emerald-600"></i> 如何將相片順利儲存至手機「相簿」？
-                        </h4>
-                        
-                        <!-- 手機端最保險的存相簿指南 -->
-                        <div class="space-y-1">
-                            <p class="text-xs font-black text-emerald-600 flex items-center gap-1.5">
-                                <i class="fa-solid fa-mobile-screen-button"></i> 智慧型手機 / 平板端（iOS & Android）：
-                            </p>
-                            <p class="text-[11px] text-slate-600 leading-relaxed pl-5 font-bold">
-                                請直接<span class="text-emerald-600 font-extrabold underline">「長按」</span>下方任何一張相片，在彈出選單中選擇<span class="text-emerald-600 font-extrabold">「儲存影像」</span>（iOS）或<span class="text-emerald-600 font-extrabold">「下載圖片」</span>（Android）。
-                                <br><span class="text-rose-500 font-extrabold">⚠️ 注意：這是唯一能保證相片 100% 直接寫入手機「原生相簿」的系統方法！</span>
-                            </p>
+                    <!-- 💡 智慧保存抽屜式摺疊面板 (微型極簡化，完全不阻擋視線) -->
+                    <details class="group bg-slate-50 border border-slate-200 rounded-2xl p-3 shadow-inner transition-all duration-300">
+                        <summary class="list-none cursor-pointer select-none">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                                    <span class="font-black text-slate-700 text-xs flex items-center gap-1">
+                                        儲存照片說明：如何存入手機「相簿」？
+                                    </span>
+                                </div>
+                                <span class="text-[10px] bg-slate-200 text-slate-600 px-2 py-0.5 rounded-lg group-open:hidden font-bold">點擊展開 💡</span>
+                                <span class="text-[10px] bg-emerald-600 text-white px-2 py-0.5 rounded-lg hidden group-open:inline font-bold">收合說明 ✕</span>
+                            </div>
+                        </summary>
+                        <div class="mt-3 space-y-3.5 pt-3 border-t border-slate-200/60 text-xs">
+                            <!-- 手機端存相簿指南 -->
+                            <div class="space-y-1">
+                                <p class="text-[11px] font-black text-emerald-600 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-mobile-screen-button"></i> 智慧型手機 / 平板（iOS & Android）：
+                                </p>
+                                <p class="text-[11px] text-slate-600 leading-relaxed pl-5 font-bold">
+                                    請直接<span class="text-emerald-600 font-extrabold underline">「長按」</span>下方任何一張相片，在彈出選單中選擇<span class="text-emerald-600 font-extrabold">「儲存影像」</span>（iOS）或<span class="text-emerald-600 font-extrabold">「下載圖片」</span>（Android）。
+                                    <br><span class="text-rose-500 font-extrabold">⚠️ 這是唯一能保證相片直接寫入手機「原生相簿」的方法！</span>
+                                </p>
+                            </div>
+                            <!-- 電腦端防阻擋指南 -->
+                            <div class="space-y-1">
+                                <p class="text-[11px] font-black text-slate-700 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-desktop"></i> 電腦網頁端：
+                                </p>
+                                <p class="text-[11px] text-slate-600 leading-relaxed pl-5 font-bold">
+                                    您可以使用上方的<span class="text-emerald-600 font-bold">「一鍵自動下載」</span>，或是點擊下方相片旁邊的<span class="text-slate-800 underline">「安全下載原圖」</span>進行單張手動存檔。
+                                </p>
+                            </div>
                         </div>
-                        
-                        <!-- 電腦端防阻擋指南 -->
-                        <div class="space-y-1">
-                            <p class="text-xs font-black text-slate-700 flex items-center gap-1.5">
-                                <i class="fa-solid fa-desktop"></i> 電腦網頁端：
-                            </p>
-                            <p class="text-[11px] text-slate-600 leading-relaxed pl-5 font-bold">
-                                您可以使用上方的<span class="text-emerald-600 font-bold">「一鍵自動下載」</span>，或是點擊下方相片旁邊的<span class="text-slate-800 underline">「安全下載原圖」</span>進行單張手動存檔。
-                            </p>
-                        </div>
-                    </div>
+                    </details>
 
                     <!-- 相片原圖列表 -->
                     <div class="grid grid-cols-1 gap-3.5 max-h-[45vh] overflow-y-auto pr-1.5">
@@ -2028,7 +2058,7 @@
 
                 photosHtml += `
                     <div class="bg-white rounded-2xl p-3 border border-slate-150 shadow-sm flex flex-col sm:flex-row gap-3 items-center">
-                        <!-- 相片縮圖 (供使用者長按) -->
+                        <!-- 相片縮圖 -->
                         <div class="w-full sm:w-36 h-24 rounded-xl overflow-hidden border border-slate-200 flex-shrink-0 relative group">
                             <img src="${photoUrl}" class="w-full h-full object-cover active:scale-95 transition-transform" onerror="this.src='${placeholderImages[pIdx % placeholderImages.length]}'">
                             <span class="absolute top-1.5 left-1.5 bg-slate-900/85 text-white text-[9px] font-black px-2 py-0.5 rounded shadow-md">圖 ${pIdx + 1}</span>
@@ -2060,9 +2090,8 @@
                 </div>
             `;
 
-            // 使用 SweetAlert 喚醒相片中心
             Swal.fire({
-                title: '<span class="text-slate-950 font-black text-base md:text-lg flex items-center justify-center gap-2"><i class="fa-solid fa-photo-film text-emerald-600 animate-pulse"></i> 卓越車庫 - 相片下載與保存中心</span>',
+                title: '<span class="text-slate-950 font-black text-base md:text-lg flex items-center justify-center gap-2"><i class="fa-solid fa-photo-film text-emerald-600 animate-pulse"></i>相片下載與保存中心</span>',
                 html: photosHtml,
                 showConfirmButton: true,
                 confirmButtonText: '已完成保存並關閉大廳 🚀',
@@ -2075,7 +2104,6 @@
             });
         }
 
-        // 安全單張下載控制包裝（徹底擺脫 CORS 跨網域阻擋與多重詢問）
         async function downloadSinglePhoto(url, filename, buttonEl) {
             const originalText = buttonEl.innerHTML;
             buttonEl.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> 下載中`;
@@ -2107,7 +2135,6 @@
                 }, 2000);
 
             } catch (error) {
-                // 如果遭遇 CDN 跨域阻擋或手機內核限制，直接在新分頁開啟高畫質圖片，引導用戶最純粹地右鍵存檔
                 console.warn(`跨域限制，正在新視窗開啟原圖：${url}`);
                 window.open(url, '_blank');
                 buttonEl.innerHTML = originalText;
