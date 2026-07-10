@@ -3,7 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>在庫車源表</title>
+    <title>在庫車輛車源表系統</title>
+    
+    <!-- ========================================== -->
+    <!-- 🌟 網頁自訂 LOGO 小圖標 (Favicon) 設定區 🌟 -->
+    <!-- 請將您的 LOGO 圖片上傳至 GitHub 儲存庫根目錄（與 index.html 同一層） -->
+    <!-- 並確保下方的 href 檔名與您的圖片檔名一致（例如：logo.png） -->
+    <link rel="icon" href="logo.png" type="image/png">
+    <!-- 如果您使用的是傳統的 ico 格式，請改用下方這行： -->
+    <!-- <link rel="icon" href="favicon.ico" type="image/x-icon"> -->
+    <!-- ========================================== -->
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -247,8 +257,8 @@
                         <i class="fa-solid fa-car-rear text-xl"></i>
                     </div>
                     <div>
-                        <h1 class="text-xl md:text-2xl font-black text-slate-850 tracking-tighter"><span class="text-emerald-600">在庫車源表</span></h1>
-                        <p class="text-[10px] text-slate-400 font-bold tracking-wider mt-0.5 uppercase">v5.41</p>
+                        <h1 class="text-xl md:text-2xl font-black text-slate-850 tracking-tighter"><span class="text-emerald-600">在庫車輛車源表</span></h1>
+                        <p class="text-[10px] text-slate-400 font-bold tracking-wider mt-0.5 uppercase">Premium Stock Showroom Hall v5.41</p>
                     </div>
                 </div>
                 <div class="flex gap-2 w-full md:w-auto">
@@ -814,6 +824,7 @@
             render();
         }
 
+        // 自動解析 Google Drive 或其他圖片網址
         function getDirectImageUrl(url) {
             if (!url || typeof url !== 'string') return placeholderImages[0];
             const drivePattern = /(?:https?:\/\/)?(?:drive\.google\.com\/)(?:file\/d\/|open\?id=)([^/&?#]+)/;
@@ -1062,12 +1073,12 @@
                     title: 'Outstanding Garage<br><span style="color:#10b981; font-size:1.2rem; font-weight:900;">今日在庫異動快報</span>',
                     html: updateHtml,
                     icon: 'info',
-                    confirmButtonText: '進入展示大廳 🚀',
+                    confirmButtonText: '進入展示大廳',
                     confirmButtonColor: '#10b981',
                     customClass: {
                         popup: 'rounded-[24px] border border-slate-200 shadow-2xl p-5 max-w-[420px] w-full',
                         title: 'font-black text-slate-850 tracking-tight leading-tight',
-                        confirmButton: 'font-black px-5 py-2.5 rounded-xl shadow-lg shadow-emerald-100 text-xs'
+                        confirmButton: 'font-black px-5 py-2.5 rounded-xl shadow-lg shadow-emerald-100 text-sm'
                     }
                 });
             }
@@ -1441,7 +1452,7 @@
                     <!-- 手機端完美置底之價格欄 -->
                     <div class="price-box w-auto md:w-${sc.priceWidth} border-l-0 md:border-l border-slate-100 ${sc.pricePadding} flex flex-col justify-center items-end bg-transparent md:bg-slate-50/50 pr-2">
                         <div class="w-full flex flex-row md:flex-col justify-between md:justify-center items-center md:items-end gap-1">
-                            <p class="text-[9px] md:text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">網路優惠價</p>
+                            <p class="text-[9px] md:text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">網路公開價</p>
                             <div class="flex items-end justify-end gap-0.5">
                                 <span class="${sc.priceText} font-black text-rose-600 italic tracking-tighter">${car["開價"]}</span>
                                 <span class="text-[10px] md:text-sm font-black text-rose-600 mb-0.5">萬</span>
