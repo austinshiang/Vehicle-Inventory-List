@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>聯盟在庫車源表 </title>
+    <title>在庫車源表</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -67,7 +67,7 @@
             border: 1px solid #e2e8f0; 
             border-radius: 24px; 
             display: flex; 
-            flex-direction: row; /* 全螢幕尺寸皆維持橫向排列 */
+            flex-direction: row; /* 桌機與全螢幕預設為橫排 */
             position: relative; 
             overflow: hidden; 
             z-index: 10; 
@@ -200,28 +200,30 @@
             transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        /* 手機版排版極致優化 */
+        /* 手機端排版優化：圖片佔滿上方寬度，資訊向下堆疊 */
         @media (max-width: 768px) { 
             .car-row { 
-                flex-direction: row !important; 
-                padding: 10px !important;
-                gap: 10px !important;
-                border-radius: 16px !important;
+                flex-direction: column !important; /* 上下堆疊 */
+                padding: 12px !important;
+                gap: 12px !important;
+                border-radius: 20px !important;
             } 
             
             .img-box { 
-                border-radius: 10px !important; 
+                width: 100% !important; /* 圖片滿寬 */
+                height: 200px !important; /* 固定高度 */
+                border-radius: 14px !important; 
                 flex-shrink: 0 !important;
             } 
             
             .price-box { 
                 border-left: none !important; 
-                border-top: none !important; 
-                width: auto !important; 
-                padding: 0 !important; 
-                flex-direction: column !important; 
-                justify-content: center !important; 
-                align-items: flex-end !important; 
+                border-top: 1px solid #f1f5f9 !important; /* 底部精緻分割線 */
+                width: 100% !important; 
+                padding: 12px 4px 4px 4px !important; 
+                flex-direction: row !important; /* 價格左右分流呈現 */
+                justify-content: space-between !important; 
+                align-items: center !important; 
                 background-color: transparent !important;
                 flex-shrink: 0 !important;
             } 
@@ -237,96 +239,98 @@
     <button id="exit-capture" onclick="toggleCapture(false)"><i class="fa-solid fa-xmark mr-2"></i> 結束截圖模式</button>
 
     <!-- 頂部控制列 -->
-    <header class="bg-white border-b border-slate-200 py-6 px-4 relative z-40 shadow-sm no-capture">
-        <div class="max-w-6xl mx-auto space-y-6">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div class="flex items-center space-x-4">
-                    <div class="bg-emerald-600 p-3 rounded-2xl text-white shadow-lg shadow-emerald-100">
-                        <i class="fa-solid fa-car-rear text-2xl"></i>
+    <header class="bg-white border-b border-slate-200 py-5 px-4 relative z-40 shadow-sm no-capture">
+        <div class="max-w-6xl mx-auto space-y-4">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+                <div class="flex items-center space-x-3.5">
+                    <div class="bg-emerald-600 p-2.5 rounded-2xl text-white shadow-lg shadow-emerald-100">
+                        <i class="fa-solid fa-car-rear text-xl"></i>
                     </div>
                     <div>
-                        <h1 class="text-2xl font-black text-slate-850 tracking-tighter">聯盟聯合<span class="text-emerald-600">在庫車源</span></h1>
-                        <p class="text-[11px] text-slate-400 font-bold tracking-wider mt-0.5 uppercase">Premium Stock Showroom Hall v5.3</p>
+                        <h1 class="text-xl md:text-2xl font-black text-slate-850 tracking-tighter"><span class="text-emerald-600">在庫車源表</span></h1>
+                        <p class="text-[10px] text-slate-400 font-bold tracking-wider mt-0.5 uppercase">v5.41</p>
                     </div>
                 </div>
                 <div class="flex gap-2 w-full md:w-auto">
                     <!-- 檢視模式切換按鈕 -->
-                    <button id="btn-toggle-view" onclick="toggleView()" class="flex-1 md:flex-none bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2.5 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-2">
+                    <button id="btn-toggle-view" onclick="toggleView()" class="flex-1 md:flex-none bg-slate-100 hover:bg-slate-200 text-slate-700 px-3.5 py-2 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-1.5">
                         <i class="fa-solid fa-list"></i> 切換清單總覽
                     </button>
                     <!-- 截圖模式 -->
-                    <button onclick="toggleCapture(true)" class="flex-1 md:flex-none bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-2.5 rounded-xl text-xs font-black shadow-lg shadow-emerald-100 flex items-center justify-center gap-2 active:scale-95 transition-all">
+                    <button onclick="toggleCapture(true)" class="flex-1 md:flex-none bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-xl text-xs font-black shadow-lg shadow-emerald-100 flex items-center justify-center gap-1.5 active:scale-95 transition-all">
                         <i class="fa-solid fa-camera"></i> 進入截圖模式
                     </button>
                 </div>
             </div>
 
             <!-- 數據看板 -->
-            <div class="flex flex-wrap items-center justify-start gap-x-6 gap-y-2 text-xs bg-slate-50 border border-slate-150 px-4 py-2.5 rounded-xl shadow-inner">
+            <div class="flex flex-wrap items-center justify-start gap-x-5 gap-y-1.5 text-xs bg-slate-50 border border-slate-150 px-4 py-2 rounded-xl shadow-inner">
                 <div class="flex items-center gap-1.5">
                     <span class="font-bold text-slate-400">目前在庫:</span>
                     <span id="stat-stock" class="font-black text-emerald-600 text-sm">0</span>
                 </div>
-                <div class="border-l border-slate-200 h-4"></div>
+                <div class="border-l border-slate-200 h-3.5"></div>
                 <div class="flex items-center gap-1.5">
                     <span class="font-bold text-slate-400">當月購買:</span>
                     <span id="stat-buy" class="font-black text-blue-600 text-sm">0</span>
                 </div>
-                <div class="border-l border-slate-200 h-4 hidden sm:block"></div>
+                <div class="border-l border-slate-200 h-3.5 hidden sm:block"></div>
                 <div class="flex items-center gap-1.5">
                     <span class="font-bold text-slate-400">當月售出:</span>
                     <span id="stat-month" class="font-black text-rose-500 text-sm">0</span>
                 </div>
-                <div class="border-l border-slate-200 h-4 hidden sm:block"></div>
+                <div class="border-l border-slate-200 h-3.5 hidden sm:block"></div>
                 <div class="flex items-center gap-1.5">
                     <span class="font-bold text-slate-400">年度累計:</span>
                     <span id="stat-year" class="font-black text-slate-700 text-sm">0</span>
                 </div>
             </div>
 
-            <!-- 篩選器與搜尋與排序 -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-3">
-                <div class="lg:col-span-2 relative">
-                    <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                    <input type="text" id="search-bar" oninput="render()" placeholder="搜尋品牌、型號、規格、配備..." class="w-full bg-slate-50 text-slate-800 placeholder-slate-400 border border-slate-200 rounded-xl pl-10 pr-4 py-2.5 text-xs font-bold outline-none focus:ring-2 focus:ring-emerald-500 transition-all">
+            <!-- 智慧型搜尋與篩選列 (雙行並排自適應 layout) -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-2 text-[11px] sm:text-xs">
+                <!-- 搜尋框 (手機端占滿 2 欄) -->
+                <div class="col-span-2 relative">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                    <input type="text" id="search-bar" oninput="render()" placeholder="搜尋品牌、型號、規格、配備..." class="w-full bg-slate-50 text-slate-800 placeholder-slate-400 border border-slate-200 rounded-xl pl-8 pr-3 py-1.5 outline-none focus:ring-2 focus:ring-emerald-500 transition-all font-bold">
                 </div>
-                <select id="filter-location" onchange="render()" class="bg-slate-50 text-slate-700 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold outline-none focus:ring-2 focus:ring-emerald-500 transition-all">
+                <!-- 汽車廠牌快選 -->
+                <select id="filter-brand" onchange="render()" class="bg-slate-50 text-slate-700 border border-slate-200 rounded-xl px-2 py-1.5 font-bold outline-none focus:ring-2 focus:ring-emerald-500 transition-all cursor-pointer">
+                    <option value="">所有汽車廠牌</option>
+                </select>
+                <!-- 車輛位置 -->
+                <select id="filter-location" onchange="render()" class="bg-slate-50 text-slate-700 border border-slate-200 rounded-xl px-2 py-1.5 font-bold outline-none focus:ring-2 focus:ring-emerald-500 transition-all cursor-pointer">
                     <option value="">所有車輛位置</option>
                 </select>
-                <select id="filter-sale" onchange="render()" class="bg-slate-50 text-slate-700 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold outline-none focus:ring-2 focus:ring-emerald-500 transition-all">
-                    <option value="">售賣形式</option>
+                <!-- 售賣形式 -->
+                <select id="filter-sale" onchange="render()" class="bg-slate-50 text-slate-700 border border-slate-200 rounded-xl px-2 py-1.5 font-bold outline-none focus:ring-2 focus:ring-emerald-500 transition-all cursor-pointer">
+                    <option value="">所有售賣形式</option>
                     <option value="零售">零售</option>
                     <option value="寄賣">寄賣</option>
                 </select>
-                <select id="filter-cert" onchange="render()" class="bg-slate-50 text-slate-700 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold outline-none focus:ring-2 focus:ring-emerald-500 transition-all">
-                    <option value="">認證與否</option>
-                    <option value="是">認證車源</option>
-                    <option value="否">非認證</option>
-                </select>
-                <!-- 智慧調節版面顯示比例 -->
-                <select id="select-scale" onchange="changeScale(this.value)" class="bg-slate-50 text-slate-700 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold outline-none focus:ring-2 focus:ring-emerald-500 transition-all cursor-pointer">
-                    <option value="compact">版面：精簡緊湊</option>
-                    <option value="normal" selected>版面：標準舒適</option>
+                <!-- 版面大小調節 -->
+                <select id="select-scale" onchange="changeScale(this.value)" class="bg-slate-50 text-slate-700 border border-slate-200 rounded-xl px-2 py-1.5 font-bold outline-none focus:ring-2 focus:ring-emerald-500 transition-all cursor-pointer">
+                    <option value="compact">版面：簡約緊湊</option>
+                    <option value="normal" selected>版面：正常舒適</option>
                     <option value="large">版面：放大清晰</option>
                 </select>
-                <!-- 排序選擇器 -->
-                <select id="sort-by" onchange="render()" class="bg-slate-900 text-white border border-slate-800 rounded-xl px-4 py-2.5 text-xs font-black outline-none focus:ring-2 focus:ring-emerald-500 transition-all cursor-pointer">
-                    <option value="date-desc">入庫時間：由新到舊</option>
-                    <option value="date-asc">入庫時間：由舊到新</option>
-                    <option value="price-desc">開價：由高到低</option>
-                    <option value="price-asc">開價：由低到高</option>
+                <!-- 排序選擇器 (手機端占滿 2 欄) -->
+                <select id="sort-by" onchange="render()" class="col-span-2 sm:col-span-1 bg-slate-950 text-white border border-slate-800 rounded-xl px-2 py-1.5 font-black outline-none focus:ring-2 focus:ring-emerald-500 transition-all cursor-pointer">
+                    <option value="date-desc">排序：入庫由新到舊</option>
+                    <option value="date-asc">排序：入庫由舊到新</option>
+                    <option value="price-desc">排序：開價由高到低</option>
+                    <option value="price-asc">排序：開價由低到高</option>
                 </select>
             </div>
         </div>
     </header>
 
-    <main class="max-w-6xl w-full mx-auto px-4 py-8 relative z-10 flex-grow">
+    <main class="max-w-6xl w-full mx-auto px-4 py-6 relative z-10 flex-grow">
         <!-- 主要畫廊與總覽表格容器 -->
-        <div id="gallery" class="space-y-6">
+        <div id="gallery" class="space-y-5">
             <!-- 骨架載入動畫 -->
             <div class="animate-pulse space-y-6">
-                <div class="h-48 bg-slate-200 rounded-2xl"></div>
-                <div class="h-48 bg-slate-200 rounded-2xl"></div>
+                <div class="h-44 bg-slate-200 rounded-2xl"></div>
+                <div class="h-44 bg-slate-200 rounded-2xl"></div>
             </div>
         </div>
     </main>
@@ -547,8 +551,8 @@
     </div>
 
     <!-- 頁尾 -->
-    <footer class="mt-auto py-8 text-center text-xs text-slate-400 no-capture">
-        <p>© 姜駒車業 整合系統 v5.3</p>
+    <footer class="mt-auto py-6 text-center text-xs text-slate-400 no-capture">
+        <p>© 姜駒車業 Outstanding Garage. All Rights Reserved. 整合系統 v5.41</p>
     </footer>
 
     <script>
@@ -559,7 +563,7 @@
         let confidentialPricesVisible = false; 
         let currentScale = 'normal'; 
 
-        // 全螢幕燈箱大圖切換與手勢專用全域變數
+        // 全螢幕燈箱大圖與滑動變數
         let lightboxImages = [];
         let currentLightboxIndex = 0;
         let touchStartX = 0;
@@ -592,7 +596,7 @@
                 tagPadding: "px-2 py-0.5 md:px-3 md:py-1.5 text-[10px] md:text-[11px] rounded-lg md:rounded-xl",
                 cardRemarksMargin: "mt-2 p-2 md:mt-3.5 md:p-3 text-[11px] md:text-xs rounded-lg md:rounded-xl",
                 priceWidth: "md:w-[220px]",
-                pricePadding: "p-3 md:p-8",
+                pricePadding: "p-3.5 md:p-8",
                 priceText: "text-xl sm:text-2xl md:text-5xl",
                 tdPadding: "py-4 px-6 text-sm",
                 thPadding: "py-4 px-6 text-[11px]"
@@ -614,7 +618,7 @@
             }
         };
 
-        // 系統錨定時間設定 (改為動態偵測當日)
+        // 系統動態日期
         const currentSystemDate = new Date(); 
 
         const placeholderImages = [
@@ -624,7 +628,7 @@
             "https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=1200" 
         ];
 
-        // 庫位色彩庫
+        // 據點背景配色
         const locationColors = {
             "台北總店": "bg-indigo-50 text-indigo-700 border-indigo-200",
             "台北店": "bg-indigo-50 text-indigo-700 border-indigo-200",
@@ -653,7 +657,6 @@
             "尋車": "bg-amber-50 text-amber-700 border-amber-200"
         };
 
-        // 在庫據點色彩解析
         function getLocationColor(loc) {
             if (!loc) return "bg-slate-50 text-slate-600 border-slate-200";
             const trimmed = String(loc).trim();
@@ -663,11 +666,7 @@
                 "bg-fuchsia-50 text-fuchsia-700 border-fuchsia-200",
                 "bg-orange-50 text-orange-700 border-orange-200",
                 "bg-pink-50 text-pink-700 border-pink-200",
-                "bg-violet-50 text-violet-700 border-violet-200",
-                "bg-yellow-50 text-yellow-700 border-yellow-200",
-                "bg-blue-50 text-blue-700 border-blue-200",
-                "bg-emerald-50 text-emerald-700 border-emerald-200",
-                "bg-rose-50 text-rose-700 border-rose-200"
+                "bg-violet-50 text-violet-700 border-violet-200"
             ];
             let hash = 0;
             for (let i = 0; i < trimmed.length; i++) {
@@ -718,13 +717,12 @@
             return isNaN(d.getTime()) ? null : d;
         }
 
-        // 🛡️ 高防禦性日期處理器 v5.3：自動解析 ISO 8601 時區偏差，確保多時區與多種日期寫法的一致性！
+        // 🛡️ 高防禦性日期處理器
         function getOnlyDate(dateVal) {
             if (!dateVal) return '';
             let str = String(dateVal).trim();
             if (str === "" || str.toLowerCase() === "null" || str.toLowerCase() === "undefined") return '';
             
-            // 優先：如果是包含 'Z' 或 'T' 的標準 ISO 字串，由 JS 原生解析（可自動矯正 UTC 偏移）
             if (str.includes('T') || str.includes('Z') || /^[0-9\-]{10,}/.test(str)) {
                 const d = new Date(str);
                 if (!isNaN(d.getTime())) {
@@ -732,7 +730,6 @@
                 }
             }
 
-            // 次要：處理時間戳記
             if (/^\d{10,}$/.test(str)) {
                 const d = new Date(parseInt(str));
                 if (!isNaN(d.getTime())) {
@@ -740,21 +737,19 @@
                 }
             }
 
-            // 相容：將橫線轉斜線並切分
             str = str.replace(/-/g, '/');
             if (str.includes(' ')) str = str.split(' ')[0];
             const parts = str.split('/');
             if (parts.length === 3) {
                 let year = parseInt(parts[0]);
                 if (year < 1911) { 
-                    year += 1911; // 民國自動轉換
+                    year += 1911;
                 }
                 const month = String(parts[1]).padStart(2, '0');
                 const day = String(parts[2]).padStart(2, '0');
                 return `${year}/${month}/${day}`;
             }
 
-            // 最終兜底
             const d = new Date(str);
             if (!isNaN(d.getTime())) {
                 return `${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}`;
@@ -842,8 +837,6 @@
                 updateDashboard();
                 populateFilters();
                 render();
-                
-                // 數據加載完成後自動檢查並開啟今日異動公告
                 checkTodayUpdates();
             } catch (e) { 
                 console.warn("API 連線異常，啟用測試 Demo 數據模式：", e);
@@ -878,7 +871,7 @@
                     "封面圖片": "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?q=80&w=1200",
                     "其他照片": "https://images.unsplash.com/photo-1617788138017-80ad40651399?q=80&w=1200",
                     "購入日期": "2026/05/10", 
-                    "成交日期": todayStr, // 今日成交，測試彈窗「今日賀收訂」
+                    "成交日期": todayStr, 
                     "驗車頻率": "2",  
                     "驗車月份": "6,12", 
                     "備註": "正一手車、配備 23P 智慧駕駛輔助、全景天窗、柏林之音。里程保證，車況極佳。"
@@ -903,7 +896,7 @@
                     "售賣形式": "寄賣",
                     "封面圖片": "https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=1200",
                     "其他照片": "",
-                    "購入日期": todayStr, // 今日購入，測試彈窗「今日新上架」
+                    "購入日期": todayStr, 
                     "成交日期": "",
                     "驗車頻率": "1",  
                     "驗車月份": "7",   
@@ -936,34 +929,8 @@
                     "備註": "最新大改款！510匹猛獸，全新大螢幕系統，全車原廠保固中。"
                 },
                 {
-                    "編碼": "CAR-004",
-                    "廠牌": "Audi",
-                    "型號": "RS6 Avant",
-                    "車號": "QA-2222",
-                    "年份": "2020",
-                    "車身碼": "WAUZZZF41MN001002",
-                    "排氣量": "3996 cc",
-                    "顏色": "水泥灰",
-                    "里程": "48000",
-                    "開價": "398",
-                    "盤售價": "370", 
-                    "底價": "362",   
-                    "燃料形式": "輕油電/汽油",
-                    "在庫位子": "高雄展示間",
-                    "販售狀態": "售出",
-                    "是否認證": "慢",
-                    "售賣形式": "零售",
-                    "封面圖片": "https://images.unsplash.com/photo-1617788138017-80ad40651399?q=80&w=1200",
-                    "其他照片": "",
-                    "購入日期": "2026/05/15",
-                    "成交日期": todayStr, // 今日成交，測試彈窗「今日狂賀成交」
-                    "驗車頻率": "",    
-                    "驗車月份": "6",
-                    "備註": "絕美暴力跑旅，已於當月成交。感謝支援。"
-                },
-                {
                     "編碼": "CONFIG_BULLETIN",
-                    "備註": "📣 全場公告：端午連警賞車人數較多，請全體業務成交後務必立刻將狀態改為「收訂」或「售出」，避免撞車重複銷售！本月 C300 系列利潤加碼促銷，加油！"
+                    "備註": "📣 全場公告：端午賞車人數較多，請全體業務成交後務必立刻將狀態改為「收訂」或「售出」，避免撞車重複銷售！"
                 }
             ];
             updateDashboard();
@@ -971,44 +938,37 @@
             render();
         }
 
-        // --- 今日異動快報自動彈窗函式 (v5.3 核心時區修復與強化) ---
         function checkTodayUpdates() {
             const today = currentSystemDate;
             const todayStr = `${today.getFullYear()}/${String(today.getMonth() + 1).padStart(2, '0')}/${String(today.getDate()).padStart(2, '0')}`;
 
-            // 1. 篩選今日購入（新上架）車源
             const newArrivals = cars.filter(car => {
                 if (car["編碼"] === "CONFIG_LOGO" || car["編碼"] === "CONFIG_BULLETIN" || !car["購入日期"]) return false;
                 const buyDate = getOnlyDate(car["購入日期"]);
                 return buyDate === todayStr && car["販售狀態"] !== "售出";
             });
 
-            // 2. 篩選今日收訂/預訂車源
             const newlyReserved = cars.filter(car => {
                 if (car["編碼"] === "CONFIG_LOGO" || car["編碼"] === "CONFIG_BULLETIN" || !car["成交日期"]) return false;
                 const dealDate = getOnlyDate(car["成交日期"]);
                 return dealDate === todayStr && (car["販售狀態"] === "收訂" || car["販售狀態"] === "預訂");
             });
 
-            // 3. 篩選今日售出車源
             const newlySold = cars.filter(car => {
                 if (car["編碼"] === "CONFIG_LOGO" || car["編碼"] === "CONFIG_BULLETIN" || !car["成交日期"]) return false;
                 const soldDate = getOnlyDate(car["成交日期"]);
                 return soldDate === todayStr && car["販售狀態"] === "售出";
             });
 
-            // 4. 取得系統後台自訂業務公告
             const bulletinRow = cars.find(c => c["編碼"] === "CONFIG_BULLETIN");
             const hasBulletin = bulletinRow && bulletinRow["備註"] && bulletinRow["備註"].trim() !== "";
 
-            // 5. 當有公告、新車上架、新收訂或新售出時，建構彈窗 HTML
             if (newArrivals.length > 0 || newlyReserved.length > 0 || newlySold.length > 0 || hasBulletin) {
                 let updateHtml = `<div class="text-left text-sm space-y-4 max-h-[60vh] overflow-y-auto pr-1">`;
 
-                // A. 置頂業務公告
                 if (hasBulletin) {
                     updateHtml += `
-                        <div class="bg-amber-50 border border-amber-200 p-3.5 rounded-2xl">
+                        <div class="bg-amber-50 border border-amber-200 p-3 rounded-2xl">
                             <h5 class="font-black text-amber-800 text-xs mb-1 uppercase tracking-wider flex items-center gap-1.5">
                                 <i class="fa-solid fa-bullhorn text-amber-600 animate-bounce"></i> 置頂業務公告
                             </h5>
@@ -1017,7 +977,6 @@
                     `;
                 }
 
-                // B. 今日全新上架
                 if (newArrivals.length > 0) {
                     updateHtml += `
                         <div>
@@ -1025,7 +984,7 @@
                                 <i class="fa-solid fa-star text-amber-400 animate-pulse"></i> 今日全新上架 (${newArrivals.length} 台)
                             </h5>
                             <ul class="space-y-1.5 text-slate-700">
-                `;
+                    `;
                     newArrivals.forEach(car => {
                         updateHtml += `
                             <li class="flex items-center justify-between bg-slate-50 p-2 rounded-xl border border-slate-100 text-xs">
@@ -1043,7 +1002,6 @@
                     updateHtml += `</ul></div>`;
                 }
 
-                // C. 今日賀收訂/預訂保留
                 if (newlyReserved.length > 0) {
                     updateHtml += `
                         <div>
@@ -1051,7 +1009,7 @@
                                 <i class="fa-solid fa-hourglass-half text-amber-500 animate-spin" style="animation-duration: 4s;"></i> 今日賀收訂 (${newlyReserved.length} 台)
                             </h5>
                             <ul class="space-y-1.5 text-slate-700">
-                `;
+                    `;
                     newlyReserved.forEach(car => {
                         updateHtml += `
                             <li class="flex items-center justify-between bg-amber-50/20 p-2 rounded-xl border border-amber-100/50 text-xs">
@@ -1069,7 +1027,6 @@
                     updateHtml += `</ul></div>`;
                 }
 
-                // D. 今日狂賀成交售出
                 if (newlySold.length > 0) {
                     updateHtml += `
                         <div>
@@ -1077,7 +1034,7 @@
                                 <i class="fa-solid fa-circle-check text-rose-500"></i> 今日狂賀成交 (${newlySold.length} 台)
                             </h5>
                             <ul class="space-y-1.5 text-slate-700">
-                `;
+                    `;
                     newlySold.forEach(car => {
                         updateHtml += `
                             <li class="flex items-center justify-between bg-rose-50/20 p-2 rounded-xl border border-rose-100/50 text-xs">
@@ -1094,36 +1051,23 @@
                     updateHtml += `</ul></div>`;
                 }
 
-                // E. 💡 加上系統判定今日日期的偵測標示，讓業務主管容易除錯
                 updateHtml += `
                     <div class="border-t border-slate-100 pt-3 flex justify-between items-center text-[10px] text-slate-400 font-bold">
                         <span>偵測基準日: ${todayStr}</span>
                         <span>系統連線狀態: <span class="text-emerald-500">已同步</span></span>
                     </div>
-                `;
-
-                updateHtml += `
-                    <p class="text-[10px] text-slate-400 font-bold mt-2 text-center tracking-wider uppercase">💡 點擊下方按鈕即可進入展示大廳開始作業</p>
                 </div>`;
 
-                // 喚醒 SweetAlert2 奢華黑金異動快報彈窗
                 Swal.fire({
-                    title: ' 今日快報<br><span style="color:#10b981; font-size:1.3rem; font-weight:900;"></span>',
+                    title: 'Outstanding Garage<br><span style="color:#10b981; font-size:1.2rem; font-weight:900;">今日在庫異動快報</span>',
                     html: updateHtml,
                     icon: 'info',
                     confirmButtonText: '進入展示大廳 🚀',
                     confirmButtonColor: '#10b981',
-                    buttonsStyling: true,
                     customClass: {
-                        popup: 'rounded-[28px] border border-slate-200 shadow-2xl p-6 max-w-[460px] w-full',
-                        title: 'font-black text-slate-800 tracking-tight pt-2 leading-tight',
-                        confirmButton: 'font-black px-6 py-3 rounded-2xl shadow-lg shadow-emerald-100 text-sm'
-                    },
-                    showClass: {
-                        popup: 'animate__animated animate__fadeInUp animate__faster'
-                    },
-                    hideClass: {
-                        popup: 'animate__animated animate__fadeOutDown animate__faster'
+                        popup: 'rounded-[24px] border border-slate-200 shadow-2xl p-5 max-w-[420px] w-full',
+                        title: 'font-black text-slate-850 tracking-tight leading-tight',
+                        confirmButton: 'font-black px-5 py-2.5 rounded-xl shadow-lg shadow-emerald-100 text-xs'
                     }
                 });
             }
@@ -1197,6 +1141,18 @@
         }
 
         function populateFilters() {
+            // 動態提取品牌並綁定至汽車廠牌選單
+            const brands = [...new Set(cars.map(c => c["廠牌"]).filter(b => b && b !== ""))];
+            const brandSelect = document.getElementById('filter-brand');
+            brandSelect.innerHTML = '<option value="">所有汽車廠牌</option>';
+            brands.forEach(b => {
+                const opt = document.createElement('option');
+                opt.value = b;
+                opt.innerText = b;
+                brandSelect.appendChild(opt);
+            });
+
+            // 在庫位置
             const locs = [...new Set(cars.map(c => c["在庫位子"]).filter(l => l && l !== ""))];
             const select = document.getElementById('filter-location');
             select.innerHTML = '<option value="">所有車輛位置</option>';
@@ -1218,9 +1174,9 @@
 
         function render() {
             const gallery = document.getElementById('gallery');
+            const fBrand = document.getElementById('filter-brand').value;
             const fLoc = document.getElementById('filter-location').value;
             const fSale = document.getElementById('filter-sale').value;
-            const fCert = document.getElementById('filter-cert').value;
             const sortBy = document.getElementById('sort-by').value; 
             const searchKeyword = document.getElementById('search-bar').value.trim().toLowerCase();
             gallery.innerHTML = "";
@@ -1230,14 +1186,14 @@
             const filtered = cars.filter(c => {
                 if (c["編碼"] === "CONFIG_LOGO" || c["編碼"] === "CONFIG_BULLETIN") return false;
                 
+                const matchBrand = !fBrand || c["廠牌"] === fBrand;
                 const matchLoc = !fLoc || c["在庫位子"] === fLoc;
                 const matchSale = !fSale || c["售賣形式"] === fSale;
-                const matchCert = !fCert || c["是否認證"] === fCert;
                 
                 const carText = `${c["廠牌"]} ${c["型號"]} ${c["年份"]} ${c["在庫位子"]} ${c["車身碼"] || ''} ${c["顏色"] || ''} ${c["排氣量"] || ''} ${c["備註"] || ''}`.toLowerCase();
                 const matchSearch = !searchKeyword || carText.includes(searchKeyword);
 
-                return matchLoc && matchSale && matchCert && matchSearch;
+                return matchBrand && matchLoc && matchSale && matchSearch;
             });
 
             if (filtered.length === 0) {
@@ -1284,17 +1240,17 @@
             if (isListView) {
                 let tableHtml = `
                     <div class="overflow-x-auto bg-white/90 rounded-2xl border border-slate-200 shadow-sm relative z-10 backdrop-blur-sm">
-                        <table class="w-full text-left border-collapse md:min-w-[850px] ${currentScale === 'compact' ? 'text-xs' : currentScale === 'large' ? 'text-base' : 'text-sm'}">
+                        <table class="w-full text-left border-collapse md:min-w-[850px] ${currentScale === 'compact' ? 'text-xs' : 'text-sm'}">
                             <thead>
                                 <tr class="bg-slate-50/80 border-b border-slate-200 font-black text-slate-400 uppercase tracking-wider">
                                     <th class="${sc.thPadding}">廠牌</th>
-                                    <th class="${sc.thPadding}">型號與狀態資訊</th>
+                                    <th class="${sc.thPadding}">型號與狀態</th>
                                     <th class="${sc.thPadding} hidden md:table-cell">年份</th>
                                     <th class="${sc.thPadding} hidden md:table-cell">行駛里程</th>
-                                    <th class="${sc.thPadding} hidden md:table-cell">在庫位子</th>
+                                    <th class="${sc.thPadding} hidden md:table-cell">在庫位置</th>
                                     <th class="${sc.thPadding} hidden md:table-cell">販售狀態</th>
-                                    <th class="${sc.thPadding} hidden md:table-cell">認證</th>
-                                    <th class="${sc.thPadding} text-right">網絡優惠開價</th>
+                                    <th class="${sc.thPadding} hidden md:table-cell">認證車</th>
+                                    <th class="${sc.thPadding} text-right">網絡開價</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-100">
@@ -1313,56 +1269,47 @@
                         if (inspectStatus.type === 'due') {
                             inspectWarningBadge = `
                                 <span class="bg-amber-100 text-amber-800 border border-amber-200 px-2 py-0.5 rounded text-[10px] font-black animate-pulse inline-flex items-center gap-1 shadow-sm">
-                                    <i class="fa-solid fa-bell text-amber-600"></i> 本月需驗車 (${inspectStatus.targetMonth}月)
+                                    <i class="fa-solid fa-bell text-amber-600"></i> 本月驗車 (${inspectStatus.targetMonth}月)
                                 </span>
                             `;
                         } else if (inspectStatus.type === 'overdue') {
                             inspectWarningBadge = `
                                 <span class="bg-rose-100 text-rose-800 border border-rose-200 px-2.5 py-0.5 rounded text-[10px] font-black animate-pulse inline-flex items-center gap-1 shadow-sm">
-                                    <i class="fa-solid fa-triangle-exclamation text-rose-600"></i> ⚠️ 驗車過期警告 (${inspectStatus.targetMonth}月)
+                                    <i class="fa-solid fa-triangle-exclamation text-rose-600"></i> ⚠️ 驗車過期 (${inspectStatus.targetMonth}月)
                                 </span>
                             `;
                         } else if (inspectStatus.type === 'remind') {
                             inspectWarningBadge = `
                                 <span class="bg-blue-50 text-blue-800 border border-blue-150 px-2 py-0.5 rounded text-[10px] font-black inline-flex items-center gap-1 shadow-sm">
-                                    <i class="fa-solid fa-circle-info text-blue-600"></i> 提醒驗車 (下月${inspectStatus.targetMonth}月)
+                                    <i class="fa-solid fa-circle-info text-blue-600"></i> 提醒驗車 (${inspectStatus.targetMonth}月)
                                 </span>
                             `;
                         }
                     }
 
                     tableHtml += `
-                        <tr onclick="openModalByCode('${car["編碼"]}')" class="hover:bg-slate-50/80 cursor-pointer transition-colors ${isSold ? 'opacity-65 grayscale-[30%]' : ''} ${isReserved ? 'bg-amber-50/20' : ''}">
-                            <td class="${sc.tdPadding} font-bold text-slate-500 tracking-wider uppercase">${car["廠牌"] || '--'}</td>
+                        <tr onclick="openModalByCode('${car["編碼"]}')" class="hover:bg-slate-50/80 cursor-pointer transition-colors ${isSold ? 'opacity-65' : ''} ${isReserved ? 'bg-amber-50/10' : ''}">
+                            <td class="${sc.tdPadding} font-bold text-slate-500 uppercase">${car["廠牌"] || '--'}</td>
                             <td class="${sc.tdPadding}">
-                                <div class="flex flex-col gap-1.5 justify-center">
+                                <div class="flex flex-col gap-1">
                                     <div class="flex flex-wrap items-center gap-2">
                                         <span class="font-black ${isSold ? 'text-slate-400 line-through' : 'text-slate-900'}">${car["型號"] || '--'}</span>
                                         <span class="border px-1.5 py-0.5 rounded text-[9px] font-bold ${saleBadgeClass}">${car["售賣形式"] || '零售'}</span>
-                                        ${isSold ? `<span class="bg-red-50 text-red-600 border border-red-100 px-1.5 py-0.5 rounded text-[9px] font-bold">已售出 (${getOnlyDate(car["成交日期"])})</span>` : ''}
-                                        <span class="hidden md:inline">${inspectWarningBadge}</span>
+                                        ${isSold ? `<span class="bg-red-50 text-red-600 border border-red-100 px-1.5 py-0.5 rounded text-[9px] font-bold">已售出</span>` : ''}
                                     </div>
-                                    
                                     <div class="flex flex-wrap items-center gap-1.5 mt-0.5 md:hidden text-[10px]">
                                         <span class="text-slate-500 font-bold bg-slate-100 px-1 py-0.5 rounded">${car["年份"]} 年</span>
                                         <span class="text-slate-500 font-bold bg-slate-100 px-1 py-0.5 rounded">${formatMileage(car["里程"])}</span>
-                                        <span class="border px-1.5 py-0.5 rounded font-bold ${locBadgeClass}">${car["在庫位子"] || "展間"}</span>
+                                        <span class="border px-1 py-0.5 rounded font-bold ${locBadgeClass}">${car["在庫位子"] || "展間"}</span>
                                         <span class="px-1.5 py-0.5 rounded font-black badge-status-${car["販售狀態"] || '在庫'}">${car["販售狀態"] || '在庫'}</span>
-                                        ${isCert ? `
-                                            <span class="text-emerald-600 font-black text-[9px] border border-emerald-100 bg-emerald-50 px-1 rounded"><i class="fa-solid fa-shield-halved mr-0.5"></i>已認證</span>
-                                        ` : `
-                                            <span class="text-rose-500 font-bold text-[9px] border border-rose-100 bg-rose-50 px-1 rounded"><i class="fa-solid fa-circle-exclamation mr-0.5"></i>未認證</span>
-                                        `}
-                                        ${inspectWarningBadge ? `<div class="w-full mt-1">${inspectWarningBadge}</div>` : ''}
                                     </div>
                                 </div>
                             </td>
-                            
                             <td class="${sc.tdPadding} text-slate-600 font-bold hidden md:table-cell">${car["年份"] || '--'} 年</td>
                             <td class="${sc.tdPadding} text-slate-600 font-bold hidden md:table-cell">${formatMileage(car["里程"])}</td>
                             <td class="${sc.tdPadding} hidden md:table-cell">
-                                <span class="px-2.5 py-1 rounded-lg border text-[11px] font-bold inline-flex items-center gap-1 ${locBadgeClass}">
-                                    <i class="fa-solid fa-location-dot text-[9px]"></i> ${car["在庫位子"] || "展間"}
+                                <span class="px-2 py-1 rounded-lg border text-[11px] font-bold ${locBadgeClass}">
+                                    ${car["在庫位子"] || "展間"}
                                 </span>
                             </td>
                             <td class="${sc.tdPadding} hidden md:table-cell">
@@ -1396,7 +1343,7 @@
                 return;
             }
 
-            // --- 模式 2: 圖文卡片模式 ---
+            // --- 模式 2: 圖文卡片模式 (手機版上下置頂堆疊與功能修復) ---
             filtered.forEach((car, index) => {
                 const isSold = car["販售狀態"] === "售出";
                 const isReserved = car["販售狀態"] === "收訂" || car["販售狀態"] === "預訂";
@@ -1434,73 +1381,70 @@
 
                 row.innerHTML = `
                     ${isReserved ? `
-                        <div class="absolute top-0 inset-x-0 bg-gradient-to-r from-amber-500 via-rose-500 to-amber-500 text-white text-[9px] md:text-[11px] font-black py-0.5 md:py-1.5 px-4 text-center tracking-wider z-20 flex items-center justify-center gap-1.5">
+                        <div class="absolute top-0 inset-x-0 bg-gradient-to-r from-amber-500 via-rose-500 to-amber-500 text-white text-[9px] md:text-[11px] font-black py-0.5 md:py-1 px-4 text-center tracking-wider z-20 flex items-center justify-center gap-1.5">
                             <i class="fa-solid fa-circle-exclamation animate-pulse"></i>
-                            <span class="truncate">本車已被預訂/收訂保留！請勿重複銷售</span>
+                            <span class="truncate">本車已保留！請勿重複銷售</span>
                         </div>
                     ` : ''}
 
                     ${isSold ? `
-                        <div class="sold-stamp">
-                            
+                        <div class="sold-stamp" style="pointer-events: none;">
                             已售出
-                            <span class="text-[9px] md:text-[11px] font-black block mt-0.5 md:mt-1.5 tracking-widest text-red-600 bg-white/95 px-1.5 py-0.5 md:px-2.5 md:py-0.5 rounded border border-red-200">
+                            <span class="text-[9px] md:text-[11px] font-black block mt-0.5 md:mt-1 tracking-widest text-red-600 bg-white/95 px-1.5 py-0.5 rounded border border-red-200">
                                 ${getOnlyDate(car["成交日期"])}
                             </span>
                         </div>` : ''
                     }
                     
+                    <!-- 主要相片區 -->
                     <div class="img-box ${sc.imgWidth} ${sc.imgHeight} bg-slate-100 flex-shrink-0 relative overflow-hidden flex items-center justify-center">
                         <img src="${resolvedImageUrl}" 
                              onerror="handleImageError(this, ${index})" 
                              class="w-full h-full object-cover transition-transform duration-500 hover:scale-105" 
                              alt="${car["型號"]}">
                         
-                        <div class="absolute bottom-1 md:bottom-auto md:top-3 left-1 md:left-3 px-1 md:px-2.5 py-0.5 md:py-1 rounded text-[8px] md:text-[10px] font-black tracking-wide badge-status-${car["販售狀態"] || '在庫'} shadow-md z-10">
+                        <div class="absolute bottom-2 md:bottom-auto md:top-3 left-2 md:left-3 px-2 py-0.5 rounded text-[9px] md:text-[10px] font-black tracking-wide badge-status-${car["販售狀態"] || '在庫'} shadow-md z-10">
                             ${car["販售狀態"] || '在庫'}
                         </div>
 
                         ${cardInspectBadge}
 
                         ${isCert && !isSold ? `
-                            <div class="absolute bottom-1 md:bottom-3 right-1 md:right-3 bg-emerald-600 text-white text-[8px] md:text-[9px] font-black px-1 md:px-2 py-0.5 md:py-1 rounded shadow-xl flex items-center z-10">
-                                <i class="fa-solid fa-shield-halved mr-0.5 md:mr-1"></i>認證車
+                            <div class="absolute bottom-2 md:bottom-3 right-2 md:right-3 bg-emerald-600 text-white text-[9px] md:text-[9px] font-black px-2 py-0.5 rounded shadow-xl flex items-center z-10">
+                                <i class="fa-solid fa-shield-halved mr-1"></i>認證車
                             </div>
                         ` : ''}
                     </div>
 
+                    <!-- 內文資訊區 -->
                     <div class="flex-grow ${sc.contentPadding} flex flex-col justify-between bg-white min-w-0">
                         <div>
-                            <div class="flex items-center gap-2 mb-1 md:mb-2">
+                            <div class="flex items-center gap-2 mb-1">
                                 <span class="border px-1.5 py-0.5 rounded text-[8px] md:text-[10px] font-black tracking-wider uppercase ${saleBadgeClass}">${car["售賣形式"] || '零售'}</span>
                             </div>
                             
-                            <div class="flex items-center flex-wrap gap-1.5 md:gap-2.5 mb-2 md:mb-3.5">
-                                <span class="bg-slate-900 text-white ${sc.brandText} rounded uppercase tracking-wider flex-shrink-0 scale-90 md:scale-100 origin-left">${car["廠牌"] || '--'}</span>
+                            <div class="flex items-center flex-wrap gap-1.5 md:gap-2.5 mb-2 md:mb-3">
+                                <span class="bg-slate-900 text-white ${sc.brandText} rounded uppercase tracking-wider flex-shrink-0 scale-90 md:scale-100 origin-left font-black">${car["廠牌"] || '--'}</span>
                                 <h3 class="${sc.titleText} font-black text-slate-950 tracking-tight hover:text-emerald-600 transition-colors truncate min-w-0" title="${car["型號"] || '--'}">${car["型號"] || '--'}</h3>
                             </div>
 
                             <div class="flex flex-wrap ${sc.tagGap}">
                                 <span class="bg-slate-50 border border-slate-100 text-slate-600 ${sc.tagPadding} font-bold scale-95 md:scale-100 origin-left">${car["年份"]} 年份</span>
                                 <span class="bg-slate-50 border border-slate-100 text-slate-600 ${sc.tagPadding} font-bold scale-95 md:scale-100 origin-left">${formatMileage(car["里程"])}</span>
-                                <span class="border ${sc.tagPadding} font-bold flex items-center gap-0.5 md:gap-1 ${locBadgeClass} scale-95 md:scale-100 origin-left truncate max-w-[120px] md:max-w-none">
+                                <span class="border ${sc.tagPadding} font-bold flex items-center gap-0.5 ${locBadgeClass} scale-95 md:scale-100 origin-left truncate max-w-[120px] md:max-w-none">
                                     <i class="fa-solid fa-location-dot text-[8px] md:text-[10px]"></i> ${car["在庫位子"] || "展間"}
                                 </span>
                             </div>
                         </div>
-                        <div class="hidden md:flex mt-4 pt-4 border-t border-slate-100 items-center justify-between no-capture">
-                            <span class="text-xs text-slate-500 font-bold hover:text-emerald-600 transition-colors">
-                                查看車輛詳細資料與大圖相簿 <i class="fa-solid fa-arrow-right ml-1"></i>
-                            </span>
-                        </div>
                     </div>
 
+                    <!-- 手機端完美置底之價格欄 -->
                     <div class="price-box w-auto md:w-${sc.priceWidth} border-l-0 md:border-l border-slate-100 ${sc.pricePadding} flex flex-col justify-center items-end bg-transparent md:bg-slate-50/50 pr-2">
-                        <div class="text-right w-full">
-                            <p class="text-[8px] md:text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-0.5 md:mb-1">網路優惠價</p>
-                            <div class="flex items-end justify-end gap-0.5 md:gap-1">
+                        <div class="w-full flex flex-row md:flex-col justify-between md:justify-center items-center md:items-end gap-1">
+                            <p class="text-[9px] md:text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">網路優惠價</p>
+                            <div class="flex items-end justify-end gap-0.5">
                                 <span class="${sc.priceText} font-black text-rose-600 italic tracking-tighter">${car["開價"]}</span>
-                                <span class="text-[10px] md:text-sm font-black text-rose-600 mb-0.5 md:mb-1">萬</span>
+                                <span class="text-[10px] md:text-sm font-black text-rose-600 mb-0.5">萬</span>
                             </div>
                         </div>
                     </div>
@@ -1514,7 +1458,6 @@
             if (car) openModal(car);
         }
 
-        // 開啟詳情 Modal
         function openModal(car) {
             currentSelectedCar = car; 
             confidentialPricesVisible = false;
@@ -1539,7 +1482,6 @@
 
             document.getElementById('modal-remarks').innerText = car["備註"] || "目前暫無詳細車況描述。";
 
-            // 填入規格
             document.getElementById('spec-brand').innerText = car["廠牌"] || '--';
             document.getElementById('spec-model').innerText = car["型號"] || '--';
             document.getElementById('spec-plate').innerText = car["車號"] || '未載錄/未領牌';
@@ -1561,7 +1503,6 @@
             const buyDateStr = car["購入日期"] ? getOnlyDate(car["購入日期"]) : '--';
             document.getElementById('spec-buy-date').innerText = buyDateStr;
 
-            // 智慧驗車資訊動態呈現
             const specInspectEl = document.getElementById('spec-inspection');
             const inspectStatus = getInspectionStatus(car);
             
@@ -1618,7 +1559,6 @@
                 daysEl.innerText = "暫無採購數據";
             }
 
-            // 認證視覺效果
             const certBadge = document.getElementById('modal-cert-badge');
             const specCert = document.getElementById('spec-cert');
             const uncertifiedWarningBar = document.getElementById('modal-uncertified-warning-bar');
@@ -1656,7 +1596,6 @@
             statusBadge.className = `absolute bottom-4 right-4 px-3 py-1.5 rounded-lg text-xs font-black shadow-xl badge-status-${car["販售狀態"] || '在庫'}`;
             statusBadge.innerText = car["販售狀態"] || '在庫';
 
-            // 多圖相簿與燈箱輪播陣列建立
             const thumbsContainer = document.getElementById('modal-thumbnails-container');
             const thumbsDiv = document.getElementById('modal-thumbnails');
             thumbsDiv.innerHTML = '';
@@ -1668,7 +1607,6 @@
                 allPhotos.push(getDirectImageUrl(p));
             });
 
-            // 建立 Modal 主圖之點擊開啟輪播大圖
             document.getElementById('modal-img').onclick = () => {
                 const currentImgSrc = document.getElementById('modal-img').src;
                 const idx = allPhotos.indexOf(currentImgSrc);
@@ -1702,7 +1640,7 @@
             document.body.style.overflow = 'hidden';
         }
 
-        // --- 全螢幕 Lightbox 燈箱 2.0 (多圖輪播、鍵盤方向鍵切換、手勢滑動) ---
+        // --- 全螢幕 Lightbox 燈箱 2.0 (多圖輪播與手勢滑動) ---
         function openLightbox(index, photoArray) {
             if (!photoArray || photoArray.length === 0) return;
             lightboxImages = photoArray;
@@ -1713,7 +1651,6 @@
             const prevBtn = document.getElementById('lightbox-prev-btn');
             const nextBtn = document.getElementById('lightbox-next-btn');
 
-            // 雙向控制按鈕配置
             if (lightboxImages.length > 1) {
                 prevBtn.classList.remove('hidden');
                 nextBtn.classList.remove('hidden');
@@ -1733,7 +1670,7 @@
 
         function updateLightboxImage() {
             const lightboxImg = document.getElementById('lightbox-img');
-            lightboxImg.classList.add('opacity-0'); // 切換淡出動畫
+            lightboxImg.classList.add('opacity-0'); 
             setTimeout(() => {
                 lightboxImg.src = lightboxImages[currentLightboxIndex];
                 lightboxImg.classList.remove('opacity-0');
@@ -1741,21 +1678,20 @@
         }
 
         function nextLightboxImage(event) {
-            if (event) event.stopPropagation(); // 阻止事件氣泡，防止關閉燈箱
+            if (event) event.stopPropagation(); 
             if (lightboxImages.length <= 1) return;
             currentLightboxIndex = (currentLightboxIndex + 1) % lightboxImages.length;
             updateLightboxImage();
         }
 
         function prevLightboxImage(event) {
-            if (event) event.stopPropagation(); // 阻止事件氣泡，防止關閉燈箱
+            if (event) event.stopPropagation(); 
             if (lightboxImages.length <= 1) return;
             currentLightboxIndex = (currentLightboxIndex - 1 + lightboxImages.length) % lightboxImages.length;
             updateLightboxImage();
         }
 
         function closeLightbox(e) {
-            // 如果點選的是大圖本身、或是點選了左右方向切換按鈕，不進行關閉大圖動作
             if (e && (e.target.id === 'lightbox-img' || e.target.closest('#lightbox-prev-btn') || e.target.closest('#lightbox-next-btn'))) return;
             
             const lightbox = document.getElementById('lightbox-modal');
@@ -1770,9 +1706,7 @@
             }, 300);
         }
 
-        // 初始化鍵盤與滑動手勢
         function initLightboxGestures() {
-            // 1. 鍵盤事件監聽 (左右方向鍵、Escape 鍵)
             document.addEventListener('keydown', (e) => {
                 const lightbox = document.getElementById('lightbox-modal');
                 if (lightbox && !lightbox.classList.contains('hidden')) {
@@ -1786,7 +1720,6 @@
                 }
             });
 
-            // 2. 行動端觸控手勢滑動 (Swipe Left/Right)
             const lightboxModal = document.getElementById('lightbox-modal');
             lightboxModal.addEventListener('touchstart', (e) => {
                 touchStartX = e.changedTouches[0].screenX;
@@ -1799,14 +1732,12 @@
         }
 
         function handleSwipeGesture() {
-            const swipeThreshold = 50; // 定義滑動觸發閥值 (像素)
+            const swipeThreshold = 50; 
             if (lightboxImages.length <= 1) return;
 
             if (touchStartX - touchEndX > swipeThreshold) {
-                // 向左滑動 -> 顯示下一張
                 nextLightboxImage();
             } else if (touchEndX - touchStartX > swipeThreshold) {
-                // 向右滑動 -> 顯示上一張
                 prevLightboxImage();
             }
         }
@@ -1844,7 +1775,7 @@
         async function handleDownloadAll() {
             if (!currentSelectedCar) return;
             const car = currentSelectedCar;
-            const otherPhotos = parseOtherPhotos(car["其他照片"]); // 核心修復：正確指涉中文字欄位「其他照片」
+            const otherPhotos = parseOtherPhotos(car["其他照片"]); 
             
             const allPhotos = [];
             if (car["封面圖片"]) allPhotos.push(getDirectImageUrl(car["封面圖片"]));
@@ -1853,7 +1784,12 @@
             });
 
             if (allPhotos.length === 0) {
-                alert("此車輛未配置可供下載的相片連結");
+                Swal.fire({
+                    icon: 'warning',
+                    title: '未設定相片',
+                    text: '此車輛沒有可供下載的封面圖片或相簿照片。',
+                    confirmButtonColor: '#10b981'
+                });
                 return;
             }
 
@@ -1893,12 +1829,21 @@
 
             downloadBtn.innerHTML = originalText;
             downloadBtn.disabled = false;
+
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'success',
+                title: '照片一鍵下載已成功！',
+                showConfirmButton: false,
+                timer: 2000
+            });
         }
 
         function closeModal() {
             const modal = document.getElementById('detail-modal');
             const modalCard = document.getElementById('modal-card');
-            modalCard.classList.remove('scale-100', 'opacity-100'); // 核心修復：修正變數 cardModal -> 應為 modalCard
+            modalCard.classList.remove('scale-100', 'opacity-100'); 
             modalCard.classList.add('scale-95', 'opacity-0');
             modal.classList.remove('opacity-100');
             
