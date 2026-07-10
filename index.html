@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>線上車源表系統</title>
+    <title>在庫車輛車源表系統</title>
     
     <!-- ========================================== -->
     <!-- 🌟 網頁自訂 LOGO 小圖標 (Favicon) 設定區 🌟 -->
@@ -26,7 +26,7 @@
     <meta name="apple-mobile-web-app-title" content="線上車源表">
     <!-- 4. 設定 iPhone 主畫面 App 專用精美圖標 (Apple Touch Icon) -->
     <!-- 同樣使用相對路徑與 ?v=1 快取破除技術，確保圖標能即時更新 -->
-    <link rel="apple-touch-icon" href="./logo.png?v=1">
+    <link class="apple-touch-icon" href="./logo.png?v=1">
     <!-- ========================================== -->
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -273,7 +273,7 @@
                     </div>
                     <div>
                         <h1 class="text-xl md:text-2xl font-black text-slate-850 tracking-tighter">在庫車輛 <span class="text-emerald-600">車源總表</span></h1>
-                        <p class="text-[10px] text-slate-400 font-bold tracking-wider mt-0.5 uppercase"> v5.42</p>
+                        <p class="text-[10px] text-slate-400 font-bold tracking-wider mt-0.5 uppercase">v5.42</p>
                     </div>
                 </div>
                 <div class="flex gap-2 w-full md:w-auto">
@@ -316,7 +316,7 @@
                 <!-- 搜尋框 -->
                 <div class="col-span-2 relative">
                     <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                    <input type="text" id="search-bar" oninput="render()" placeholder="搜尋品牌、型號、規格、配備..." class="w-full bg-slate-50 text-slate-800 placeholder-slate-400 border border-slate-200 rounded-xl pl-8 pr-3 py-1.5 outline-none focus:ring-2 focus:ring-emerald-500 transition-all font-bold">
+                    <input type="text" id="search-bar" oninput="render()" placeholder="搜尋 brand、型號、規格、配備..." class="w-full bg-slate-50 text-slate-800 placeholder-slate-400 border border-slate-200 rounded-xl pl-8 pr-3 py-1.5 outline-none focus:ring-2 focus:ring-emerald-500 transition-all font-bold">
                 </div>
                 <!-- 汽車廠牌快選 -->
                 <select id="filter-brand" onchange="render()" class="bg-slate-50 text-slate-700 border border-slate-200 rounded-xl px-2 py-1.5 font-bold outline-none focus:ring-2 focus:ring-emerald-500 transition-all cursor-pointer">
@@ -330,6 +330,7 @@
                 <select id="filter-sale" onchange="render()" class="bg-slate-50 text-slate-700 border border-slate-200 rounded-xl px-2 py-1.5 font-bold outline-none focus:ring-2 focus:ring-emerald-500 transition-all cursor-pointer">
                     <option value="">所有售賣形式</option>
                     <option value="零售">零售</option>
+                    <option value="盤兵">盤兵</option>
                     <option value="寄賣">寄賣</option>
                 </select>
                 <!-- 版面大小調節 -->
@@ -577,7 +578,7 @@
 
     <!-- 頁尾 -->
     <footer class="mt-auto py-6 text-center text-xs text-slate-400 no-capture">
-        <p>© 姜駒車業 Outstanding Garage. All Rights Reserved. 整合系統 v5.42</p>
+        <p>© 姜駒車業 . All Rights Reserved. 整合系統 v5.42</p>
     </footer>
 
     <script>
@@ -889,6 +890,7 @@
             }
         }
 
+        // 本地 Mock 資料庫
         function loadMockData() {
             const today = currentSystemDate;
             const todayStr = `${today.getFullYear()}/${String(today.getMonth() + 1).padStart(2, '0')}/${String(today.getDate()).padStart(2, '0')}`;
@@ -974,7 +976,7 @@
                 },
                 {
                     "編碼": "CONFIG_BULLETIN",
-                    "備註": "📣 全場公告：看到此通知請重新登入系統！此為網路同步失敗情況顯示"
+                    "備註": "📣 全場公告：看到此通知請重新登入網頁，此為資料庫抓取失敗的示範網頁！"
                 }
             ];
             updateDashboard();
@@ -1858,10 +1860,87 @@
             }
         }
 
-        async function handleDownloadAll() {
+        // 💻 電腦版專屬：全自動依序下載全部照片 (精準安全延時，繞過瀏覽器限制)
+        async function downloadAllDesktopPhotos() {
             if (!currentSelectedCar) return;
             const car = currentSelectedCar;
             const otherPhotos = parseOtherPhotos(car["其他照片"]); 
+            
+            const allPhotos = [];
+            if (car["封面圖片"]) allPhotos.push(getDirectImageUrl(car["封面圖片"]));
+            otherPhotos.forEach(p => {
+                allPhotos.push(getDirectImageUrl(p));
+            });
+
+            const btn = document.getElementById('btn-desktop-download-all');
+            if (!btn) return;
+
+            const originalHTML = btn.innerHTML;
+            btn.disabled = true;
+
+            // 建立 SweetAlert 提示浮窗
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timerProgressBar: true,
+                timer: 3000
+            });
+
+            for (let i = 0; i < allPhotos.length; i++) {
+                const imageUrl = allPhotos[i];
+                const cleanedBrand = String(car["廠牌"]).replace(/[^a-zA-Z0-9\u4e00-\u9fa5]/g, "_");
+                const cleanedModel = String(car["型號"]).replace(/[^a-zA-Z0-9\u4e00-\u9fa5]/g, "_");
+                const vehicleYear = car["年份"] || "0000";
+                const fileName = `${cleanedBrand}_${cleanedModel}_${vehicleYear}_照片_${i + 1}.jpg`;
+
+                // 動態更新按鈕文字顯示進度
+                btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> 下載中 (${i + 1}/${allPhotos.length})`;
+
+                try {
+                    const response = await fetch(imageUrl, { mode: 'cors' });
+                    if (!response.ok) throw new Error("Network error or CORS issue");
+                    
+                    const blob = await response.blob();
+                    const objectUrl = URL.createObjectURL(blob);
+                    
+                    const anchor = document.createElement('a');
+                    anchor.href = objectUrl;
+                    anchor.download = fileName;
+                    document.body.appendChild(anchor);
+                    anchor.click();
+                    document.body.removeChild(anchor);
+                    
+                    URL.revokeObjectURL(objectUrl);
+                    
+                    // 關鍵安全延時：防止瀏覽器垃圾下載防護阻擋多圖排程
+                    await new Promise(resolve => setTimeout(resolve, 400));
+                } catch (error) {
+                    console.warn(`遭遇跨域或網路限制，正在嘗試以新分頁下載：${imageUrl}`);
+                    window.open(imageUrl, '_blank');
+                }
+            }
+
+            btn.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-300"></i> 下載成功！`;
+            btn.className = btn.className.replace('bg-emerald-600 hover:bg-emerald-500', 'bg-blue-600 hover:bg-blue-500');
+
+            Toast.fire({
+                icon: 'success',
+                title: '照片已全自動下載完成！'
+            });
+
+            setTimeout(() => {
+                btn.innerHTML = originalHTML;
+                btn.className = btn.className.replace('bg-blue-600 hover:bg-blue-500', 'bg-emerald-600 hover:bg-emerald-500');
+                btn.disabled = false;
+            }, 3000);
+        }
+
+        // 🌟 全平台重構：智慧照片保存與引導中心
+        async function handleDownloadAll() {
+            if (!currentSelectedCar) return;
+            const car = currentSelectedCar;
+            const otherPhotos = parseOtherPhotos(car["other照片"] || car["其他照片"]); 
             
             const allPhotos = [];
             if (car["封面圖片"]) allPhotos.push(getDirectImageUrl(car["封面圖片"]));
@@ -1879,51 +1958,170 @@
                 return;
             }
 
-            const downloadBtn = document.getElementById('btn-download-photos');
-            const originalText = downloadBtn.innerHTML;
-            downloadBtn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> 照片下載中...`;
-            downloadBtn.disabled = true;
+            // 📱 偵測是否為行動裝置
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-            for (let i = 0; i < allPhotos.length; i++) {
-                const imageUrl = allPhotos[i];
+            // 動態產生電腦端一鍵自動批次下載快捷列
+            let desktopShortcutHtml = "";
+            if (!isMobile) {
+                desktopShortcutHtml = `
+                    <!-- 💻 電腦版專屬：一鍵批次全自動下載面板 -->
+                    <div class="bg-emerald-50/70 border border-emerald-200 rounded-2xl p-4 flex flex-col sm:flex-row justify-between items-center gap-3 shadow-inner">
+                        <div class="text-center sm:text-left">
+                            <h4 class="font-black text-emerald-800 text-xs sm:text-sm flex items-center justify-center sm:justify-start gap-1.5">
+                                <i class="fa-solid fa-laptop text-emerald-600"></i> 偵測到電腦端瀏覽器
+                            </h4>
+                            <p class="text-[11px] text-emerald-600 font-bold mt-1">
+                                點擊右側按鈕，系統將自動依序為您批次下載此車輛的全部原圖照片。
+                            </p>
+                        </div>
+                        <button id="btn-desktop-download-all" onclick="downloadAllDesktopPhotos()" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black py-2.5 px-4.5 rounded-xl transition-all shadow-md active:scale-95 flex items-center justify-center gap-1.5 whitespace-nowrap">
+                            <i class="fa-solid fa-download"></i> 一鍵自動下載全部照片
+                        </button>
+                    </div>
+                `;
+            }
+
+            // 建立高奢感、直覺且防錯的「相片下載與儲存中心」彈窗 HTML
+            let photosHtml = `
+                <div class="text-left space-y-4">
+                    
+                    ${desktopShortcutHtml}
+
+                    <!-- 智慧保存指南看板 -->
+                    <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-3 shadow-inner">
+                        <h4 class="font-black text-slate-800 text-xs flex items-center gap-1.5 border-b border-slate-200 pb-2">
+                            <i class="fa-solid fa-circle-question text-emerald-600"></i> 如何將相片順利儲存至手機「相簿」？
+                        </h4>
+                        
+                        <!-- 手機端最保險的存相簿指南 -->
+                        <div class="space-y-1">
+                            <p class="text-xs font-black text-emerald-600 flex items-center gap-1.5">
+                                <i class="fa-solid fa-mobile-screen-button"></i> 智慧型手機 / 平板端（iOS & Android）：
+                            </p>
+                            <p class="text-[11px] text-slate-600 leading-relaxed pl-5 font-bold">
+                                請直接<span class="text-emerald-600 font-extrabold underline">「長按」</span>下方任何一張相片，在彈出選單中選擇<span class="text-emerald-600 font-extrabold">「儲存影像」</span>（iOS）或<span class="text-emerald-600 font-extrabold">「下載圖片」</span>（Android）。
+                                <br><span class="text-rose-500 font-extrabold">⚠️ 注意：這是唯一能保證相片 100% 直接寫入手機「原生相簿」的系統方法！</span>
+                            </p>
+                        </div>
+                        
+                        <!-- 電腦端防阻擋指南 -->
+                        <div class="space-y-1">
+                            <p class="text-xs font-black text-slate-700 flex items-center gap-1.5">
+                                <i class="fa-solid fa-desktop"></i> 電腦網頁端：
+                            </p>
+                            <p class="text-[11px] text-slate-600 leading-relaxed pl-5 font-bold">
+                                您可以使用上方的<span class="text-emerald-600 font-bold">「一鍵自動下載」</span>，或是點擊下方相片旁邊的<span class="text-slate-800 underline">「安全下載原圖」</span>進行單張手動存檔。
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- 相片原圖列表 -->
+                    <div class="grid grid-cols-1 gap-3.5 max-h-[45vh] overflow-y-auto pr-1.5">
+            `;
+            
+            allPhotos.forEach((photoUrl, pIdx) => {
                 const cleanedBrand = String(car["廠牌"]).replace(/[^a-zA-Z0-9\u4e00-\u9fa5]/g, "_");
                 const cleanedModel = String(car["型號"]).replace(/[^a-zA-Z0-9\u4e00-\u9fa5]/g, "_");
                 const vehicleYear = car["年份"] || "0000";
-                const fileName = `${cleanedBrand}_${cleanedModel}_${vehicleYear}_照片_${i + 1}.jpg`;
+                const fileName = `${cleanedBrand}_${cleanedModel}_${vehicleYear}_照片_${pIdx + 1}.jpg`;
 
-                try {
-                    const response = await fetch(imageUrl, { mode: 'cors' });
-                    if (!response.ok) throw new Error("CORS or network error");
-                    
-                    const blob = await response.blob();
-                    const objectUrl = URL.createObjectURL(blob);
-                    
-                    const anchor = document.createElement('a');
-                    anchor.href = objectUrl;
-                    anchor.download = fileName;
-                    document.body.appendChild(anchor);
-                    anchor.click();
-                    document.body.removeChild(anchor);
-                    
-                    URL.revokeObjectURL(objectUrl);
-                    await new Promise(resolve => setTimeout(resolve, 350));
-                } catch (error) {
-                    console.warn(`跨域限制，新分頁開啟下載：${imageUrl}`);
-                    window.open(imageUrl, '_blank');
-                }
-            }
-
-            downloadBtn.innerHTML = originalText;
-            downloadBtn.disabled = false;
-
-            Swal.fire({
-                toast: true,
-                position: 'top-end',
-                icon: 'success',
-                title: '照片一鍵下載已成功！',
-                showConfirmButton: false,
-                timer: 2000
+                photosHtml += `
+                    <div class="bg-white rounded-2xl p-3 border border-slate-150 shadow-sm flex flex-col sm:flex-row gap-3 items-center">
+                        <!-- 相片縮圖 (供使用者長按) -->
+                        <div class="w-full sm:w-36 h-24 rounded-xl overflow-hidden border border-slate-200 flex-shrink-0 relative group">
+                            <img src="${photoUrl}" class="w-full h-full object-cover active:scale-95 transition-transform" onerror="this.src='${placeholderImages[pIdx % placeholderImages.length]}'">
+                            <span class="absolute top-1.5 left-1.5 bg-slate-900/85 text-white text-[9px] font-black px-2 py-0.5 rounded shadow-md">圖 ${pIdx + 1}</span>
+                        </div>
+                        
+                        <!-- 控制與引導按鈕 -->
+                        <div class="w-full flex-grow flex flex-col md:flex-row justify-between items-center gap-2">
+                            <div class="text-center sm:text-left min-w-0">
+                                <p class="text-[9px] text-slate-400 font-bold uppercase tracking-wider mb-0.5">預計保存檔名</p>
+                                <p class="text-xs font-black text-slate-700 truncate max-w-[200px]" title="${fileName}">${fileName}</p>
+                            </div>
+                            <div class="flex flex-col xs:flex-row gap-2 w-full md:w-auto">
+                                <!-- 手機長按儲存提示標籤 -->
+                                <span class="bg-emerald-50 text-emerald-700 text-[10px] font-black px-2.5 py-2 rounded-xl border border-emerald-100 flex items-center justify-center gap-1 shadow-sm select-none">
+                                    <i class="fa-solid fa-fingerprint"></i> 手機長按此圖儲存
+                                </span>
+                                <!-- 電腦/單張儲存按鈕 -->
+                                <button onclick="downloadSinglePhoto('${photoUrl}', '${fileName}', this)" class="bg-slate-900 hover:bg-slate-800 text-white text-xs font-black px-3.5 py-2 rounded-xl transition-all shadow active:scale-95 flex items-center justify-center gap-1">
+                                    <i class="fa-solid fa-circle-arrow-down text-emerald-500"></i> 安全下載原圖
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
             });
+
+            photosHtml += `
+                    </div>
+                </div>
+            `;
+
+            // 使用 SweetAlert 喚醒相片中心
+            Swal.fire({
+                title: '<span class="text-slate-950 font-black text-base md:text-lg flex items-center justify-center gap-2"><i class="fa-solid fa-photo-film text-emerald-600 animate-pulse"></i> 卓越車庫 - 相片下載與保存中心</span>',
+                html: photosHtml,
+                showConfirmButton: true,
+                confirmButtonText: '已完成保存並關閉大廳 🚀',
+                confirmButtonColor: '#10b981',
+                customClass: {
+                    popup: 'rounded-[28px] border border-slate-200 shadow-2xl p-6 max-w-[640px] w-full bg-white',
+                    title: 'font-black tracking-tight border-b border-slate-150 pb-3.5',
+                    confirmButton: 'font-black px-6 py-3.5 rounded-2xl text-sm w-full shadow-lg shadow-emerald-100 mt-2'
+                }
+            });
+        }
+
+        // 安全單張下載控制包裝（徹底擺脫 CORS 跨網域阻擋與多重詢問）
+        async function downloadSinglePhoto(url, filename, buttonEl) {
+            const originalText = buttonEl.innerHTML;
+            buttonEl.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> 下載中`;
+            buttonEl.disabled = true;
+
+            try {
+                const response = await fetch(url, { mode: 'cors' });
+                if (!response.ok) throw new Error("CORS or network error");
+                
+                const blob = await response.blob();
+                const objectUrl = URL.createObjectURL(blob);
+                
+                const anchor = document.createElement('a');
+                anchor.href = objectUrl;
+                anchor.download = filename;
+                document.body.appendChild(anchor);
+                anchor.click();
+                document.body.removeChild(anchor);
+                
+                URL.revokeObjectURL(objectUrl);
+                
+                buttonEl.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500"></i> 下載成功`;
+                buttonEl.className = buttonEl.className.replace('bg-slate-900', 'bg-emerald-50 text-emerald-800 border border-emerald-200');
+                
+                setTimeout(() => {
+                    buttonEl.innerHTML = originalText;
+                    buttonEl.className = buttonEl.className.replace('bg-emerald-50 text-emerald-800 border border-emerald-200', 'bg-slate-900');
+                    buttonEl.disabled = false;
+                }, 2000);
+
+            } catch (error) {
+                // 如果遭遇 CDN 跨域阻擋或手機內核限制，直接在新分頁開啟高畫質圖片，引導用戶最純粹地右鍵存檔
+                console.warn(`跨域限制，正在新視窗開啟原圖：${url}`);
+                window.open(url, '_blank');
+                buttonEl.innerHTML = originalText;
+                buttonEl.disabled = false;
+                
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'info',
+                    title: '已在新視窗開啟高畫質相片，請直接長按或按右鍵另存即可！',
+                    showConfirmButton: false,
+                    timer: 4500
+                });
+            }
         }
 
         function closeModal() {
