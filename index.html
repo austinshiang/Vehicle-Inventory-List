@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>在庫車輛車源表系統</title>
+    <title>線上庫存車輛車源表系統</title>
     
     <!-- ========================================== -->
     <!-- 🍎 iOS / iPhone Safari 專屬 APP 模式設定 🍎 -->
@@ -261,6 +261,16 @@
             display: none;
         }
 
+        /* 密碼錯誤抖動動畫 */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-10px); }
+            40%, 80% { transform: translateX(10px); }
+        }
+        .error-shake {
+            animation: shake 0.4s ease-in-out;
+        }
+
         /* 手機端排版優化：圖片佔滿上方寬度，資訊向下堆疊 */
         @media (max-width: 768px) { 
             .car-row { 
@@ -293,6 +303,74 @@
 </head>
 <body class="min-h-screen flex flex-col pb-12">
 
+    <!-- ========================================== -->
+    <!-- 🔐 奢華安全門禁認證解鎖層 (全平面無縫蓋板) 🔐 -->
+    <!-- ========================================== -->
+    <div id="lock-screen" class="fixed inset-0 z-[100] bg-slate-950 flex flex-col items-center justify-center p-6 transition-all duration-500 overflow-y-auto">
+        <!-- 豪華跑車儀表風格背景裝飾 -->
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-emerald-950/40 via-slate-950 to-slate-950 pointer-events-none z-0"></div>
+        
+        <div class="max-w-md w-full text-center space-y-6 relative z-10 my-auto">
+            <!-- 品牌徽標 -->
+            <div class="mx-auto bg-gradient-to-br from-emerald-500 to-teal-600 w-16 h-16 rounded-3xl text-white shadow-xl flex items-center justify-center transform hover:rotate-12 transition-transform duration-300">
+                <i class="fa-solid fa-key-skeleton text-2xl"></i>
+            </div>
+            
+            <!-- 認證主文字 -->
+            <div class="space-y-1">
+                <h2 class="text-xl md:text-2xl font-black text-white tracking-wider">認證中心</h2>
+                <p id="lock-status" class="text-xs text-emerald-500 font-bold tracking-widest flex items-center justify-center gap-1.5 uppercase">
+                    <i class="fa-solid fa-spinner animate-spin"></i> 正在安全連線試算表...
+                </p>
+            </div>
+
+            <!-- 密碼點陣顯示窗 -->
+            <div id="passcode-dots-wrapper" class="bg-slate-900/80 border border-slate-800 rounded-2xl px-5 py-4 flex flex-col items-center justify-center gap-2 shadow-inner">
+                <div class="flex space-x-3.5 h-6 items-center">
+                    <!-- 安全輸入隱藏圓點 -->
+                    <div class="dot w-3.5 h-3.5 rounded-full bg-slate-800 transition-all duration-150"></div>
+                    <div class="dot w-3.5 h-3.5 rounded-full bg-slate-800 transition-all duration-150"></div>
+                    <div class="dot w-3.5 h-3.5 rounded-full bg-slate-800 transition-all duration-150"></div>
+                    <div class="dot w-3.5 h-3.5 rounded-full bg-slate-800 transition-all duration-150"></div>
+                    <div class="dot w-3.5 h-3.5 rounded-full bg-slate-800 transition-all duration-150"></div>
+                    <div class="dot w-3.5 h-3.5 rounded-full bg-slate-800 transition-all duration-150"></div>
+                </div>
+                <!-- 虛擬隱藏輸入欄 (支援桌機端直接實體鍵盤敲字) -->
+                <input type="password" id="hidden-passcode-input" maxlength="12" class="opacity-0 w-0 h-0 absolute" autofocus>
+            </div>
+
+            <!-- 📱 高級觸控數字鍵盤 (極速快點與防錯) -->
+            <div class="grid grid-cols-3 gap-3 max-w-[280px] mx-auto select-none">
+                <button onclick="pressKey('1')" class="bg-slate-900/60 hover:bg-slate-800/80 active:bg-emerald-600 text-white font-black text-lg py-4 rounded-2xl border border-slate-800/60 active:border-emerald-500 shadow transition-all">1</button>
+                <button onclick="pressKey('2')" class="bg-slate-900/60 hover:bg-slate-800/80 active:bg-emerald-600 text-white font-black text-lg py-4 rounded-2xl border border-slate-800/60 active:border-emerald-500 shadow transition-all">2</button>
+                <button onclick="pressKey('3')" class="bg-slate-900/60 hover:bg-slate-800/80 active:bg-emerald-600 text-white font-black text-lg py-4 rounded-2xl border border-slate-800/60 active:border-emerald-500 shadow transition-all">3</button>
+                
+                <button onclick="pressKey('4')" class="bg-slate-900/60 hover:bg-slate-800/80 active:bg-emerald-600 text-white font-black text-lg py-4 rounded-2xl border border-slate-800/60 active:border-emerald-500 shadow transition-all">4</button>
+                <button onclick="pressKey('5')" class="bg-slate-900/60 hover:bg-slate-800/80 active:bg-emerald-600 text-white font-black text-lg py-4 rounded-2xl border border-slate-800/60 active:border-emerald-500 shadow transition-all">5</button>
+                <button onclick="pressKey('6')" class="bg-slate-900/60 hover:bg-slate-800/80 active:bg-emerald-600 text-white font-black text-lg py-4 rounded-2xl border border-slate-800/60 active:border-emerald-500 shadow transition-all">6</button>
+                
+                <button onclick="pressKey('7')" class="bg-slate-900/60 hover:bg-slate-800/80 active:bg-emerald-600 text-white font-black text-lg py-4 rounded-2xl border border-slate-800/60 active:border-emerald-500 shadow transition-all">7</button>
+                <button onclick="pressKey('8')" class="bg-slate-900/60 hover:bg-slate-800/80 active:bg-emerald-600 text-white font-black text-lg py-4 rounded-2xl border border-slate-800/60 active:border-emerald-500 shadow transition-all">8</button>
+                <button onclick="pressKey('9')" class="bg-slate-900/60 hover:bg-slate-800/80 active:bg-emerald-600 text-white font-black text-lg py-4 rounded-2xl border border-slate-800/60 active:border-emerald-500 shadow transition-all">9</button>
+                
+                <!-- 清除/退格按鈕 -->
+                <button onclick="pressKey('CLEAR')" class="bg-slate-950 hover:bg-slate-900 active:bg-rose-950 text-slate-400 hover:text-rose-400 font-bold text-sm py-4 rounded-2xl border border-slate-900 shadow transition-all flex items-center justify-center">
+                    <i class="fa-solid fa-delete-left text-lg"></i>
+                </button>
+                <button onclick="pressKey('0')" class="bg-slate-900/60 hover:bg-slate-800/80 active:bg-emerald-600 text-white font-black text-lg py-4 rounded-2xl border border-slate-800/60 active:border-emerald-500 shadow transition-all">0</button>
+                <!-- 驗證/OK按鈕 -->
+                <button id="btn-submit-passcode" onclick="submitPasscode()" class="bg-emerald-600 hover:bg-emerald-500 active:bg-teal-600 text-white font-black text-sm py-4 rounded-2xl border border-emerald-500 shadow transition-all flex items-center justify-center">
+                    解鎖
+                </button>
+            </div>
+
+            <!-- 快選/說明標籤 -->
+            <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest pt-2">
+                僅供業務與內部授權夥伴限閱
+            </p>
+        </div>
+    </div>
+
     <!-- 浮水印 (自動載入專屬圖片) -->
     <div id="watermark-bg" class="hidden"><img id="watermark-img" src="https://images.1111.com.tw/oad/117197616.jpg" alt="浮水印"></div>
     
@@ -308,8 +386,8 @@
                         <i class="fa-solid fa-car-rear text-xl"></i>
                     </div>
                     <div>
-                        <h1 class="text-xl md:text-2xl font-black text-slate-850 tracking-tighter">在庫車輛 <span class="text-emerald-600">車源總表</span></h1>
-                        <p class="text-[10px] text-slate-400 font-bold tracking-wider mt-0.5 uppercase">Premium v5.42</p>
+                        <h1 class="text-xl md:text-2xl font-black text-slate-850 tracking-tighter">庫存車輛 <span class="text-emerald-600">車源總表</span></h1>
+                        <p class="text-[10px] text-slate-400 font-bold tracking-wider mt-0.5 uppercase"> v5.42</p>
                     </div>
                 </div>
                 <div class="flex gap-2 w-full md:w-auto">
@@ -623,6 +701,12 @@
         let isListView = false; 
         let confidentialPricesVisible = false; 
         let currentScale = 'normal'; 
+        
+        // ==========================================
+        // 🔐 門禁系統密碼狀態管理 🔐
+        // ==========================================
+        let correctPasscode = "8888"; // 預設密碼 (若連線失敗或試算表尚未設定時作為 Fallback)
+        let typedPasscode = "";       // 使用者當前輸入的暫存密碼
 
         // 全螢幕燈箱大圖與滑動變數
         let lightboxImages = [];
@@ -882,6 +966,7 @@
         }
 
         window.onload = () => {
+            initLockScreen();
             init();
             initLightboxGestures();
         };
@@ -911,13 +996,28 @@
             try {
                 const res = await fetch(apiUrl);
                 cars = await res.json();
+                
+                // 動態在 Google Sheet 陣列中尋找並套用密碼設定
+                const passwordConfig = cars.find(c => c["編碼"] === "CONFIG_PASSWORD" || c["編碼"] === "CONFIG_PASSCODE");
+                if (passwordConfig) {
+                    const foundPassword = String(passwordConfig["備註"] || passwordConfig["型號"] || "").trim();
+                    if (foundPassword !== "") {
+                        correctPasscode = foundPassword;
+                        console.log("試算表密碼同步成功！");
+                    }
+                }
+
                 updateDashboard();
                 populateFilters();
                 render();
+                
+                // 完成資料載入與解密設定，更改密碼鎖頁面狀態
+                document.getElementById('lock-status').innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500"></i> 安全防護系統已準備就緒`;
                 checkTodayUpdates();
             } catch (e) { 
-                console.warn("API 連線異常，啟用測試 Demo 數據模式：", e);
+                console.warn("API 連線異常，啟用測試 Demo 數據模式與預設密碼 8888：", e);
                 loadMockData(); 
+                document.getElementById('lock-status').innerHTML = `<i class="fa-solid fa-triangle-exclamation text-amber-500"></i> 本地備份模式 (預設密碼: 8888)`;
                 checkTodayUpdates();
             }
         }
@@ -927,6 +1027,10 @@
             const todayStr = `${today.getFullYear()}/${String(today.getMonth() + 1).padStart(2, '0')}/${String(today.getDate()).padStart(2, '0')}`;
 
             cars = [
+                {
+                    "編碼": "CONFIG_PASSWORD",
+                    "備註": "8888" // 本地 Mock 密碼數據，供 offline 或調試使用
+                },
                 {
                     "編碼": "CAR-001",
                     "廠牌": "Mercedes-Benz",
@@ -1007,32 +1111,144 @@
                 },
                 {
                     "編碼": "CONFIG_BULLETIN",
-                    "備註": "📣 全場公告：看見此通知請重新載入網頁，此為資料庫抓取失敗的範例網頁！"
+                    "備註": "📣 全場公告：看到此通知請重新登入網頁，此為資料庫抓取失敗的示範頁面！"
                 }
             ];
+            
+            const passwordConfig = cars.find(c => c["編碼"] === "CONFIG_PASSWORD" || c["編碼"] === "CONFIG_PASSCODE");
+            if (passwordConfig) {
+                correctPasscode = String(passwordConfig["備註"] || "8888").trim();
+            }
+
             updateDashboard();
             populateFilters();
             render();
         }
 
+        // ==========================================
+        // 🔐 門禁解鎖邏輯控制器 🔐
+        // ==========================================
+        function initLockScreen() {
+            const isUnlocked = sessionStorage.getItem('garage_unlocked') === 'true';
+            const lockScreen = document.getElementById('lock-screen');
+            const hiddenInput = document.getElementById('hidden-passcode-input');
+
+            if (isUnlocked) {
+                lockScreen.classList.add('hidden', 'opacity-0');
+                document.body.style.overflow = '';
+            } else {
+                lockScreen.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+                
+                // 行動裝置與桌機點擊背景，自動聚焦隱藏輸入框以便鍵盤打字
+                document.getElementById('lock-screen').onclick = () => {
+                    hiddenInput.focus();
+                };
+                
+                hiddenInput.focus();
+
+                // 綁定桌機鍵盤敲字事件
+                hiddenInput.oninput = (e) => {
+                    typedPasscode = e.target.value;
+                    updatePasscodeDots();
+                };
+
+                hiddenInput.onkeydown = (e) => {
+                    if (e.key === 'Enter') {
+                        submitPasscode();
+                    }
+                };
+            }
+        }
+
+        // 點擊觸控數字鍵盤
+        function pressKey(key) {
+            const hiddenInput = document.getElementById('hidden-passcode-input');
+            
+            if (key === 'CLEAR') {
+                typedPasscode = typedPasscode.slice(0, -1);
+            } else {
+                if (typedPasscode.length < 12) {
+                    typedPasscode += key;
+                }
+            }
+            
+            hiddenInput.value = typedPasscode;
+            updatePasscodeDots();
+        }
+
+        // 更新圓點點陣狀態
+        function updatePasscodeDots() {
+            const dots = document.querySelectorAll('#passcode-dots-wrapper .dot');
+            dots.forEach((dot, index) => {
+                if (index < typedPasscode.length) {
+                    dot.classList.remove('bg-slate-800');
+                    dot.classList.add('bg-emerald-500', 'scale-110', 'shadow-[0_0_8px_rgba(16,185,129,0.5)]');
+                } else {
+                    dot.classList.remove('bg-emerald-500', 'scale-110', 'shadow-[0_0_8px_rgba(16,185,129,0.5)]');
+                    dot.classList.add('bg-slate-800');
+                }
+            });
+        }
+
+        // 送出密碼認證
+        function submitPasscode() {
+            const lockScreen = document.getElementById('lock-screen');
+            const dotsWrapper = document.getElementById('passcode-dots-wrapper');
+            const hiddenInput = document.getElementById('hidden-passcode-input');
+            const lockStatus = document.getElementById('lock-status');
+
+            if (typedPasscode === correctPasscode) {
+                // 解鎖成功：寫入快取，淡出鎖定層
+                sessionStorage.setItem('garage_unlocked', 'true');
+                
+                lockStatus.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500"></i> 驗證成功！正在為您開啟展間`;
+                dotsWrapper.classList.add('border-emerald-500', 'bg-emerald-950/20');
+
+                setTimeout(() => {
+                    lockScreen.classList.add('opacity-0');
+                    document.body.style.overflow = '';
+                    setTimeout(() => {
+                        lockScreen.classList.add('hidden');
+                    }, 500);
+                }, 400);
+
+            } else {
+                // 解鎖失敗：觸發紅框抖動、清理密碼
+                lockStatus.innerHTML = `<i class="fa-solid fa-circle-exclamation text-rose-500"></i> 密碼錯誤，請重新輸入`;
+                dotsWrapper.classList.add('error-shake', 'border-rose-500', 'bg-rose-950/20');
+                
+                // 播放震動或提示音，若支援 Web Vibration API
+                if (navigator.vibrate) navigator.vibrate(200);
+
+                setTimeout(() => {
+                    dotsWrapper.classList.remove('error-shake', 'border-rose-500', 'bg-rose-950/20');
+                    typedPasscode = "";
+                    hiddenInput.value = "";
+                    updatePasscodeDots();
+                }, 500);
+            }
+        }
+
         function checkTodayUpdates() {
+            // 原有的今日庫存更新通知
             const today = currentSystemDate;
             const todayStr = `${today.getFullYear()}/${String(today.getMonth() + 1).padStart(2, '0')}/${String(today.getDate()).padStart(2, '0')}`;
 
             const newArrivals = cars.filter(car => {
-                if (car["編碼"] === "CONFIG_LOGO" || car["編碼"] === "CONFIG_BULLETIN" || !car["購入日期"]) return false;
+                if (car["編碼"] === "CONFIG_LOGO" || car["編碼"] === "CONFIG_BULLETIN" || car["編碼"] === "CONFIG_PASSWORD" || !car["購入日期"]) return false;
                 const buyDate = getOnlyDate(car["購入日期"]);
                 return buyDate === todayStr && car["販售狀態"] !== "售出";
             });
 
             const newlyReserved = cars.filter(car => {
-                if (car["編碼"] === "CONFIG_LOGO" || car["編碼"] === "CONFIG_BULLETIN" || !car["成交日期"]) return false;
+                if (car["編碼"] === "CONFIG_LOGO" || car["編碼"] === "CONFIG_BULLETIN" || car["編碼"] === "CONFIG_PASSWORD" || !car["成交日期"]) return false;
                 const dealDate = getOnlyDate(car["成交日期"]);
                 return dealDate === todayStr && (car["販售狀態"] === "收訂" || car["販售狀態"] === "預訂");
             });
 
             const newlySold = cars.filter(car => {
-                if (car["編碼"] === "CONFIG_LOGO" || car["編碼"] === "CONFIG_BULLETIN" || !car["成交日期"]) return false;
+                if (car["編碼"] === "CONFIG_LOGO" || car["編碼"] === "CONFIG_BULLETIN" || car["編碼"] === "CONFIG_PASSWORD" || !car["成交日期"]) return false;
                 const soldDate = getOnlyDate(car["成交日期"]);
                 return soldDate === todayStr && car["販售狀態"] === "售出";
             });
@@ -1180,7 +1396,7 @@
         }
 
         function updateDashboard() {
-            const activeCars = cars.filter(c => c["編碼"] !== "CONFIG_LOGO" && c["編碼"] !== "CONFIG_BULLETIN");
+            const activeCars = cars.filter(c => c["編碼"] !== "CONFIG_LOGO" && c["編碼"] !== "CONFIG_BULLETIN" && c["編碼"] !== "CONFIG_PASSWORD");
             const thisYear = currentSystemDate.getFullYear();
             const thisMonth = currentSystemDate.getMonth();
             const stock = activeCars.filter(c => c["販售狀態"] !== "售出").length;
@@ -1222,7 +1438,7 @@
             const brandSelect = document.getElementById('filter-brand');
             brandSelect.innerHTML = '<option value="">所有汽車廠牌</option>';
             brands.forEach(b => {
-                const count = cars.filter(c => c["編碼"] !== "CONFIG_LOGO" && c["編碼"] !== "CONFIG_BULLETIN" && c["廠牌"] === b && c["販售狀態"] !== "售出").length;
+                const count = cars.filter(c => c["編碼"] !== "CONFIG_LOGO" && c["編碼"] !== "CONFIG_BULLETIN" && c["編碼"] !== "CONFIG_PASSWORD" && c["廠牌"] === b && c["販售狀態"] !== "售出").length;
                 const opt = document.createElement('option');
                 opt.value = b;
                 opt.innerText = `${b} (${count}台)`;
@@ -1233,7 +1449,7 @@
             const select = document.getElementById('filter-location');
             select.innerHTML = '<option value="">所有車輛位置</option>';
             locs.forEach(l => { 
-                const count = cars.filter(c => c["編碼"] !== "CONFIG_LOGO" && c["編碼"] !== "CONFIG_BULLETIN" && c["在庫位子"] === l && c["販售狀態"] !== "售出").length;
+                const count = cars.filter(c => c["編碼"] !== "CONFIG_LOGO" && c["編碼"] !== "CONFIG_BULLETIN" && c["編碼"] !== "CONFIG_PASSWORD" && c["在庫位子"] === l && c["販售狀態"] !== "售出").length;
                 const opt = document.createElement('option'); 
                 opt.value = l; 
                 opt.innerText = `${l} (${count}台在庫)`; 
@@ -1269,7 +1485,7 @@
             const sc = scaleConfig[currentScale] || scaleConfig.normal;
 
             const filtered = cars.filter(c => {
-                if (c["編碼"] === "CONFIG_LOGO" || c["編碼"] === "CONFIG_BULLETIN") return false;
+                if (c["編碼"] === "CONFIG_LOGO" || c["編碼"] === "CONFIG_BULLETIN" || c["編碼"] === "CONFIG_PASSWORD") return false;
                 
                 const matchBrand = !fBrand || c["廠牌"] === fBrand;
                 const matchLoc = !fLoc || c["在庫位子"] === fLoc;
@@ -1455,8 +1671,8 @@
                 return;
             }
 
-            // --- 模式 2: 圖文卡片模式 (手機版上下置頂堆疊與功能修復) ---
-            gallery.innerHTML = filterStatusHtml; // 先掛載篩選狀態提示條
+            // --- 模式 2: 圖文卡片模式 ---
+            gallery.innerHTML = filterStatusHtml; 
             filtered.forEach((car, index) => {
                 const isSold = car["販售狀態"] === "售出";
                 const isReserved = car["販售狀態"] === "收訂" || car["販售狀態"] === "預訂";
@@ -1554,7 +1770,7 @@
                     <!-- 手機端完美置底之價格欄 -->
                     <div class="price-box w-auto md:w-${sc.priceWidth} border-l-0 md:border-l border-slate-100 ${sc.pricePadding} flex flex-col justify-center items-end bg-transparent md:bg-slate-50/50 pr-2">
                         <div class="w-full flex flex-row md:flex-col justify-between md:justify-center items-center md:items-end gap-1">
-                            <p class="text-[9px] md:text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">網路公開價</p>
+                            <p class="text-[9px] md:text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">網路優惠價</p>
                             <div class="flex items-end justify-end gap-0.5">
                                 <span class="${sc.priceText} font-black text-rose-600 italic tracking-tighter">${car["開價"]}</span>
                                 <span class="text-[10px] md:text-sm font-black text-rose-600 mb-0.5">萬</span>
@@ -1997,7 +2213,7 @@
                             </p>
                         </div>
                         <button id="btn-desktop-download-all" onclick="downloadAllDesktopPhotos()" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black py-2.5 px-4.5 rounded-xl transition-all shadow-md active:scale-95 flex items-center justify-center gap-1.5 whitespace-nowrap">
-                            <i class="fa-solid fa-download"></i> 一鍵自動下載全部照片
+                            <i class="fa-solid fa-download"></i> 下載全部照片
                         </button>
                     </div>
                 `;
@@ -2009,7 +2225,7 @@
                     
                     ${desktopShortcutHtml}
 
-                    <!-- 💡 智慧保存抽屜式摺疊面板 (微型極簡化，完全不阻擋視線) -->
+                    <!-- 💡 智慧保存抽屜式摺疊面板 -->
                     <details class="group bg-slate-50 border border-slate-200 rounded-2xl p-3 shadow-inner transition-all duration-300">
                         <summary class="list-none cursor-pointer select-none">
                             <div class="flex items-center justify-between">
@@ -2073,7 +2289,7 @@
                             <div class="flex flex-col xs:flex-row gap-2 w-full md:w-auto">
                                 <!-- 手機長按儲存提示標籤 -->
                                 <span class="bg-emerald-50 text-emerald-700 text-[10px] font-black px-2.5 py-2 rounded-xl border border-emerald-100 flex items-center justify-center gap-1 shadow-sm select-none">
-                                    <i class="fa-solid fa-fingerprint"></i> 手機長按此圖儲存
+                                    <i class="fa-solid fa-fingerprint"></i> 手機長按圖片儲存
                                 </span>
                                 <!-- 電腦/單張儲存按鈕 -->
                                 <button onclick="downloadSinglePhoto('${photoUrl}', '${fileName}', this)" class="bg-slate-900 hover:bg-slate-800 text-white text-xs font-black px-3.5 py-2 rounded-xl transition-all shadow active:scale-95 flex items-center justify-center gap-1">
