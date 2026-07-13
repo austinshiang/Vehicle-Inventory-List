@@ -23,7 +23,7 @@
         (function() {
             try {
                 // 產生 100% 精準的 github logo 絕對路徑，並附加時間戳防止快取死鎖
-                const absoluteLogoUrl = 'https://raw.githubusercontent.com/outstanding-garage/main/logo_v2.png?v=' + Date.now();
+                const absoluteLogoUrl = 'https://raw.githubusercontent.com/outstanding-garage/main/logogo.png?v=' + Date.now();
                 
                 // 1. 動態建立標準 Apple Touch Icon
                 const appleIcon = document.createElement('link');
@@ -383,12 +383,12 @@
             <!-- ======================================================== -->
             <div class="mx-auto w-24 h-24 rounded-3xl bg-white/5 border border-white/10 shadow-2xl flex items-center justify-center overflow-hidden p-2 relative">
                 <!-- 輪播圖片容器 (透過 JS 控制 src 切換與淡入淡出動畫) -->
-                <img id="lock-logo-img" src="./logo.png" alt="線上車源表" class="max-w-full max-h-full object-contain transition-all duration-500 opacity-100">
+                <img id="lock-logo-img" src="https://raw.githubusercontent.com/outstanding-garage/main/logogo.png" alt="線上車源表" class="max-w-full max-h-full object-contain transition-all duration-500 opacity-100">
             </div>
             
             <!-- 認證主文字 -->
             <div class="space-y-1">
-                <h2 class="text-xl md:text-2xl font-black text-white tracking-wider">認證中心</h2>
+                <h2 class="text-xl md:text-2xl font-black text-white tracking-wider">登入認證中心</h2>
                 <p id="lock-status" class="text-xs text-emerald-500 font-bold tracking-widest flex items-center justify-center gap-1.5 uppercase">
                     <i class="fa-solid fa-spinner animate-spin"></i> 正在安全連線資料庫...
                 </p>
@@ -454,7 +454,7 @@
                 <div class="flex items-center space-x-3.5">
                     <!-- 首頁的 LOGO，已經同步對接登入頁面的動態輪播 -->
                     <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center overflow-hidden shrink-0 shadow-sm border border-slate-100 p-1 relative">
-                        <img id="header-logo-img" src="./logo.png" alt="線上車源表" class="w-full h-full object-contain transition-all duration-500 opacity-100">
+                        <img id="header-logo-img" src="https://raw.githubusercontent.com/outstanding-garage/main/logogo.png" alt="線上車源表" class="w-full h-full object-contain transition-all duration-500 opacity-100">
                     </div>
                     <div>
                         <h1 class="text-xl md:text-2xl font-black text-slate-850 tracking-tighter">在庫車輛 <span class="text-emerald-600">線上車源總表</span></h1>
@@ -731,7 +731,7 @@
             <!-- 底部動作欄 -->
             <div class="p-6 bg-slate-50 border-t border-slate-150 flex flex-col sm:flex-row gap-3 justify-end no-capture">
                 <button id="btn-download-photos" onclick="handleDownloadAll()" class="bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 font-black py-3.5 px-6 rounded-2xl text-center text-sm shadow-sm flex items-center justify-center gap-2 transition-all">
-                    <i class="fa-solid fa-circle-arrow-down text-emerald-600"></i> 下載照片
+                    <i class="fa-solid fa-circle-arrow-down text-emerald-600"></i> 下載所有照片
                 </button>
                 <button onclick="closeModal()" class="bg-slate-900 hover:bg-slate-850 text-white font-black py-3.5 px-6 rounded-2xl text-center text-sm shadow-md flex items-center justify-center gap-2 transition-all">
                     關閉視窗 Close
@@ -783,12 +783,12 @@
         const LOCK_LOGOS_CONFIG = {
             // 在此處自訂您的輪播 LOGO (順序依次由上到下，支援相對與絕對路徑)
             logos: [
-                "./logo.png", // 預設本地 Logo
+                "./logogo.png", // 首頁與登入頁預設主 Logo
                 "./logo67.jpg", // 專案 GitHub 輪播 Logo 2
-                "./cjlogo.jpg"  // 專案 GitHub 輪播 Logo 3
+                "cjlogo.jpg"  // 專案 GitHub 輪播 Logo 3
             ],
             maxCount: 3,   // 💡 最大輪播數量限制
-            interval: 2500 // 💡 輪播切換速度 (毫秒，例如 3500 = 3.5 秒)
+            interval: 200 // 💡 輪播切換速度 (毫秒，例如 3500 = 3.5 秒)
         };
         let currentLogoIndex = 0;
         let logoCarouselTimer = null;
@@ -1221,7 +1221,7 @@
                 },
                 {
                     "編碼": "CONFIG_BULLETIN",
-                    "備註": "📣 全場公告：請退出系統重新登入！"
+                    "備註": "📣 全場公告：端午賞車人數較多，請全體業務成交後務必立刻將狀態改為「收訂」或「售出」，避免撞車重複銷售！"
                 }
             ];
             
@@ -1242,6 +1242,9 @@
             const isUnlocked = sessionStorage.getItem('garage_unlocked') === 'true';
             const lockScreen = document.getElementById('lock-screen');
             const hiddenInput = document.getElementById('hidden-passcode-input');
+
+            // 🪐 無論目前是否已經解鎖，都直接啟動 LOGO 漸變輪播機制 (確保首頁 LOGO 也會動)
+            startLogoCarousel();
 
             if (isUnlocked) {
                 lockScreen.classList.add('hidden', 'opacity-0');
@@ -1268,9 +1271,6 @@
                         submitPasscode();
                     }
                 };
-
-                // 🪐 啟動登入頁面 LOGO 漸變輪播機制
-                startLogoCarousel();
             }
         }
 
@@ -2518,7 +2518,7 @@
                 title: '<span class="text-slate-950 font-black text-base md:text-lg flex items-center justify-center gap-2"><i class="fa-solid fa-photo-film text-emerald-600 animate-pulse"></i>相片下載與保存中心</span>',
                 html: photosHtml,
                 showConfirmButton: true,
-                confirmButtonText: '已完成保存並關閉大廳 🚀',
+                confirmButtonText: '已完成保存並關閉大廳 ',
                 confirmButtonColor: '#10b981',
                 customClass: {
                     popup: 'rounded-[28px] border border-slate-200 shadow-2xl p-6 max-w-[640px] w-full bg-white',
