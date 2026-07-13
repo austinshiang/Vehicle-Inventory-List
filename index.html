@@ -7,54 +7,18 @@
     
     <!-- ========================================== -->
     <!-- 🍎 iOS / iPhone Safari 專屬 APP 模式設定 🍎 -->
-    <!-- 1. 啟用獨立 Web App 模式（隱藏 Safari 網址列與底部導覽列） -->
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <!-- 2. 設定手機頂部狀態列的顏色（default、black、black-translucent 三選一） -->
-    <!-- black-translucent 能讓網頁背景延伸至最上方狀態列，呈現沉浸式全螢幕效果 -->
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <!-- 3. 設定加入主畫面後的 APP 顯示名稱 (建議控制在 4~6 個中文字，避免截斷) -->
     <meta name="apple-mobile-web-app-title" content="線上車源表">
     <!-- ========================================== -->
 
     <!-- ========================================== -->
-    <!-- 🛡️ iOS Safari 桌面圖標路徑絕對化編譯器 🛡 -->
-    <!-- iOS 系統在解析相對路徑圖標時容易失敗，本腳本能確保動態編譯出 100% 完美的絕對 URL -->
-    <script>
-        (function() {
-            try {
-                // 產生 100% 精準的 github logo 絕對路徑，並附加時間戳防止快取死鎖
-                const absoluteLogoUrl = 'https://raw.githubusercontent.com/outstanding-garage/main/logogo.png?v=' + Date.now();
-                
-                // 1. 動態建立標準 Apple Touch Icon
-                const appleIcon = document.createElement('link');
-                appleIcon.rel = 'apple-touch-icon';
-                appleIcon.href = absoluteLogoUrl;
-                document.head.appendChild(appleIcon);
-
-                // 2. 動態建立預合成 Apple Touch Icon (相容舊版 iOS)
-                const appleIconPre = document.createElement('link');
-                appleIconPre.rel = 'apple-touch-icon-precomposed';
-                appleIconPre.href = absoluteLogoUrl;
-                document.head.appendChild(appleIconPre);
-
-                // 3. 動態建立 Favicon
-                const favicon = document.createElement('link');
-                favicon.rel = 'icon';
-                favicon.type = 'image/png';
-                favicon.href = absoluteLogoUrl;
-                document.head.appendChild(favicon);
-
-                // 4. 動態建立 Shortcut Icon
-                const shortcut = document.createElement('link');
-                shortcut.rel = 'shortcut icon';
-                shortcut.type = 'image/png';
-                shortcut.href = absoluteLogoUrl;
-                document.head.appendChild(shortcut);
-            } catch (e) {
-                console.error("iOS 絕對圖標編譯器執行異常: ", e);
-            }
-        })();
-    </script>
+    <!-- 🛡️ 網站與 APP 圖標 (Favicon & Apple Touch Icon) 🛡 -->
+    <!-- 直接使用 HTML 靜態標籤，並對接 logogo.png，確保所有瀏覽器 100% 抓取到 -->
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/outstanding-garage/main/logogo.png">
+    <link rel="shortcut icon" type="image/png" href="https://raw.githubusercontent.com/outstanding-garage/main/logogo.png">
+    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/outstanding-garage/main/logogo.png">
+    <link rel="apple-touch-icon-precomposed" href="https://raw.githubusercontent.com/outstanding-garage/main/logogo.png">
     <!-- ========================================== -->
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -779,16 +743,15 @@
         let correctPasscode = "8888"; // 預設密碼 (若連線失敗或試算表尚未設定時作為 Fallback)
         let typedPasscode = "";       // 使用者當前輸入的暫存密碼
 
-        // 輪播 LOGO 組態設定檔 (支援自訂 GitHub 上的圖片名稱、路徑、數量)
+        // 輪播 LOGO 組態設定檔 (使用絕對路徑防止路徑錯亂)
         const LOCK_LOGOS_CONFIG = {
-            // 在此處自訂您的輪播 LOGO (順序依次由上到下，支援相對與絕對路徑)
             logos: [
-                "./logogo.png", // 首頁與登入頁預設主 Logo
-                "./logo67.jpg", // 專案 GitHub 輪播 Logo 2
-                "cjlogo.jpg"  // 專案 GitHub 輪播 Logo 3
+                "https://raw.githubusercontent.com/outstanding-garage/main/logogo.png", 
+                "https://raw.githubusercontent.com/outstanding-garage/main/logo67.jpg", 
+                "https://raw.githubusercontent.com/outstanding-garage/main/cjlogo.jpg"  
             ],
-            maxCount: 3,   // 💡 最大輪播數量限制
-            interval: 200 // 💡 輪播切換速度 (毫秒，例如 3500 = 3.5 秒)
+            maxCount: 3,   
+            interval: 3500 // 💡 修正：輪播切換速度必須大於動畫時間 500ms，設為 3500 (3.5秒) 確保輪播正常運作
         };
         let currentLogoIndex = 0;
         let logoCarouselTimer = null;
@@ -1347,7 +1310,7 @@
             if (typedPasscode === correctPasscode) {
                 // 解鎖成功：寫入快取，淡出鎖定層
                 sessionStorage.setItem('garage_unlocked', 'true');
-                if (logoCarouselTimer) clearInterval(logoCarouselTimer); // 清除定時器節省資源
+                // 🚀 修復首頁 LOGO 不輪播的 BUG (移除了原先的 clearInterval)
                 
                 lockStatus.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500"></i> 驗證成功！正在為您開啟展間`;
                 dotsWrapper.classList.add('border-emerald-500', 'bg-emerald-950/20');
