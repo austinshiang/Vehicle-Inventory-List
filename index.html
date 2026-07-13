@@ -2,7 +2,7 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>線上車源表系統</title>
     
     <!-- ========================================== -->
@@ -22,11 +22,8 @@
     <script>
         (function() {
             try {
-                const origin = window.location.origin;
-                const pathname = window.location.pathname;
-                const folder = pathname.substring(0, pathname.lastIndexOf('/'));
-                // 產生 100% 精準的 logo 絕對路徑，並附加時間戳防止快取死鎖
-                const absoluteLogoUrl = origin + folder + '/logo.png?v=' + Date.now();
+                // 產生 100% 精準的 github logo 絕對路徑，並附加時間戳防止快取死鎖
+                const absoluteLogoUrl = 'https://raw.githubusercontent.com/outstanding-garage/main/logo_v2.png?v=' + Date.now();
                 
                 // 1. 動態建立標準 Apple Touch Icon
                 const appleIcon = document.createElement('link');
@@ -37,21 +34,21 @@
                 // 2. 動態建立預合成 Apple Touch Icon (相容舊版 iOS)
                 const appleIconPre = document.createElement('link');
                 appleIconPre.rel = 'apple-touch-icon-precomposed';
-                appleIconPre.href = absoluteUrl;
+                appleIconPre.href = absoluteLogoUrl;
                 document.head.appendChild(appleIconPre);
 
                 // 3. 動態建立 Favicon
                 const favicon = document.createElement('link');
                 favicon.rel = 'icon';
                 favicon.type = 'image/png';
-                favicon.href = absoluteUrl;
+                favicon.href = absoluteLogoUrl;
                 document.head.appendChild(favicon);
 
                 // 4. 動態建立 Shortcut Icon
                 const shortcut = document.createElement('link');
                 shortcut.rel = 'shortcut icon';
                 shortcut.type = 'image/png';
-                shortcut.href = absoluteUrl;
+                shortcut.href = absoluteLogoUrl;
                 document.head.appendChild(shortcut);
             } catch (e) {
                 console.error("iOS 絕對圖標編譯器執行異常: ", e);
@@ -288,6 +285,11 @@
             transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
+        /* 📱 禁用雙擊放大 (行動端防呆設計，修復輸入密碼與狂點按鈕時的干擾) */
+        button, input, select, a, .car-row, .car-brick-item {
+            touch-action: manipulation;
+        }
+
         /* 自訂摺疊標籤展開箭頭隱藏 */
         details summary::-webkit-details-marker {
             display: none;
@@ -381,7 +383,7 @@
             <!-- ======================================================== -->
             <div class="mx-auto w-24 h-24 rounded-3xl bg-white/5 border border-white/10 shadow-2xl flex items-center justify-center overflow-hidden p-2 relative">
                 <!-- 輪播圖片容器 (透過 JS 控制 src 切換與淡入淡出動畫) -->
-                <img id="lock-logo-img" src="./logo.png" alt="線上車源表系統" class="max-w-full max-h-full object-contain transition-all duration-500 opacity-100">
+                <img id="lock-logo-img" src="./logo.png" alt="線上車源表" class="max-w-full max-h-full object-contain transition-all duration-500 opacity-100">
             </div>
             
             <!-- 認證主文字 -->
@@ -450,12 +452,13 @@
         <div class="max-w-6xl mx-auto space-y-4">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
                 <div class="flex items-center space-x-3.5">
-                    <div class="bg-emerald-600 p-2.5 rounded-2xl text-white shadow-lg shadow-emerald-100">
-                        <i class="fa-solid fa-car-rear text-xl"></i>
+                    <!-- 首頁的 LOGO，已經同步對接登入頁面的動態輪播 -->
+                    <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center overflow-hidden shrink-0 shadow-sm border border-slate-100 p-1 relative">
+                        <img id="header-logo-img" src="./logo.png" alt="線上車源表" class="w-full h-full object-contain transition-all duration-500 opacity-100">
                     </div>
                     <div>
-                        <h1 class="text-xl md:text-2xl font-black text-slate-850 tracking-tighter">在庫車輛 <span class="text-emerald-600">車源總表</span></h1>
-                        <p class="text-[10px] text-slate-400 font-bold tracking-wider mt-0.5 uppercase"> v5.5</p>
+                        <h1 class="text-xl md:text-2xl font-black text-slate-850 tracking-tighter">在庫車輛 <span class="text-emerald-600">線上車源總表</span></h1>
+                        <p class="text-[10px] text-slate-400 font-bold tracking-wider mt-0.5 uppercase">Premium v5.5</p>
                     </div>
                 </div>
                 <div class="flex gap-2 w-full md:w-auto">
@@ -728,7 +731,7 @@
             <!-- 底部動作欄 -->
             <div class="p-6 bg-slate-50 border-t border-slate-150 flex flex-col sm:flex-row gap-3 justify-end no-capture">
                 <button id="btn-download-photos" onclick="handleDownloadAll()" class="bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 font-black py-3.5 px-6 rounded-2xl text-center text-sm shadow-sm flex items-center justify-center gap-2 transition-all">
-                    <i class="fa-solid fa-circle-arrow-down text-emerald-600"></i> 下載所有照片
+                    <i class="fa-solid fa-circle-arrow-down text-emerald-600"></i> 下載照片
                 </button>
                 <button onclick="closeModal()" class="bg-slate-900 hover:bg-slate-850 text-white font-black py-3.5 px-6 rounded-2xl text-center text-sm shadow-md flex items-center justify-center gap-2 transition-all">
                     關閉視窗 Close
@@ -781,11 +784,11 @@
             // 在此處自訂您的輪播 LOGO (順序依次由上到下，支援相對與絕對路徑)
             logos: [
                 "./logo.png", // 預設本地 Logo
-                "./cjlogo.jpg", // 專案 GitHub 輪播 Logo 2
-                "./logo67.jpeg"  // 專案 GitHub 輪播 Logo 3
+                "./logo67.jpg", // 專案 GitHub 輪播 Logo 2
+                "./cjlogo.jpg"  // 專案 GitHub 輪播 Logo 3
             ],
             maxCount: 3,   // 💡 最大輪播數量限制
-            interval: 2000 // 💡 輪播切換速度 (毫秒，例如 3500 = 3.5 秒)
+            interval: 2500 // 💡 輪播切換速度 (毫秒，例如 3500 = 3.5 秒)
         };
         let currentLogoIndex = 0;
         let logoCarouselTimer = null;
@@ -1218,7 +1221,7 @@
                 },
                 {
                     "編碼": "CONFIG_BULLETIN",
-                    "備註": "📣 全場公告：端午賞車人數較多，請全體業務成交後務必立刻將狀態改為「收訂」或「售出」，避免撞車重複銷售！"
+                    "備註": "📣 全場公告：請退出系統重新登入！"
                 }
             ];
             
@@ -1274,7 +1277,10 @@
         // 🪐 輪播核心函數
         function startLogoCarousel() {
             const logoImg = document.getElementById('lock-logo-img');
-            if (!logoImg || LOCK_LOGOS_CONFIG.logos.length <= 1) return;
+            const headerLogoImg = document.getElementById('header-logo-img');
+            
+            if (!logoImg && !headerLogoImg) return;
+            if (LOCK_LOGOS_CONFIG.logos.length <= 1) return;
 
             // 確保設定數量不溢出陣列範圍
             const activeLogoCount = Math.min(LOCK_LOGOS_CONFIG.logos.length, LOCK_LOGOS_CONFIG.maxCount);
@@ -1283,15 +1289,20 @@
 
             logoCarouselTimer = setInterval(() => {
                 // 優雅的淡出效果
-                logoImg.classList.add('opacity-0');
+                if (logoImg) logoImg.classList.add('opacity-0');
+                if (headerLogoImg) headerLogoImg.classList.add('opacity-0');
                 
                 setTimeout(() => {
                     // 切換至下一張
                     currentLogoIndex = (currentLogoIndex + 1) % activeLogoCount;
-                    logoImg.src = LOCK_LOGOS_CONFIG.logos[currentLogoIndex];
+                    const nextLogoSrc = LOCK_LOGOS_CONFIG.logos[currentLogoIndex];
+                    
+                    if (logoImg) logoImg.src = nextLogoSrc;
+                    if (headerLogoImg) headerLogoImg.src = nextLogoSrc;
                     
                     // 優雅淡入
-                    logoImg.classList.remove('opacity-0');
+                    if (logoImg) logoImg.classList.remove('opacity-0');
+                    if (headerLogoImg) headerLogoImg.classList.remove('opacity-0');
                 }, 500); // 半秒漸淡過渡
             }, LOCK_LOGOS_CONFIG.interval);
         }
@@ -1490,10 +1501,10 @@
                 </div>`;
 
                 Swal.fire({
-                    title: 'Today Reminder<br><span style="color:#10b981; font-size:1.2rem; font-weight:900;">今日在庫異動快報</span>',
+                    title: 'Outstanding Garage<br><span style="color:#10b981; font-size:1.2rem; font-weight:900;">今日在庫異動快報</span>',
                     html: updateHtml,
                     icon: 'info',
-                    confirmButtonText: '🚀 進入展示大廳 🚀',
+                    confirmButtonText: '進入展示大廳 🚀',
                     confirmButtonColor: '#10b981',
                     customClass: {
                         popup: 'rounded-[24px] border border-slate-200 shadow-2xl p-5 max-w-[420px] w-full',
@@ -2507,7 +2518,7 @@
                 title: '<span class="text-slate-950 font-black text-base md:text-lg flex items-center justify-center gap-2"><i class="fa-solid fa-photo-film text-emerald-600 animate-pulse"></i>相片下載與保存中心</span>',
                 html: photosHtml,
                 showConfirmButton: true,
-                confirmButtonText: '已完成保存並關閉大廳 ',
+                confirmButtonText: '已完成保存並關閉大廳 🚀',
                 confirmButtonColor: '#10b981',
                 customClass: {
                     popup: 'rounded-[28px] border border-slate-200 shadow-2xl p-6 max-w-[640px] w-full bg-white',
