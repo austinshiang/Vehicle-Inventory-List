@@ -37,21 +37,21 @@
                 // 2. 動態建立預合成 Apple Touch Icon (相容舊版 iOS)
                 const appleIconPre = document.createElement('link');
                 appleIconPre.rel = 'apple-touch-icon-precomposed';
-                appleIconPre.href = absoluteLogoUrl;
+                appleIconPre.href = absoluteUrl;
                 document.head.appendChild(appleIconPre);
 
                 // 3. 動態建立 Favicon
                 const favicon = document.createElement('link');
                 favicon.rel = 'icon';
                 favicon.type = 'image/png';
-                favicon.href = absoluteLogoUrl;
+                favicon.href = absoluteUrl;
                 document.head.appendChild(favicon);
 
                 // 4. 動態建立 Shortcut Icon
                 const shortcut = document.createElement('link');
                 shortcut.rel = 'shortcut icon';
                 shortcut.type = 'image/png';
-                shortcut.href = absoluteLogoUrl;
+                shortcut.href = absoluteUrl;
                 document.head.appendChild(shortcut);
             } catch (e) {
                 console.error("iOS 絕對圖標編譯器執行異常: ", e);
@@ -781,8 +781,8 @@
             // 在此處自訂您的輪播 LOGO (順序依次由上到下，支援相對與絕對路徑)
             logos: [
                 "./logo.png", // 預設本地 Logo
-                "https://raw.githubusercontent.com/ outstanding-garage/main/logo_v2.png", // 專案 GitHub 輪播 Logo 2
-                "https://raw.githubusercontent.com/ outstanding-garage/main/logo_v3.png"  // 專案 GitHub 輪播 Logo 3
+                "./cjlogo.jpg", // 專案 GitHub 輪播 Logo 2
+                "./logo6.jpeg"  // 專案 GitHub 輪播 Logo 3
             ],
             maxCount: 3,   // 💡 最大輪播數量限制
             interval: 3500 // 💡 輪播切換速度 (毫秒，例如 3500 = 3.5 秒)
