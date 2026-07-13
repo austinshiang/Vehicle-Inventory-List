@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>線上庫存車輛車源表系統</title>
+    <title>在庫車輛線上車源表系統</title>
     
     <!-- ========================================== -->
     <!-- 🍎 iOS / iPhone Safari 專屬 APP 模式設定 🍎 -->
@@ -299,6 +299,38 @@
                 flex-shrink: 0 !important;
             } 
         }
+
+        /* ========================================== */
+        <!-- 🖨️ 專業 A4 紙本列印最佳化樣式表 🖨️ -->
+        /* ========================================== */
+        @media print {
+            body {
+                background: #ffffff !important;
+                color: #000000 !important;
+                padding-bottom: 0 !important;
+            }
+            /* 隱藏一切非紙本內容 */
+            .no-capture, header, footer, button, select, input, .close-btn, #exit-capture {
+                display: none !important;
+            }
+            #gallery {
+                padding: 0 !important;
+                margin: 0 !important;
+                display: grid !important;
+                /* 列印時強制切換成 A4 最合適的 3 欄方磚 layout */
+                grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+                gap: 16px !important;
+            }
+            /* 列印方磚分頁控制 */
+            .car-brick-item {
+                break-inside: avoid !important;
+                page-break-inside: avoid !important;
+                border: 1px solid #cbd5e1 !important;
+                background: #ffffff !important;
+                box-shadow: none !important;
+                border-radius: 12px !important;
+            }
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col pb-12">
@@ -311,16 +343,20 @@
         <div class="absolute inset-0 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-emerald-950/40 via-slate-950 to-slate-950 pointer-events-none z-0"></div>
         
         <div class="max-w-md w-full text-center space-y-6 relative z-10 my-auto">
-            <!-- 品牌徽標 -->
-            <div class="mx-auto bg-gradient-to-br from-emerald-500 to-teal-600 w-16 h-16 rounded-3xl text-white shadow-xl flex items-center justify-center transform hover:rotate-12 transition-transform duration-300">
-                <i class="fa-solid fa-key-skeleton text-2xl"></i>
+            
+            <!-- ======================================================== -->
+            <!-- 🪐 GitHub LOGO 多圖智慧輪播組件 🪐 -->
+            <!-- ======================================================== -->
+            <div class="mx-auto w-24 h-24 rounded-3xl bg-white/5 border border-white/10 shadow-2xl flex items-center justify-center overflow-hidden p-2 relative">
+                <!-- 輪播圖片容器 (透過 JS 控制 src 切換與淡入淡出動畫) -->
+                <img id="lock-logo-img" src="./logo.png" alt="線上車源表" class="max-w-full max-h-full object-contain transition-all duration-500 opacity-100">
             </div>
             
             <!-- 認證主文字 -->
             <div class="space-y-1">
-                <h2 class="text-xl md:text-2xl font-black text-white tracking-wider">認證中心</h2>
+                <h2 class="text-xl md:text-2xl font-black text-white tracking-wider">線上車源表系統</h2>
                 <p id="lock-status" class="text-xs text-emerald-500 font-bold tracking-widest flex items-center justify-center gap-1.5 uppercase">
-                    <i class="fa-solid fa-spinner animate-spin"></i> 正在安全連線試算表...
+                    <i class="fa-solid fa-spinner animate-spin"></i> 正在安全連線資料庫...
                 </p>
             </div>
 
@@ -335,11 +371,11 @@
                     <div class="dot w-3.5 h-3.5 rounded-full bg-slate-800 transition-all duration-150"></div>
                     <div class="dot w-3.5 h-3.5 rounded-full bg-slate-800 transition-all duration-150"></div>
                 </div>
-                <!-- 虛擬隱藏輸入欄 (支援桌機端直接實體鍵盤敲字) -->
-                <input type="password" id="hidden-passcode-input" maxlength="12" class="opacity-0 w-0 h-0 absolute" autofocus>
+                <!-- 虛擬隱藏輸入欄 (🛡️ 導入 inputmode="none" 確保行動端絕不彈出系統鍵盤) -->
+                <input type="password" id="hidden-passcode-input" inputmode="none" maxlength="12" class="opacity-0 w-0 h-0 absolute" autofocus>
             </div>
 
-            <!-- 📱 高級觸控數字鍵盤 (極速快點與防錯) -->
+            <!-- 📱 高級觸控數字鍵盤 (行動裝置強制使用此處輸入) -->
             <div class="grid grid-cols-3 gap-3 max-w-[280px] mx-auto select-none">
                 <button onclick="pressKey('1')" class="bg-slate-900/60 hover:bg-slate-800/80 active:bg-emerald-600 text-white font-black text-lg py-4 rounded-2xl border border-slate-800/60 active:border-emerald-500 shadow transition-all">1</button>
                 <button onclick="pressKey('2')" class="bg-slate-900/60 hover:bg-slate-800/80 active:bg-emerald-600 text-white font-black text-lg py-4 rounded-2xl border border-slate-800/60 active:border-emerald-500 shadow transition-all">2</button>
@@ -386,14 +422,14 @@
                         <i class="fa-solid fa-car-rear text-xl"></i>
                     </div>
                     <div>
-                        <h1 class="text-xl md:text-2xl font-black text-slate-850 tracking-tighter">庫存車輛 <span class="text-emerald-600">車源總表</span></h1>
+                        <h1 class="text-xl md:text-2xl font-black text-slate-850 tracking-tighter">在庫車輛 <span class="text-emerald-600">車源總表</span></h1>
                         <p class="text-[10px] text-slate-400 font-bold tracking-wider mt-0.5 uppercase"> v5.42</p>
                     </div>
                 </div>
                 <div class="flex gap-2 w-full md:w-auto">
-                    <!-- 檢視模式切換按鈕 -->
+                    <!-- 檢視模式切換按鈕 (升級為 3 態智慧檢視循環切換) -->
                     <button id="btn-toggle-view" onclick="toggleView()" class="flex-1 md:flex-none bg-slate-100 hover:bg-slate-200 text-slate-700 px-3.5 py-2 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-1.5">
-                        <i class="fa-solid fa-list"></i> 切換清單總覽
+                        <i class="fa-solid fa-list"></i> 清單總覽模式
                     </button>
                     <!-- 截圖模式 -->
                     <button onclick="toggleCapture(true)" class="flex-1 md:flex-none bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-xl text-xs font-black shadow-lg shadow-emerald-100 flex items-center justify-center gap-1.5 active:scale-95 transition-all">
@@ -698,15 +734,29 @@
         const apiUrl = "https://script.google.com/macros/s/AKfycby5wAruFNCLkPEy9yDLx9Rz1D_P93nyVptSJqHiTaK5C_YvIUA7jljjD01GdeqLjn_eWw/exec";
         let cars = [];
         let currentSelectedCar = null; 
-        let isListView = false; 
+        let isListView = 'card'; // 🚀 檢視模式重構：現在支援三個狀態 'card' | 'list' | 'brick'
         let confidentialPricesVisible = false; 
         let currentScale = 'normal'; 
         
-        // ==========================================
-        // 🔐 門禁系統密碼狀態管理 🔐
-        // ==========================================
+        // ========================================================
+        // 🔐 門禁解鎖 & 🪐 LOGO 輪播全域設定區
+        // ========================================================
         let correctPasscode = "8888"; // 預設密碼 (若連線失敗或試算表尚未設定時作為 Fallback)
         let typedPasscode = "";       // 使用者當前輸入的暫存密碼
+
+        // 輪播 LOGO 組態設定檔 (支援自訂 GitHub 上的圖片名稱、路徑、數量)
+        const LOCK_LOGOS_CONFIG = {
+            // 在此處自訂您的輪播 LOGO (順序依次由上到下，支援相對與絕對路徑)
+            logos: [
+                "./logo.png", // 預設本地 Logo
+                "https://raw.githubusercontent.com/ outstanding-garage/main/logo_v2.png", // 專案 GitHub 輪播 Logo 2
+                "https://raw.githubusercontent.com/ outstanding-garage/main/logo_v3.png"  // 專案 GitHub 輪播 Logo 3
+            ],
+            maxCount: 3,   // 💡 最大輪播數量限制
+            interval: 3500 // 💡 輪播切換速度 (毫秒，例如 3500 = 3.5 秒)
+        };
+        let currentLogoIndex = 0;
+        let logoCarouselTimer = null;
 
         // 全螢幕燈箱大圖與滑動變數
         let lightboxImages = [];
@@ -1111,7 +1161,7 @@
                 },
                 {
                     "編碼": "CONFIG_BULLETIN",
-                    "備註": "📣 全場公告：看到此通知請重新登入網頁，此為資料庫抓取失敗的示範頁面！"
+                    "備註": "📣 全場公告：請重新登入系統！"
                 }
             ];
             
@@ -1126,7 +1176,7 @@
         }
 
         // ==========================================
-        // 🔐 門禁解鎖邏輯控制器 🔐
+        // 🔐 門禁解鎖與 LOGO 輪播邏輯控制器 🔐
         // ==========================================
         function initLockScreen() {
             const isUnlocked = sessionStorage.getItem('garage_unlocked') === 'true';
@@ -1147,7 +1197,7 @@
                 
                 hiddenInput.focus();
 
-                // 綁定桌機鍵盤敲字事件
+                // 綁定桌機鍵盤敲字事件 (行動端因 inputmode="none" 僅捕獲狀態)
                 hiddenInput.oninput = (e) => {
                     typedPasscode = e.target.value;
                     updatePasscodeDots();
@@ -1158,7 +1208,35 @@
                         submitPasscode();
                     }
                 };
+
+                // 🪐 啟動登入頁面 LOGO 漸變輪播機制
+                startLogoCarousel();
             }
+        }
+
+        // 🪐 輪播核心函數
+        function startLogoCarousel() {
+            const logoImg = document.getElementById('lock-logo-img');
+            if (!logoImg || LOCK_LOGOS_CONFIG.logos.length <= 1) return;
+
+            // 確保設定數量不溢出陣列範圍
+            const activeLogoCount = Math.min(LOCK_LOGOS_CONFIG.logos.length, LOCK_LOGOS_CONFIG.maxCount);
+
+            if (logoCarouselTimer) clearInterval(logoCarouselTimer);
+
+            logoCarouselTimer = setInterval(() => {
+                // 優雅的淡出效果
+                logoImg.classList.add('opacity-0');
+                
+                setTimeout(() => {
+                    // 切換至下一張
+                    currentLogoIndex = (currentLogoIndex + 1) % activeLogoCount;
+                    logoImg.src = LOCK_LOGOS_CONFIG.logos[currentLogoIndex];
+                    
+                    // 優雅淡入
+                    logoImg.classList.remove('opacity-0');
+                }, 500); // 半秒漸淡過渡
+            }, LOCK_LOGOS_CONFIG.interval);
         }
 
         // 點擊觸控數字鍵盤
@@ -1201,6 +1279,7 @@
             if (typedPasscode === correctPasscode) {
                 // 解鎖成功：寫入快取，淡出鎖定層
                 sessionStorage.setItem('garage_unlocked', 'true');
+                if (logoCarouselTimer) clearInterval(logoCarouselTimer); // 清除定時器節省資源
                 
                 lockStatus.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500"></i> 驗證成功！正在為您開啟展間`;
                 dotsWrapper.classList.add('border-emerald-500', 'bg-emerald-950/20');
@@ -1231,7 +1310,6 @@
         }
 
         function checkTodayUpdates() {
-            // 原有的今日庫存更新通知
             const today = currentSystemDate;
             const todayStr = `${today.getFullYear()}/${String(today.getMonth() + 1).padStart(2, '0')}/${String(today.getDate()).padStart(2, '0')}`;
 
@@ -1355,7 +1433,7 @@
                     title: 'Outstanding Garage<br><span style="color:#10b981; font-size:1.2rem; font-weight:900;">今日在庫異動快報</span>',
                     html: updateHtml,
                     icon: 'info',
-                    confirmButtonText: '進入展示大廳 🚀',
+                    confirmButtonText: '進入展示大廳',
                     confirmButtonColor: '#10b981',
                     customClass: {
                         popup: 'rounded-[24px] border border-slate-200 shadow-2xl p-5 max-w-[420px] w-full',
@@ -1372,22 +1450,33 @@
             if (active) {
                 watermarkBg.classList.remove('hidden');
             } else {
-                if (!isListView) {
+                if (isListView !== 'list') {
                     watermarkBg.classList.add('hidden');
                 }
             }
         }
 
+        // ==========================================
+        // 🔄 智慧三向檢視切換 (卡片 -> 清單 -> 紙本方磚)
+        // ==========================================
         function toggleView() {
-            isListView = !isListView;
             const toggleBtn = document.getElementById('btn-toggle-view');
             const watermarkBg = document.getElementById('watermark-bg');
 
-            if (isListView) {
-                toggleBtn.innerHTML = `<i class="fa-solid fa-table-cells"></i> 切換圖文卡片`;
+            if (isListView === 'card') {
+                // 切換至第二階段：清單總覽模式
+                isListView = 'list';
+                toggleBtn.innerHTML = `<i class="fa-solid fa-border-all"></i> 紙本方磚模式`;
+                watermarkBg.classList.remove('hidden'); 
+            } else if (isListView === 'list') {
+                // 切換至第三階段：紙本方磚模式 (強調大圖、列印排版)
+                isListView = 'brick';
+                toggleBtn.innerHTML = `<i class="fa-solid fa-table-cells"></i> 圖文卡片模式`;
                 watermarkBg.classList.remove('hidden'); 
             } else {
-                toggleBtn.innerHTML = `<i class="fa-solid fa-list"></i> 切換清單總覽`;
+                // 循環回歸：豪華圖文卡片
+                isListView = 'card';
+                toggleBtn.innerHTML = `<i class="fa-solid fa-list"></i> 清單總覽模式`;
                 if (!document.body.classList.contains('screenshot-mode')) {
                     watermarkBg.classList.add('hidden');
                 }
@@ -1564,8 +1653,8 @@
                 }
             });
 
-            // --- 模式 1: 清單總覽模式 ---
-            if (isListView) {
+            // --- 模式 1: 清單總覽模式 (Table View) ---
+            if (isListView === 'list') {
                 let tableHtml = filterStatusHtml + `
                     <div class="overflow-x-auto bg-white/90 rounded-2xl border border-slate-200 shadow-sm relative z-10 backdrop-blur-sm">
                         <table class="w-full text-left border-collapse md:min-w-[850px] ${currentScale === 'compact' ? 'text-xs' : 'text-sm'}">
@@ -1590,30 +1679,6 @@
                     const isCert = car["是否認證"] === "是";
                     const locBadgeClass = getLocationColor(car["在庫位子"]);
                     const saleBadgeClass = getSaleTypeColor(car["售賣形式"]);
-
-                    const inspectStatus = getInspectionStatus(car);
-                    let inspectWarningBadge = '';
-                    if (inspectStatus) {
-                        if (inspectStatus.type === 'due') {
-                            inspectWarningBadge = `
-                                <span class="bg-amber-100 text-amber-800 border border-amber-200 px-2 py-0.5 rounded text-[10px] font-black animate-pulse inline-flex items-center gap-1 shadow-sm">
-                                    <i class="fa-solid fa-bell text-amber-600"></i> 本月驗車 (${inspectStatus.targetMonth}月)
-                                </span>
-                            `;
-                        } else if (inspectStatus.type === 'overdue') {
-                            inspectWarningBadge = `
-                                <span class="bg-rose-100 text-rose-800 border border-rose-200 px-2.5 py-0.5 rounded text-[10px] font-black animate-pulse inline-flex items-center gap-1 shadow-sm">
-                                    <i class="fa-solid fa-triangle-exclamation text-rose-600"></i> ⚠️ 驗車過期 (${inspectStatus.targetMonth}月)
-                                </span>
-                            `;
-                        } else if (inspectStatus.type === 'remind') {
-                            inspectWarningBadge = `
-                                <span class="bg-blue-50 text-blue-800 border border-blue-150 px-2 py-0.5 rounded text-[10px] font-black inline-flex items-center gap-1 shadow-sm">
-                                    <i class="fa-solid fa-circle-info text-blue-600"></i> 提醒驗車 (${inspectStatus.targetMonth}月)
-                                </span>
-                            `;
-                        }
-                    }
 
                     tableHtml += `
                         <tr onclick="openModalByCode('${car["編碼"]}')" class="hover:bg-slate-50/80 cursor-pointer transition-colors ${isSold ? 'opacity-65' : ''} ${isReserved ? 'bg-amber-50/10' : ''}">
@@ -1671,7 +1736,73 @@
                 return;
             }
 
-            // --- 模式 2: 圖文卡片模式 ---
+            // --- 🚀 模式 2: 全新「紙本方磚模式」(Printable Bricks Layout) 🚀 ---
+            if (isListView === 'brick') {
+                let brickHtml = filterStatusHtml + `
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3.5 relative z-10 print:gap-2">
+                `;
+
+                filtered.forEach((car, index) => {
+                    const isSold = car["販售狀態"] === "售出";
+                    const isReserved = car["販售狀態"] === "收訂" || car["販售狀態"] === "預訂";
+                    const isCert = car["是否認證"] === "是";
+                    const resolvedImageUrl = getDirectImageUrl(car["封面圖片"]);
+                    const locBadgeClass = getLocationColor(car["在庫位子"]);
+                    const saleBadgeClass = getSaleTypeColor(car["售賣形式"]);
+
+                    brickHtml += `
+                        <div onclick="openModalByCode('${car["編碼"]}')" class="car-brick-item bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm hover:border-emerald-500 hover:shadow-md transition-all cursor-pointer flex flex-col relative ${isSold ? 'opacity-65' : ''} ${isReserved ? 'border-amber-500 ring-2 ring-amber-500/20' : ''}">
+                            <!-- 車照區 (固定比例) -->
+                            <div class="aspect-[4/3] bg-slate-100 relative overflow-hidden flex-shrink-0">
+                                <img src="${resolvedImageUrl}" onerror="handleImageError(this, ${index})" class="w-full h-full object-cover">
+                                
+                                <!-- 頂部狀態小角標 -->
+                                <span class="absolute top-1.5 left-1.5 bg-slate-950/80 text-white text-[9px] font-black px-1.5 py-0.5 rounded shadow z-10">
+                                    ${car["販售狀態"] || '在庫'}
+                                </span>
+
+                                ${isCert && !isSold ? `
+                                    <span class="absolute bottom-1.5 right-1.5 bg-emerald-600 text-white text-[8px] font-black px-1 py-0.5 rounded shadow z-10 flex items-center">
+                                        <i class="fa-solid fa-shield-halved scale-90 mr-0.5"></i> 認證
+                                    </span>
+                                ` : ''}
+                            </div>
+
+                            <!-- 資訊內容 (緊湊極簡) -->
+                            <div class="p-3 flex-grow flex flex-col justify-between space-y-2">
+                                <div class="space-y-1">
+                                    <div class="flex items-center gap-1 flex-wrap">
+                                        <span class="bg-slate-900 text-white text-[8px] px-1 py-0.5 rounded font-bold uppercase tracking-wider">${car["廠牌"] || '--'}</span>
+                                        <span class="border text-[8px] px-1 py-0.5 rounded font-black ${saleBadgeClass}">${car["售賣形式"] || '零售'}</span>
+                                    </div>
+                                    <h3 class="text-xs font-black text-slate-900 leading-tight truncate-2-lines min-h-[2rem]" title="${car["型號"]}">${car["型號"] || '--'}</h3>
+                                </div>
+
+                                <div class="space-y-1.5 pt-1.5 border-t border-slate-100">
+                                    <div class="flex justify-between text-[9px] text-slate-500 font-bold">
+                                        <span>${car["年份"]} 年份</span>
+                                        <span>${formatMileage(car["里程"])}</span>
+                                    </div>
+                                    <div class="flex items-center justify-between gap-1">
+                                        <span class="text-[9px] border px-1 rounded truncate max-w-[80px] ${locBadgeClass}">
+                                            ${car["在庫位子"] || "展間"}
+                                        </span>
+                                        <p class="text-xs font-black text-rose-600 font-mono text-right shrink-0">
+                                            ${car["開價"]}<span class="text-[9px] font-bold">萬</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                brickHtml += `</div>`;
+                gallery.innerHTML = brickHtml;
+                return;
+            }
+
+            // --- 模式 3: 豪華圖文卡片模式 (Classic Cards Layout) ---
             gallery.innerHTML = filterStatusHtml; 
             filtered.forEach((car, index) => {
                 const isSold = car["販售狀態"] === "售出";
@@ -2152,7 +2283,6 @@
                     
                     URL.revokeObjectURL(objectUrl);
                     
-                    // 400ms 間隔防止被瀏覽器安全阻擋
                     await new Promise(resolve => setTimeout(resolve, 400));
                 } catch (error) {
                     console.warn(`遭遇跨域或網路限制，正在嘗試以新分頁下載：${imageUrl}`);
@@ -2213,13 +2343,12 @@
                             </p>
                         </div>
                         <button id="btn-desktop-download-all" onclick="downloadAllDesktopPhotos()" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black py-2.5 px-4.5 rounded-xl transition-all shadow-md active:scale-95 flex items-center justify-center gap-1.5 whitespace-nowrap">
-                            <i class="fa-solid fa-download"></i> 下載全部照片
+                            <i class="fa-solid fa-download"></i> 一鍵自動下載全部照片
                         </button>
                     </div>
                 `;
             }
 
-            // 建立高奢感、直覺且防錯的「相片下載與儲存中心」彈窗 HTML
             let photosHtml = `
                 <div class="text-left space-y-4">
                     
@@ -2310,7 +2439,7 @@
                 title: '<span class="text-slate-950 font-black text-base md:text-lg flex items-center justify-center gap-2"><i class="fa-solid fa-photo-film text-emerald-600 animate-pulse"></i>相片下載與保存中心</span>',
                 html: photosHtml,
                 showConfirmButton: true,
-                confirmButtonText: '已完成保存並關閉大廳 🚀',
+                confirmButtonText: '已完成保存並關閉大廳',
                 confirmButtonColor: '#10b981',
                 customClass: {
                     popup: 'rounded-[28px] border border-slate-200 shadow-2xl p-6 max-w-[640px] w-full bg-white',
