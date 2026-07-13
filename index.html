@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>在庫車輛線上車源表系統</title>
+    <title>線上車源表系統</title>
     
     <!-- ========================================== -->
     <!-- 🍎 iOS / iPhone Safari 專屬 APP 模式設定 🍎 -->
@@ -134,6 +134,10 @@
             transform: translateY(-4px) scale(1.005); 
             box-shadow: 0 20px 40px rgba(16, 185, 129, 0.06); 
         }
+        /* 懸停時書籤微幅震動感 */
+        .car-row:hover .bookmark-ribbon {
+            transform: translateY(2px);
+        }
 
         /* 預訂車輛警戒外框 */
         .is-reserved-card {
@@ -157,11 +161,39 @@
             }
         }
 
-        /* 狀態色系定義 */
-        .badge-status-在庫 { background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; } /* 翡翠綠 */
-        .badge-status-收訂 { background: #fff7ed; color: #ea580c; border: 1px solid #ffedd5; } /* 曜眼亮橙 */
-        .badge-status-預訂 { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; } /* 皇家寶石藍 */
-        .badge-status-售出 { background: #f1f5f9; color: #64748b; border: 1px solid #cbd5e1; } /* 鈦金灰 */
+        /* ======================================================== */
+        /* 🎨 狀態書籤/色系定義 (v5.5 旗艦美學版) 🎨 */
+        /* 使用 CSS clip-path 裁切出完美高質感的燕尾懸掛書籤 banner */
+        /* ======================================================== */
+        .bookmark-ribbon {
+            position: absolute;
+            top: 0;
+            left: 12px;
+            padding: 8px 10px 14px 10px;
+            font-size: 10px;
+            font-weight: 950;
+            color: #ffffff !important;
+            text-align: center;
+            z-index: 25;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 86%, 0 100%);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        @media (min-width: 768px) {
+            .bookmark-ribbon {
+                left: 16px;
+                padding: 10px 12px 18px 12px;
+                font-size: 11px;
+            }
+        }
+        
+        .badge-status-instock { background: #10b981 !important; color: #ffffff !important; }      /* 在庫：優雅翡翠綠 */
+        .badge-status-consignment { background: #6366f1 !important; color: #ffffff !important; }  /* 寄賣：皇家寶藍靛藍 */
+        .badge-status-arriving { background: #f59e0b !important; color: #ffffff !important; }     /* 即將到港：尊貴暖陽橘金 */
+        .badge-status-sold { background: #64748b !important; color: #ffffff !important; }         /* 售出：沉穩鈦金灰 */
+        .badge-status-reserved { background: #f43f5e !important; color: #ffffff !important; }     /* 收訂 / 預訂：薔薇紅 */
 
         /* 已售出車款黑白處理 */
         .is-sold { 
@@ -301,7 +333,7 @@
         }
 
         /* ========================================== */
-        <!-- 🖨️ 專業 A4 紙本列印最佳化樣式表 🖨️ -->
+        /* 🖨️ 專業 A4 紙本列印最佳化樣式表 🖨️ */
         /* ========================================== */
         @media print {
             body {
@@ -349,14 +381,14 @@
             <!-- ======================================================== -->
             <div class="mx-auto w-24 h-24 rounded-3xl bg-white/5 border border-white/10 shadow-2xl flex items-center justify-center overflow-hidden p-2 relative">
                 <!-- 輪播圖片容器 (透過 JS 控制 src 切換與淡入淡出動畫) -->
-                <img id="lock-logo-img" src="./logo.png" alt="線上車源表" class="max-w-full max-h-full object-contain transition-all duration-500 opacity-100">
+                <img id="lock-logo-img" src="./logo.png" alt="線上車源表系統" class="max-w-full max-h-full object-contain transition-all duration-500 opacity-100">
             </div>
             
             <!-- 認證主文字 -->
             <div class="space-y-1">
-                <h2 class="text-xl md:text-2xl font-black text-white tracking-wider">線上車源表系統</h2>
+                <h2 class="text-xl md:text-2xl font-black text-white tracking-wider">認證中心</h2>
                 <p id="lock-status" class="text-xs text-emerald-500 font-bold tracking-widest flex items-center justify-center gap-1.5 uppercase">
-                    <i class="fa-solid fa-spinner animate-spin"></i> 正在安全連線資料庫...
+                    <i class="fa-solid fa-spinner animate-spin"></i> 正在安全連線試算表...
                 </p>
             </div>
 
@@ -423,7 +455,7 @@
                     </div>
                     <div>
                         <h1 class="text-xl md:text-2xl font-black text-slate-850 tracking-tighter">在庫車輛 <span class="text-emerald-600">車源總表</span></h1>
-                        <p class="text-[10px] text-slate-400 font-bold tracking-wider mt-0.5 uppercase"> v5.42</p>
+                        <p class="text-[10px] text-slate-400 font-bold tracking-wider mt-0.5 uppercase"> v5.5</p>
                     </div>
                 </div>
                 <div class="flex gap-2 w-full md:w-auto">
@@ -727,7 +759,7 @@
 
     <!-- 頁尾 -->
     <footer class="mt-auto py-6 text-center text-xs text-slate-400 no-capture">
-        <p>© 姜駒車業. All Rights Reserved. 整合系統 v5.42</p>
+        <p>© 姜駒車業. All Rights Reserved. 整合系統 v5.5</p>
     </footer>
 
     <script>
@@ -749,11 +781,11 @@
             // 在此處自訂您的輪播 LOGO (順序依次由上到下，支援相對與絕對路徑)
             logos: [
                 "./logo.png", // 預設本地 Logo
-                "./logo6.jpeg", // 專案 GitHub 輪播 Logo 2
-                "./cjlogo.jpg"  // 專案 GitHub 輪播 Logo 3
+                "https://raw.githubusercontent.com/ outstanding-garage/main/logo_v2.png", // 專案 GitHub 輪播 Logo 2
+                "https://raw.githubusercontent.com/ outstanding-garage/main/logo_v3.png"  // 專案 GitHub 輪播 Logo 3
             ],
             maxCount: 3,   // 💡 最大輪播數量限制
-            interval: 2000 // 💡 輪播切換速度 (毫秒，例如 3500 = 3.5 秒)
+            interval: 3500 // 💡 輪播切換速度 (毫秒，例如 3500 = 3.5 秒)
         };
         let currentLogoIndex = 0;
         let logoCarouselTimer = null;
@@ -764,7 +796,9 @@
         let touchStartX = 0;
         let touchEndX = 0;
 
-        // 智慧版面配置定義檔 (完美支援行動端與桌機端橫向聯動)
+        // ==========================================
+        // 🌟 智慧版面配置定義檔 (🚀 著重價格：價格大小全面加粗上調優化)
+        // ==========================================
         const scaleConfig = {
             compact: {
                 imgWidth: "w-20 h-20 sm:w-24 sm:h-24 md:w-[260px]",
@@ -777,7 +811,7 @@
                 cardRemarksMargin: "mt-1 p-1.5 md:mt-2.5 md:p-2.5 text-[10px] md:text-[11px] rounded-lg",
                 priceWidth: "md:w-[170px]",
                 pricePadding: "p-2 md:p-5",
-                priceText: "text-lg sm:text-xl md:text-3xl",
+                priceText: "text-2xl sm:text-3xl md:text-4xl", // 🚀 大幅著重，原為 text-lg
                 tdPadding: "py-2 px-4 text-xs",
                 thPadding: "py-2.5 px-4 text-[10px]"
             },
@@ -790,9 +824,9 @@
                 tagGap: "mt-1.5 gap-1 md:mt-3.5 md:gap-2",
                 tagPadding: "px-2 py-0.5 md:px-3 md:py-1.5 text-[10px] md:text-[11px] rounded-lg md:rounded-xl",
                 cardRemarksMargin: "mt-2 p-2 md:mt-3.5 md:p-3 text-[11px] md:text-xs rounded-lg md:rounded-xl",
-                priceWidth: "md:w-[220px]",
+                priceWidth: "md:w-[225px]",
                 pricePadding: "p-3.5 md:p-8",
-                priceText: "text-xl sm:text-2xl md:text-5xl",
+                priceText: "text-3xl sm:text-4xl md:text-6xl", // 🚀 大幅著重，原為 text-xl
                 tdPadding: "py-4 px-6 text-sm",
                 thPadding: "py-4 px-6 text-[11px]"
             },
@@ -807,7 +841,7 @@
                 cardRemarksMargin: "mt-3 p-2.5 md:mt-5 md:p-4 text-xs md:text-sm rounded-xl md:rounded-2xl",
                 priceWidth: "md:w-[280px]",
                 pricePadding: "p-4 md:p-10",
-                priceText: "text-2xl sm:text-3xl md:text-6xl",
+                priceText: "text-4xl sm:text-5xl md:text-7xl", // 🚀 大幅著重，原為 text-2xl
                 tdPadding: "py-5 px-8 text-base",
                 thPadding: "py-5 px-8 text-xs"
             }
@@ -893,6 +927,19 @@
             const trimmed = String(type).trim();
             if (saleTypeColors[trimmed]) return saleTypeColors[trimmed];
             return "bg-slate-50 text-slate-600 border-slate-200";
+        }
+
+        // ==========================================
+        // 🛡️ 智慧狀態類名轉換器 (防黑底黑字編碼錯誤)
+        // ==========================================
+        function getStatusBadgeClass(status) {
+            const trimmed = String(status || '').trim();
+            if (trimmed === '在庫') return 'badge-status-instock';
+            if (trimmed === '寄賣') return 'badge-status-consignment';
+            if (trimmed === '即將到港') return 'badge-status-arriving';
+            if (trimmed === '售出') return 'badge-status-sold';
+            if (trimmed === '收訂' || trimmed === '預訂') return 'badge-status-reserved';
+            return 'badge-status-instock'; // 預設安全 fallback
         }
 
         function formatMileage(mileageVal) {
@@ -1063,12 +1110,22 @@
                 
                 // 完成資料載入與解密設定，更改密碼鎖頁面狀態
                 document.getElementById('lock-status').innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500"></i> 安全防護系統已準備就緒`;
-                checkTodayUpdates();
+                
+                // 🌟 v5.5 修正：若已經解鎖才主動顯示更新公告，否則靜默不彈窗 🌟
+                const isUnlocked = sessionStorage.getItem('garage_unlocked') === 'true';
+                if (isUnlocked) {
+                    checkTodayUpdates();
+                }
             } catch (e) { 
                 console.warn("API 連線異常，啟用測試 Demo 數據模式與預設密碼 8888：", e);
                 loadMockData(); 
                 document.getElementById('lock-status').innerHTML = `<i class="fa-solid fa-triangle-exclamation text-amber-500"></i> 本地備份模式 (預設密碼: 8888)`;
-                checkTodayUpdates();
+                
+                // 🌟 v5.5 修正：若已經解鎖才主動顯示更新公告，否則靜默不彈窗 🌟
+                const isUnlocked = sessionStorage.getItem('garage_unlocked') === 'true';
+                if (isUnlocked) {
+                    checkTodayUpdates();
+                }
             }
         }
 
@@ -1096,7 +1153,7 @@
                     "底價": "148",   
                     "燃料形式": "汽油",
                     "在庫位子": "台北總店",
-                    "販售狀態": "預訂", 
+                    "販售狀態": "即將到港", 
                     "是否認證": "是",
                     "售賣形式": "零售",
                     "封面圖片": "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?q=80&w=1200",
@@ -1148,7 +1205,7 @@
                     "底價": "415",   
                     "燃料形式": "汽油",
                     "在庫位子": "新竹店",
-                    "販售狀態": "在庫",
+                    "販售狀態": "寄賣",
                     "是否認證": "否", 
                     "售賣形式": "盤兵",
                     "封面圖片": "https://images.unsplash.com/photo-1555215695-3004980ad54e?q=80&w=1200",
@@ -1161,7 +1218,7 @@
                 },
                 {
                     "編碼": "CONFIG_BULLETIN",
-                    "備註": "📣 全場公告：請重新登入系統！"
+                    "備註": "📣 全場公告：端午賞車人數較多，請全體業務成交後務必立刻將狀態改為「收訂」或「售出」，避免撞車重複銷售！"
                 }
             ];
             
@@ -1289,6 +1346,9 @@
                     document.body.style.overflow = '';
                     setTimeout(() => {
                         lockScreen.classList.add('hidden');
+                        
+                        // 🌟 v5.5 智慧修正：唯有在完全驗證解鎖、且防護層淡出後，才顯示今日在庫更新快報 🌟
+                        checkTodayUpdates();
                     }, 500);
                 }, 400);
 
@@ -1430,10 +1490,10 @@
                 </div>`;
 
                 Swal.fire({
-                    title: 'Outstanding Garage<br><span style="color:#10b981; font-size:1.2rem; font-weight:900;">今日在庫異動快報</span>',
+                    title: 'Today Reminder<br><span style="color:#10b981; font-size:1.2rem; font-weight:900;">今日在庫異動快報</span>',
                     html: updateHtml,
                     icon: 'info',
-                    confirmButtonText: '進入展示大廳',
+                    confirmButtonText: '🚀 進入展示大廳 🚀',
                     confirmButtonColor: '#10b981',
                     customClass: {
                         popup: 'rounded-[24px] border border-slate-200 shadow-2xl p-5 max-w-[420px] w-full',
@@ -1679,6 +1739,7 @@
                     const isCert = car["是否認證"] === "是";
                     const locBadgeClass = getLocationColor(car["在庫位子"]);
                     const saleBadgeClass = getSaleTypeColor(car["售賣形式"]);
+                    const badgeColorClass = getStatusBadgeClass(car["販售狀態"]);
 
                     tableHtml += `
                         <tr onclick="openModalByCode('${car["編碼"]}')" class="hover:bg-slate-50/80 cursor-pointer transition-colors ${isSold ? 'opacity-65' : ''} ${isReserved ? 'bg-amber-50/10' : ''}">
@@ -1694,7 +1755,7 @@
                                         <span class="text-slate-500 font-bold bg-slate-100 px-1 py-0.5 rounded">${car["年份"]} 年</span>
                                         <span class="text-slate-500 font-bold bg-slate-100 px-1 py-0.5 rounded">${formatMileage(car["里程"])}</span>
                                         <span class="border px-1 py-0.5 rounded font-bold ${locBadgeClass}">${car["在庫位子"] || "展間"}</span>
-                                        <span class="px-1.5 py-0.5 rounded font-black badge-status-${car["販售狀態"] || '在庫'}">${car["販售狀態"] || '在庫'}</span>
+                                        <span class="px-1.5 py-0.5 rounded font-black ${badgeColorClass}">${car["販售狀態"] || '在庫'}</span>
                                     </div>
                                 </div>
                             </td>
@@ -1706,7 +1767,7 @@
                                 </span>
                             </td>
                             <td class="${sc.tdPadding} hidden md:table-cell">
-                                <span class="px-2 py-0.5 rounded text-[10px] font-black badge-status-${car["販售狀態"] || '在庫'} shadow-sm">
+                                <span class="px-2 py-0.5 rounded text-[10px] font-black ${badgeColorClass} text-white shadow-sm">
                                     ${car["販售狀態"] || '在庫'}
                                 </span>
                             </td>
@@ -1717,10 +1778,11 @@
                                     <span class="text-rose-500 font-bold"><i class="fa-solid fa-circle-exclamation mr-1"></i>未認證</span>
                                 `}
                             </td>
+                            <!-- 🚀 清單模式：手機與桌機開價字體尺寸全面著重優化 -->
                             <td class="${sc.tdPadding} text-right">
                                 <div class="flex items-end justify-end gap-0.5">
-                                    <span class="font-black ${isSold ? 'text-slate-500 line-through' : 'text-rose-600'} italic">${car["開價"]}</span>
-                                    <span class="text-[10px] font-black ${isSold ? 'text-slate-400' : 'text-rose-600'} mb-0.5">萬</span>
+                                    <span class="font-black font-mono tracking-tighter ${isSold ? 'text-slate-400 line-through' : 'text-rose-600 text-lg md:text-xl lg:text-2xl'} italic">${car["開價"]}</span>
+                                    <span class="text-[10px] md:text-xs font-black ${isSold ? 'text-slate-400' : 'text-rose-600'} mb-0.5">萬</span>
                                 </div>
                             </td>
                         </tr>
@@ -1749,6 +1811,7 @@
                     const resolvedImageUrl = getDirectImageUrl(car["封面圖片"]);
                     const locBadgeClass = getLocationColor(car["在庫位子"]);
                     const saleBadgeClass = getSaleTypeColor(car["售賣形式"]);
+                    const badgeColorClass = getStatusBadgeClass(car["販售狀態"]);
 
                     brickHtml += `
                         <div onclick="openModalByCode('${car["編碼"]}')" class="car-brick-item bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm hover:border-emerald-500 hover:shadow-md transition-all cursor-pointer flex flex-col relative ${isSold ? 'opacity-65' : ''} ${isReserved ? 'border-amber-500 ring-2 ring-amber-500/20' : ''}">
@@ -1756,10 +1819,10 @@
                             <div class="aspect-[4/3] bg-slate-100 relative overflow-hidden flex-shrink-0">
                                 <img src="${resolvedImageUrl}" onerror="handleImageError(this, ${index})" class="w-full h-full object-cover">
                                 
-                                <!-- 頂部狀態小角標 -->
-                                <span class="absolute top-1.5 left-1.5 bg-slate-950/80 text-white text-[9px] font-black px-1.5 py-0.5 rounded shadow z-10">
+                                <!-- 🌟 v5.5 精緻雙燕尾書籤 (即將到港/寄賣/在庫) 🌟 -->
+                                <div class="bookmark-ribbon ${badgeColorClass} scale-90 origin-top">
                                     ${car["販售狀態"] || '在庫'}
-                                </span>
+                                </div>
 
                                 ${isCert && !isSold ? `
                                     <span class="absolute bottom-1.5 right-1.5 bg-emerald-600 text-white text-[8px] font-black px-1 py-0.5 rounded shadow z-10 flex items-center">
@@ -1783,12 +1846,13 @@
                                         <span>${car["年份"]} 年份</span>
                                         <span>${formatMileage(car["里程"])}</span>
                                     </div>
+                                    <!-- 🚀 方磚模式：著重加大價格顯示 -->
                                     <div class="flex items-center justify-between gap-1">
                                         <span class="text-[9px] border px-1 rounded truncate max-w-[80px] ${locBadgeClass}">
                                             ${car["在庫位子"] || "展間"}
                                         </span>
-                                        <p class="text-xs font-black text-rose-600 font-mono text-right shrink-0">
-                                            ${car["開價"]}<span class="text-[9px] font-bold">萬</span>
+                                        <p class="text-sm md:text-base font-black text-rose-600 font-mono text-right shrink-0">
+                                            ${car["開價"]}<span class="text-[10px] font-bold">萬</span>
                                         </p>
                                     </div>
                                 </div>
@@ -1816,6 +1880,7 @@
                 const resolvedImageUrl = getDirectImageUrl(car["封面圖片"]);
                 const locBadgeClass = getLocationColor(car["在庫位子"]); 
                 const saleBadgeClass = getSaleTypeColor(car["售賣形式"]);
+                const badgeColorClass = getStatusBadgeClass(car["販售狀態"]);
 
                 const inspectStatus = getInspectionStatus(car);
                 let cardInspectBadge = '';
@@ -1863,7 +1928,8 @@
                              class="w-full h-full object-cover transition-transform duration-500 hover:scale-105" 
                              alt="${car["型號"]}">
                         
-                        <div class="absolute bottom-2 md:bottom-auto md:top-3 left-2 md:left-3 px-2 py-0.5 rounded text-[9px] md:text-[10px] font-black tracking-wide badge-status-${car["販售狀態"] || '在庫'} shadow-md z-10">
+                        <!-- 🌟 v5.5 旗艦精緻燕尾書籤角標 (即將到港/寄賣/在庫) 🌟 -->
+                        <div class="bookmark-ribbon ${badgeColorClass}">
                             ${car["販售狀態"] || '在庫'}
                         </div>
 
@@ -1898,13 +1964,13 @@
                         </div>
                     </div>
 
-                    <!-- 手機端完美置底之價格欄 -->
+                    <!-- 手機端 & 桌機端 完美置底之價格欄 (價格與字體大小顯眼著重) -->
                     <div class="price-box w-auto md:w-${sc.priceWidth} border-l-0 md:border-l border-slate-100 ${sc.pricePadding} flex flex-col justify-center items-end bg-transparent md:bg-slate-50/50 pr-2">
                         <div class="w-full flex flex-row md:flex-col justify-between md:justify-center items-center md:items-end gap-1">
-                            <p class="text-[9px] md:text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">網路優惠價</p>
+                            <p class="text-[10px] md:text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">網路優惠價</p>
                             <div class="flex items-end justify-end gap-0.5">
-                                <span class="${sc.priceText} font-black text-rose-600 italic tracking-tighter">${car["開價"]}</span>
-                                <span class="text-[10px] md:text-sm font-black text-rose-600 mb-0.5">萬</span>
+                                <span class="${sc.priceText} font-black text-rose-600 italic tracking-tighter font-mono">${car["開價"]}</span>
+                                <span class="text-xs sm:text-sm md:text-base font-black text-rose-600 mb-0.5">萬</span>
                             </div>
                         </div>
                     </div>
@@ -2053,7 +2119,9 @@
             }
 
             const statusBadge = document.getElementById('modal-status-badge');
-            statusBadge.className = `absolute bottom-4 right-4 px-3 py-1.5 rounded-lg text-xs font-black shadow-xl badge-status-${car["販售狀態"] || '在庫'}`;
+            // 🛡️ 對接標準英文類名，確保彈窗狀態色系不跳回預設黑白
+            const badgeColorClass = getStatusBadgeClass(car["販售狀態"]);
+            statusBadge.className = `absolute bottom-4 right-4 px-3 py-1.5 rounded-lg text-xs font-black shadow-xl ${badgeColorClass} text-white`;
             statusBadge.innerText = car["販售狀態"] || '在庫';
 
             const thumbsContainer = document.getElementById('modal-thumbnails-container');
@@ -2385,7 +2453,7 @@
                                     <i class="fa-solid fa-desktop"></i> 電腦網頁端：
                                 </p>
                                 <p class="text-[11px] text-slate-600 leading-relaxed pl-5 font-bold">
-                                    您可以使用上方的<span class="text-emerald-600 font-bold">「一鍵自動下載」</span>，或是點擊下方相片旁邊的<span class="text-slate-800 underline">「安全下載原圖」</span>進行單張手動存檔。
+                                    您可以使用上方的<span class="text-emerald-600 font-bold">「一鍵自動下載」</span>，或是點擊下方相片旁邊的<span class="text-slate-800 underline">("安全下載原圖")</span>進行單張手動存檔。
                                 </p>
                             </div>
                         </div>
@@ -2439,7 +2507,7 @@
                 title: '<span class="text-slate-950 font-black text-base md:text-lg flex items-center justify-center gap-2"><i class="fa-solid fa-photo-film text-emerald-600 animate-pulse"></i>相片下載與保存中心</span>',
                 html: photosHtml,
                 showConfirmButton: true,
-                confirmButtonText: '已完成保存並關閉大廳',
+                confirmButtonText: '已完成保存並關閉大廳 ',
                 confirmButtonColor: '#10b981',
                 customClass: {
                     popup: 'rounded-[28px] border border-slate-200 shadow-2xl p-6 max-w-[640px] w-full bg-white',
