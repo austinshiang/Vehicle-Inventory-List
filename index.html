@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>線上車源表系統 v5.7</title>
+    <title>線上車源表系統 v5.8</title>
     
     <!-- iOS / Safari App settings -->
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -60,12 +60,6 @@
             max-width: 60%; 
             max-height: 60%; 
             object-fit: contain; 
-        }
-
-        .screenshot-mode #watermark-bg {
-            display: flex !important;   
-            opacity: 0.15 !important;   
-            z-index: 35 !important;     
         }
 
         .car-row { 
@@ -193,37 +187,6 @@
             100% { transform: translate(-50%, -50%) scale(1) rotate(-12deg); opacity: 1; }
         }
 
-        .screenshot-mode {
-            background-color: #ffffff !important;
-        }
-        .screenshot-mode .no-capture { 
-            display: none !important; 
-        }
-        .screenshot-mode #gallery { 
-            padding-top: 20px; 
-        }
-        #exit-capture { 
-            display: none; 
-            position: fixed; 
-            top: 20px; 
-            right: 20px; 
-            z-index: 100; 
-            background: #dc2626; 
-            color: white; 
-            padding: 12px 24px; 
-            border-radius: 50px; 
-            font-weight: 900; 
-            font-size: 14px; 
-            box-shadow: 0 10px 25px rgba(220, 38, 38, 0.3); 
-            transition: all 0.2s;
-        }
-        #exit-capture:hover {
-            transform: scale(1.05);
-        }
-        .screenshot-mode #exit-capture { 
-            display: block; 
-        }
-
         .modal-transition {
             transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
@@ -276,29 +239,47 @@
             } 
         }
 
+        /* A4 列印輸出專屬 CSS (預設 A4 一行 5 台) */
+        @page {
+            size: A4 portrait;
+            margin: 6mm 4mm 6mm 4mm;
+        }
         @media print {
             body {
                 background: #ffffff !important;
                 color: #000000 !important;
-                padding-bottom: 0 !important;
-            }
-            .no-capture, header, footer, button, select, input, .close-btn, #exit-capture {
-                display: none !important;
-            }
-            #gallery {
                 padding: 0 !important;
                 margin: 0 !important;
-                display: grid !important;
-                grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-                gap: 16px !important;
+                font-size: 8.5px !important;
             }
-            .car-brick-item {
+            header, footer, main, #lock-screen, #detail-modal, #lightbox-modal, #print-modal, #watermark-bg {
+                display: none !important;
+            }
+            #print-output-container {
+                display: block !important;
+                width: 100% !important;
+            }
+            .print-grid {
+                display: grid !important;
+                grid-template-columns: repeat(5, 1fr) !important;
+                gap: 5px !important;
+                width: 100% !important;
+            }
+            .print-brick-card {
                 break-inside: avoid !important;
                 page-break-inside: avoid !important;
                 border: 1px solid #cbd5e1 !important;
+                border-radius: 6px !important;
+                overflow: hidden !important;
                 background: #ffffff !important;
-                box-shadow: none !important;
-                border-radius: 12px !important;
+                display: flex !important;
+                flex-direction: column !important;
+            }
+            .print-brick-card img {
+                width: 100% !important;
+                aspect-ratio: 4 / 3 !important;
+                object-fit: cover !important;
+                display: block !important;
             }
         }
     </style>
@@ -362,11 +343,8 @@
 
     <!-- Watermark Background -->
     <div id="watermark-bg" class="hidden"><img id="watermark-img" src="https://images.1111.com.tw/oad/117197616.jpg" alt="浮水印"></div>
-    
-    <!-- Exit Capture Mode Button -->
-    <button id="exit-capture" onclick="toggleCapture(false)"><i class="fa-solid fa-xmark mr-2"></i> 結束截圖模式</button>
 
-    <header class="bg-white border-b border-slate-200 py-5 px-4 relative z-40 shadow-sm no-capture">
+    <header class="bg-white border-b border-slate-200 py-5 px-4 relative z-40 shadow-sm">
         <div class="max-w-6xl mx-auto space-y-4">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
                 <div class="flex items-center space-x-3.5">
@@ -375,15 +353,15 @@
                     </div>
                     <div>
                         <h1 class="text-xl md:text-2xl font-black text-slate-850 tracking-tighter">在庫車輛 <span class="text-emerald-600">線上車源總表</span></h1>
-                        <p class="text-[10px] text-slate-400 font-bold tracking-wider mt-0.5 uppercase">Premium v5.7 </p>
+                        <p class="text-[10px] text-slate-400 font-bold tracking-wider mt-0.5 uppercase">Premium v5.8 </p>
                     </div>
                 </div>
                 <div class="flex gap-2 w-full md:w-auto">
                     <button id="btn-toggle-view" onclick="toggleView()" class="flex-1 md:flex-none bg-slate-100 hover:bg-slate-200 text-slate-700 px-3.5 py-2 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-1.5">
                         <i class="fa-solid fa-image"></i> 圖文卡片模式
                     </button>
-                    <button onclick="toggleCapture(true)" class="flex-1 md:flex-none bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-xl text-xs font-black shadow-lg shadow-emerald-100 flex items-center justify-center gap-1.5 active:scale-95 transition-all">
-                        <i class="fa-solid fa-camera"></i> 進入截圖模式
+                    <button onclick="openPrintModal()" class="flex-1 md:flex-none bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-xl text-xs font-black shadow-lg shadow-emerald-100 flex items-center justify-center gap-1.5 active:scale-95 transition-all">
+                        <i class="fa-solid fa-print"></i> 列印模式
                     </button>
                 </div>
             </div>
@@ -462,6 +440,104 @@
             </div>
         </div>
     </main>
+
+    <!-- 列印模式篩選設定 Modal (預設 A4 5欄) -->
+    <div id="print-modal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white border border-slate-200 max-w-xl w-full rounded-3xl overflow-hidden shadow-2xl relative flex flex-col transform scale-95 opacity-0 modal-transition" id="print-modal-card">
+            <div class="p-5 md:p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow">
+                        <i class="fa-solid fa-print"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base md:text-lg font-black text-slate-850">A4 紙本方磚列印設定</h3>
+                        <p class="text-[11px] text-slate-400 font-bold">自訂篩選條件，以一排 5 台方磚樣式輸出至 A4 紙張</p>
+                    </div>
+                </div>
+                <button onclick="closePrintModal()" class="text-slate-400 hover:text-slate-700 w-8 h-8 rounded-full flex items-center justify-center bg-white shadow-sm border border-slate-200">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="p-5 md:p-6 space-y-5 overflow-y-auto max-h-[70vh] text-xs">
+                <!-- 1. 販售狀態 / 是否售出 -->
+                <div>
+                    <label class="font-black text-slate-700 block mb-2 text-xs flex items-center gap-1.5">
+                        <i class="fa-solid fa-tag text-emerald-600"></i> 車輛狀態 / 售出與否：
+                    </label>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2" id="print-filter-status">
+                        <label class="flex items-center gap-2 p-2 bg-slate-50 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-100">
+                            <input type="checkbox" value="在庫" checked class="accent-emerald-600 w-4 h-4">
+                            <span class="font-bold text-slate-700">在庫</span>
+                        </label>
+                        <label class="flex items-center gap-2 p-2 bg-slate-50 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-100">
+                            <input type="checkbox" value="收訂" checked class="accent-emerald-600 w-4 h-4">
+                            <span class="font-bold text-slate-700">收訂/預訂</span>
+                        </label>
+                        <label class="flex items-center gap-2 p-2 bg-slate-50 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-100">
+                            <input type="checkbox" value="即將到港" checked class="accent-emerald-600 w-4 h-4">
+                            <span class="font-bold text-slate-700">即將到港</span>
+                        </label>
+                        <label class="flex items-center gap-2 p-2 bg-slate-50 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-100">
+                            <input type="checkbox" value="售出" class="accent-emerald-600 w-4 h-4">
+                            <span class="font-bold text-slate-700">已售出</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 2. 售賣形式 -->
+                <div>
+                    <label class="font-black text-slate-700 block mb-2 text-xs flex items-center gap-1.5">
+                        <i class="fa-solid fa-handshake text-emerald-600"></i> 售賣形式：
+                    </label>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2" id="print-filter-sale">
+                        <label class="flex items-center gap-2 p-2 bg-slate-50 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-100">
+                            <input type="checkbox" value="零售" checked class="accent-emerald-600 w-4 h-4">
+                            <span class="font-bold text-slate-700">零售</span>
+                        </label>
+                        <label class="flex items-center gap-2 p-2 bg-slate-50 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-100">
+                            <input type="checkbox" value="寄賣" checked class="accent-emerald-600 w-4 h-4">
+                            <span class="font-bold text-slate-700">寄賣</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 3. 廠牌選擇 -->
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <label class="font-black text-slate-700 text-xs flex items-center gap-1.5">
+                            <i class="fa-solid fa-car text-emerald-600"></i> 廠牌篩選：
+                        </label>
+                        <button type="button" onclick="toggleSelectAll('print-filter-brands')" class="text-[11px] text-emerald-600 hover:text-emerald-700 font-bold">全選 / 全取消</button>
+                    </div>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-36 overflow-y-auto p-2 bg-slate-50 border border-slate-200 rounded-xl" id="print-filter-brands"></div>
+                </div>
+
+                <!-- 4. 在庫位置 -->
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <label class="font-black text-slate-700 text-xs flex items-center gap-1.5">
+                            <i class="fa-solid fa-location-dot text-emerald-600"></i> 在庫位置：
+                        </label>
+                        <button type="button" onclick="toggleSelectAll('print-filter-locations')" class="text-[11px] text-emerald-600 hover:text-emerald-700 font-bold">全選 / 全取消</button>
+                    </div>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-36 overflow-y-auto p-2 bg-slate-50 border border-slate-200 rounded-xl" id="print-filter-locations"></div>
+                </div>
+            </div>
+
+            <div class="p-4 md:p-5 bg-slate-50 border-t border-slate-150 flex gap-3 justify-end">
+                <button onclick="closePrintModal()" class="bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 font-bold py-2.5 px-4 rounded-xl text-xs transition-all">
+                    取消關閉
+                </button>
+                <button onclick="executePrint()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black py-2.5 px-6 rounded-xl text-xs shadow-lg shadow-emerald-100 flex items-center gap-2 active:scale-95 transition-all">
+                    <i class="fa-solid fa-print"></i> 確認列印 (A4 5欄排版)
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 列印專用輸出區塊（螢幕顯示時隱藏，列印時顯示） -->
+    <div id="print-output-container" class="hidden"></div>
 
     <div id="detail-modal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-white border border-slate-200 max-w-3xl w-full rounded-3xl overflow-hidden shadow-2xl relative max-h-[90vh] flex flex-col transform scale-95 opacity-0 modal-transition" id="modal-card">
@@ -542,7 +618,7 @@
                                 <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-0.5">車身顏色</p>
                                 <p id="spec-color" class="text-sm font-black text-slate-800">--</p>
                             </div>
-                            <div class="bg-slate-50/50 p-3.5 rounded-xl border border-slate-150">
+                            <div class="bg-slate-50/50 p-3.5 rounded-xl border border-slate-100">
                                 <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-0.5">行駛里程</p>
                                 <p id="spec-mileage" class="text-sm font-black text-slate-800">-- 萬 km</p>
                             </div>
@@ -629,7 +705,7 @@
                 </div>
             </div>
 
-            <div class="p-6 bg-slate-50 border-t border-slate-150 flex flex-col sm:flex-row gap-3 justify-end no-capture">
+            <div class="p-6 bg-slate-50 border-t border-slate-150 flex flex-col sm:flex-row gap-3 justify-end">
                 <button id="btn-download-photos" onclick="handleDownloadAll()" class="bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 font-black py-3.5 px-6 rounded-2xl text-center text-sm shadow-sm flex items-center justify-center gap-2 transition-all">
                     <i class="fa-solid fa-circle-arrow-down text-emerald-600"></i> 下載所有照片
                 </button>
@@ -656,8 +732,8 @@
         <img id="lightbox-img" src="" alt="全螢幕車照" class="max-w-full max-h-[90vh] object-contain rounded-2xl shadow-2xl transition-all duration-300 transform scale-95 opacity-0 select-none">
     </div>
 
-    <footer class="mt-auto py-6 text-center text-xs text-slate-400 no-capture">
-        <p>© 姜駒車業. All Rights Reserved. 整合系統 v5.7 </p>
+    <footer class="mt-auto py-6 text-center text-xs text-slate-400">
+        <p>© 姜駒車業. All Rights Reserved. 整合系統 v5.8 </p>
     </footer>
 
     <script>
@@ -674,9 +750,9 @@
 
         const LOCK_LOGOS_CONFIG = {
             logos: [
-                "./logogo.png", 
-                "./logo67.jpg", 
-                "./cjlogo.jpg"  
+                "https://raw.githubusercontent.com/austinshiang/Vehicle-Inventory-List/refs/heads/main/logogo.png", 
+                "https://raw.githubusercontent.com/outstanding-garage/main/logo67.jpg", 
+                "https://raw.githubusercontent.com/outstanding-garage/main/cjlogo.jpg"  
             ],
             maxCount: 3,   
             interval: 3500 
@@ -955,6 +1031,15 @@
                 }
             }
             return finalStatus || { type: 'none', targetMonths: targetMonths, freq: freq };
+        }
+
+        function getCarEffectivePrice(car) {
+            const orig = parseFloat(String(car["開價"] || '').replace(/[^0-9.]/g, ''));
+            const np = parseFloat(String(car["新價格"] || '').replace(/[^0-9.]/g, ''));
+            if (!isNaN(np) && np > 0 && !isNaN(orig) && np < orig) {
+                return np;
+            }
+            return isNaN(orig) ? 0 : orig;
         }
 
         window.onload = () => {
@@ -1385,18 +1470,6 @@
             }
         }
 
-        function toggleCapture(active) {
-            document.body.classList.toggle('screenshot-mode', active);
-            const watermarkBg = document.getElementById('watermark-bg');
-            if (active) {
-                watermarkBg.classList.remove('hidden');
-            } else {
-                if (isListView !== 'list') {
-                    watermarkBg.classList.add('hidden');
-                }
-            }
-        }
-
         function toggleView() {
             const toggleBtn = document.getElementById('btn-toggle-view');
             const watermarkBg = document.getElementById('watermark-bg');
@@ -1412,9 +1485,7 @@
             } else {
                 isListView = 'card';
                 toggleBtn.innerHTML = `<i class="fa-solid fa-image"></i> 圖文卡片模式`;
-                if (!document.body.classList.contains('screenshot-mode')) {
-                    watermarkBg.classList.add('hidden');
-                }
+                watermarkBg.classList.add('hidden');
             }
             render();
         }
@@ -1558,7 +1629,7 @@
                 if (searchKeyword) filterTexts.push(`關鍵字: "${searchKeyword}"`);
                 
                 filterStatusHtml = `
-                    <div class="bg-emerald-50 border border-emerald-150 rounded-2xl px-4 py-3.5 text-xs font-bold text-slate-700 flex flex-col sm:flex-row gap-2 justify-between items-start sm:items-center no-capture shadow-sm mb-4">
+                    <div class="bg-emerald-50 border border-emerald-150 rounded-2xl px-4 py-3.5 text-xs font-bold text-slate-700 flex flex-col sm:flex-row gap-2 justify-between items-start sm:items-center shadow-sm mb-4">
                         <div class="flex flex-wrap items-center gap-1.5">
                             <span class="bg-emerald-600 text-white text-[10px] font-black px-2 py-0.5 rounded-lg">當前篩選</span>
                             <span>${escapeHtml(filterTexts.join(' ｜ '))}</span>
@@ -1580,19 +1651,20 @@
                 return;
             }
             
+            // 排序邏輯：以實際顯示價格（若有降價新價格則以新價格優先）排序
             filtered.sort((a, b) => {
                 const aSold = a["販售狀態"] === "售出" ? 1 : 0;
                 const bSold = b["販售狀態"] === "售出" ? 1 : 0;
                 if (aSold !== bSold) return aSold - bSold; 
                 
                 if (sortBy === "price-desc") {
-                    const priceA = parseFloat(a["開價"]) || 0;
-                    const priceB = parseFloat(b["開價"]) || 0;
+                    const priceA = getCarEffectivePrice(a);
+                    const priceB = getCarEffectivePrice(b);
                     return priceB - priceA;
                 } else if (sortBy === "price-asc") {
-                    const priceA = parseFloat(a["開價"]) || 0;
-                    const priceB = parseFloat(b["開價"]) || 0;
-                    return priceA - priceA;
+                    const priceA = getCarEffectivePrice(a);
+                    const priceB = getCarEffectivePrice(b);
+                    return priceA - priceB;
                 } else if (sortBy === "date-asc") {
                     const dateA = parseDate(a["購入日期"]);
                     const dateB = parseDate(b["購入日期"]);
@@ -1648,7 +1720,6 @@
                     const locBadgeClass = getLocationColor(car["在庫位子"]);
                     const badgeColorClass = getStatusBadgeClass(car["販售狀態"]);
 
-                    // 判斷是否有新價格，若有則顯示新價格，否則顯示原開價（不顯示降價幅度標籤）
                     const origPriceNum = parseFloat(String(car["開價"] || '').replace(/[^0-9.]/g, ''));
                     const newPriceNum = parseFloat(String(car["新價格"] || '').replace(/[^0-9.]/g, ''));
                     const displayPrice = (!isNaN(newPriceNum) && newPriceNum > 0 && !isNaN(origPriceNum) && newPriceNum < origPriceNum) 
@@ -1708,7 +1779,7 @@
                 }
 
                 const grid = document.createElement('div');
-                grid.className = "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3.5 relative z-10 print:gap-2";
+                grid.className = "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3.5 relative z-10";
 
                 filtered.forEach((car, index) => {
                     const isSold = car["販售狀態"] === "售出";
@@ -1718,7 +1789,6 @@
                     const locBadgeClass = getLocationColor(car["在庫位子"]);
                     const badgeColorClass = getStatusBadgeClass(car["販售狀態"]);
 
-                    // 判斷是否有新價格，若有則顯示新價格，否則顯示原開價（不顯示降價幅度標籤）
                     const origPriceNum = parseFloat(String(car["開價"] || '').replace(/[^0-9.]/g, ''));
                     const newPriceNum = parseFloat(String(car["新價格"] || '').replace(/[^0-9.]/g, ''));
                     const displayPrice = (!isNaN(newPriceNum) && newPriceNum > 0 && !isNaN(origPriceNum) && newPriceNum < origPriceNum) 
@@ -1811,7 +1881,7 @@
                                 <span class="${sc.priceText} font-black text-rose-600 italic tracking-tighter font-mono">${escapeHtml(car["新價格"])}</span>
                                 <span class="text-xs sm:text-sm md:text-base font-black text-rose-600 mb-0.5">萬</span>
                             </div>
-                            <!-- 3. 降價提示 (已移至最下方) -->
+                            <!-- 3. 降價提示 -->
                             <div class="bg-rose-500 text-white text-[15px] md:text-xs font-black px-2 py-0.5 rounded-md shadow-sm animate-pulse mt-0.5">
                                 <i class="fa-solid fa-arrow-down-long mr-0.5"></i>降價 ${priceDrop} 萬
                             </div>
@@ -2102,6 +2172,189 @@
                 modalCard.classList.add('scale-100', 'opacity-100');
             }, 10);
             document.body.style.overflow = 'hidden';
+        }
+
+        /* --- 列印模式邏輯 (A4 5欄優化) --- */
+        function openPrintModal() {
+            const printModal = document.getElementById('print-modal');
+            const modalCard = document.getElementById('print-modal-card');
+            
+            // 填充廠牌與位子
+            const brands = [...new Set(cars.map(c => c["廠牌"]).filter(b => b && b !== ""))];
+            const brandContainer = document.getElementById('print-filter-brands');
+            brandContainer.innerHTML = '';
+            brands.forEach(b => {
+                brandContainer.innerHTML += `
+                    <label class="flex items-center gap-1.5 p-1.5 hover:bg-white rounded cursor-pointer text-xs">
+                        <input type="checkbox" value="${escapeHtml(b)}" checked class="accent-emerald-600 w-3.5 h-3.5">
+                        <span class="truncate font-bold text-slate-700">${escapeHtml(b)}</span>
+                    </label>
+                `;
+            });
+
+            const locs = [...new Set(cars.map(c => c["在庫位子"]).filter(l => l && l !== ""))];
+            const locContainer = document.getElementById('print-filter-locations');
+            locContainer.innerHTML = '';
+            locs.forEach(l => {
+                locContainer.innerHTML += `
+                    <label class="flex items-center gap-1.5 p-1.5 hover:bg-white rounded cursor-pointer text-xs">
+                        <input type="checkbox" value="${escapeHtml(l)}" checked class="accent-emerald-600 w-3.5 h-3.5">
+                        <span class="truncate font-bold text-slate-700">${escapeHtml(l)}</span>
+                    </label>
+                `;
+            });
+
+            printModal.classList.remove('hidden');
+            setTimeout(() => {
+                printModal.classList.add('opacity-100');
+                modalCard.classList.remove('scale-95', 'opacity-0');
+                modalCard.classList.add('scale-100', 'opacity-100');
+            }, 10);
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closePrintModal() {
+            const printModal = document.getElementById('print-modal');
+            const modalCard = document.getElementById('print-modal-card');
+            modalCard.classList.remove('scale-100', 'opacity-100');
+            modalCard.classList.add('scale-95', 'opacity-0');
+            printModal.classList.remove('opacity-100');
+            
+            setTimeout(() => {
+                printModal.classList.add('hidden');
+                document.body.style.overflow = '';
+            }, 300);
+        }
+
+        function toggleSelectAll(containerId) {
+            const checkboxes = document.querySelectorAll(`#${containerId} input[type="checkbox"]`);
+            const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+            checkboxes.forEach(cb => cb.checked = !allChecked);
+        }
+
+        function executePrint() {
+            const selectedStatuses = Array.from(document.querySelectorAll('#print-filter-status input:checked')).map(cb => cb.value);
+            const selectedSales = Array.from(document.querySelectorAll('#print-filter-sale input:checked')).map(cb => cb.value);
+            const selectedBrands = Array.from(document.querySelectorAll('#print-filter-brands input:checked')).map(cb => cb.value);
+            const selectedLocs = Array.from(document.querySelectorAll('#print-filter-locations input:checked')).map(cb => cb.value);
+
+            const printCars = cars.filter(c => {
+                if (c["編碼"] === "CONFIG_LOGO" || c["編碼"] === "CONFIG_BULLETIN" || c["編碼"] === "CONFIG_PASSWORD") return false;
+
+                const status = String(c["販售狀態"] || "在庫").trim();
+                let matchStatus = false;
+                if (selectedStatuses.includes(status)) {
+                    matchStatus = true;
+                } else if (selectedStatuses.includes("收訂") && (status === "預訂" || status === "收訂")) {
+                    matchStatus = true;
+                }
+
+                const matchSale = selectedSales.length === 0 || selectedSales.includes(c["售賣形式"] || "零售");
+                const matchBrand = selectedBrands.length === 0 || selectedBrands.includes(c["廠牌"]);
+                const matchLoc = selectedLocs.length === 0 || selectedLocs.includes(c["在庫位子"]);
+
+                return matchStatus && matchSale && matchBrand && matchLoc;
+            });
+
+            if (printCars.length === 0) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: '無符合車輛',
+                    text: '依照您所設定的條件，查無任何車輛可供列印，請調整篩選設定。',
+                    confirmButtonColor: '#10b981'
+                });
+                return;
+            }
+
+            const printContainer = document.getElementById('print-output-container');
+            const today = currentSystemDate;
+const monthStr = String(today.getMonth()+1).padStart(2,'0');
+            const todayStr = `${today.getFullYear()}/${String(today.getMonth() + 1).padStart(2, '0')}/${String(today.getDate()).padStart(2, '0')}`;
+
+            let html = `
+                <div class="p-1">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #0f172a; padding-bottom: 5px; margin-bottom: 6px;">
+                        <div>
+                            <h1 style="font-size: 30px; font-weight: 900; margin: 0; color: #0f172a;">${monthStr}月 在庫車輛總表 </h1>
+                            <p style="font-size: 8px; color: #64748b; margin: 1px 0 0 0;">列印基準: ${todayStr} ｜ 車輛數: ${printCars.length} 台</p>
+                        </div>
+                        <div style="font-size: 9px; font-weight: 900; color: #059669; border: 1px solid #059669; padding: 1.5px 6px; border-radius: 4px;">
+                            內部業務專用
+                        </div>
+                    </div>
+
+                    <div class="print-grid">
+            `;
+
+            printCars.forEach((car, index) => {
+                const resolvedImageUrl = getDirectImageUrl(car["封面圖片"]);
+                const origPriceNum = parseFloat(String(car["開價"] || '').replace(/[^0-9.]/g, ''));
+                const newPriceNum = parseFloat(String(car["新價格"] || '').replace(/[^0-9.]/g, ''));
+                const displayPrice = (!isNaN(newPriceNum) && newPriceNum > 0 && !isNaN(origPriceNum) && newPriceNum < origPriceNum) 
+                    ? car["新價格"] 
+                    : (car["開價"] || '--');
+
+                const isSold = car["販售狀態"] === "售出";
+                const isReserved = car["販售狀態"] === "收訂" || car["販售狀態"] === "預訂";
+
+                html += `
+                    <div class="print-brick-card" style="page-break-inside: avoid; break-inside: avoid; border: 1px solid #cbd5e1; border-radius: 5px; overflow: hidden; background: #ffffff; position: relative;">
+                        <div style="position: relative; width: 100%; aspect-ratio: 4/3; background: #f1f5f9; overflow: hidden;">
+                            <img src="${resolvedImageUrl}" style="width: 100%; height: 100%; object-fit: cover; ${isSold ? 'filter: grayscale(85%); opacity: 0.65;' : ''}" onerror="this.src='${placeholderImages[index % placeholderImages.length]}'">
+                            
+                            <!-- 狀態書籤 -->
+                            <div style="position: absolute; top: 0; left: 4px; background: ${isSold ? '#64748b' : (isReserved ? '#f43f5e' : '#10b981')}; color: white; font-size: 6.5px; font-weight: 900; padding: 1.5px 4px; border-radius: 0 0 3px 3px; z-index: 5;">
+                                ${escapeHtml(car["販售狀態"] || '在庫')}
+                            </div>
+
+                            <!-- 已售出專屬雙框印章戳記 -->
+                            ${isSold ? `
+                                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-12deg); border: 2.5px double #dc2626; color: #dc2626; background: rgba(255, 255, 255, 0.96); padding: 2px 7px; font-size: 11px; font-weight: 900; z-index: 15; border-radius: 4px; letter-spacing: 1.5px; box-shadow: 0 2px 5px rgba(220,38,38,0.2); text-align: center; line-height: 1.1; white-space: nowrap;">
+                                    已售出
+                                    ${car["成交日期"] ? `<span style="display:block; font-size: 6px; font-weight: 800; color: #ef4444; letter-spacing: 0;">${getOnlyDate(car["成交日期"])}</span>` : ''}
+                                </div>
+                            ` : ''}
+                        </div>
+
+                        <div style="padding: 4px; display: flex; flex-direction: column; justify-content: space-between; flex-grow: 1;">
+                            <div style="margin-bottom: 3px;">
+                                <div style="font-size: 6.5px; font-weight: 900; color: #64748b; text-transform: uppercase;">${escapeHtml(car["廠牌"] || '--')}</div>
+                                <div style="font-size: 9px; font-weight: 900; color: #0f172a; line-height: 1.15; height: 2.3em; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">
+                                    ${escapeHtml(car["型號"] || '--')}
+                                </div>
+                            </div>
+
+                            <div style="border-top: 1px solid #f1f5f9; padding-top: 2.5px;">
+                                <div style="display: flex; justify-content: space-between; font-size: 7px; color: #475569; font-weight: bold; margin-bottom: 2px;">
+                                    <span>${escapeHtml(car["年份"])} 年</span>
+                                    <span>${formatMileage(car["里程"])}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+                                    <span style="font-size: 6.5px; font-weight: bold; border: 1px solid #cbd5e1; padding: 1px 3px; border-radius: 2.5px; background: #f8fafc; color: #334155; max-width: 58px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                        ${escapeHtml(car["在庫位子"] || "展間")}
+                                    </span>
+                                    <!-- 放大凸顯之價格 -->
+                                    <span style="font-size: 14px; font-weight: 900; color: #dc2626; font-family: monospace; line-height: 1; letter-spacing: -0.5px;">
+                                        ${escapeHtml(displayPrice)}<span style="font-size: 8.5px; font-weight: bold; margin-left: 1px;">萬</span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `
+                    </div>
+                </div>
+            `;
+
+            printContainer.innerHTML = html;
+            closePrintModal();
+
+            setTimeout(() => {
+                window.print();
+            }, 300);
         }
 
         function openLightbox(index, photoArray) {
